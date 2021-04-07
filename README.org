@@ -1,3 +1,3 @@
 #+title: Py-OpenWordnetPT
 
-This package contains a set of usefull features for manipulation, representation and releasing [OpenWordnet-PT](http://wn.mybluemix.net).
+This package contains a set of usefull features for manipulation, representation and releasing [[http://wn.mybluemix.net/][OpenWordnet-PT]].
