@@ -99,8 +99,18 @@ def filter_suggestions(
     zipped = _left_zip_by_id(suggestions, votes, f_idl, f_idr)
 
     # apply filter rules and return
-    return suggestions
+    return [x[0] for x in zipped if _rules(*x,users_senior,trashold_senior,trashold_junior)]
 
+
+def _rules(suggestion, votes:list, users_senior:list, trashold_senior:int, trashold_junior:int):
+    """"""
+
+    r1 = suggestion["status"] == "new"
+    r2 = suggestion["action"] != "comment"
+    score = sum([vote["value"] for vote in votes])
+    r3 = score >= trashold_senior and suggestion["user"] in users_senior or score >= trashold_junior
+
+    return all([r1,r2,r3])
 
 
 def _left_zip_by_id(listl, listr, f_idl, f_idr):
