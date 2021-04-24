@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from json import loads, dump
+from logging import Logger  
+from rdflib import Graph, Namespace, URIRef, Literal, XSD, RDF, RDFS, SKOS, OWL
+
+
+# global
+OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
+
+WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
+SYNSET_PT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
+WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
 
 def cli_dump_update(
     wn_filepath:str,
@@ -38,6 +48,67 @@ def cli_update_ownpt_from_dump(
 
     # saves results
     ownpt.serialize(output_filepath, format=output_format, encoding="utf8")
+
+
+def update_ownpt_from_dump(ownpt:Graph, wn:dict):
+    """"""
+
+    # removing WordSense from Synset
+    ownpt.remove((None, OWNPT.containsWordSense, None))
+    # removing properties of WordSense
+    ownpt.remove((None, RDF.type, OWNPT.WordSense))
+    ownpt.remove((None, OWNPT.wordNumber, None))
+    ownpt.remove((None, RDFS.label, None))
+    # removing Word from WordSense
+    ownpt.remove((None, OWNPT.word, None))
+    # removing properties of Word
+    ownpt.remove((None, RDF.type, OWNPT.Word))
+    ownpt.remove((None, OWNPT.lexicalForm, None))
+
+    # removing gloss from from Synset
+    ownpt.remove((None, OWNPT.gloss, None))
+
+    # removing example from from Synset
+    ownpt.remove((None, OWNPT.example, None))
+    
+    # updates synsets
+    for synset in wn:
+        update_synset(ownpt, synset)
+
+    return ownpt
+
+
+def update_synset(ownpt:Graph, synset:dict):
+    """"""
+
+    doc_id = SYNSET_PT["doc_id"]
+    synset_pt = SYNSET_PT[doc_id]
+    
+    # adding word-pt
+    for i, word in enumerate(synset["word_pt"]):
+        word_pt = WORD[word.replace(" ", "_")]  
+        word_sense = WORDSENSE[f"{doc_id}-{i}"]
+
+        ownpt.add((synset_pt, OWNPT.containsWordSense, word_sense))
+        
+        # word sense
+        ownpt.add((word_sense, RDF.type, OWNPT.WordSense))
+        ownpt.add((word_sense, OWNPT.wordNumber, Literal(i)))
+        ownpt.add((word_sense, RDF.label, Literal(word, lang="pt")))
+
+        # word form
+        ownpt.add((word_sense, OWNPT.word, word_pt))
+        ownpt.add((word_pt, RDF.type, OWNPT.Word))
+        ownpt.add((word_pt, OWNPT.lexicalForm, Literal(word, lang="pt")))
+
+
+    # adding gloss-pt
+    for i, gloss in enumerate(synset["gloss_pt"]):
+        ownpt.add((synset_pt, OWNPT.gloss, Literal(gloss, lang="pt")))
+
+    # adding example-pt
+    for i, example in enumerate(synset["example_pt"]):
+        ownpt.add((synset_pt, OWNPT.example, Literal(example, lang="pt")))
 
 
 def dump_update(
@@ -172,9 +243,15 @@ def _write_jsonl(items, filepath):
         outfile.write("\n")
 
 # test
-cli_dump_update(
-    "/home/fredson/openWordnet-PT/dump/wn.json",
-    "/home/fredson/openWordnet-PT/dump/suggestion.json",
-    "/home/fredson/openWordnet-PT/dump/votes.json",
+# cli_dump_update(
+#     "/home/fredson/openWordnet-PT/dump/wn.json",
+#     "/home/fredson/openWordnet-PT/dump/suggestion.json",
+#     "/home/fredson/openWordnet-PT/dump/votes.json",
+#     "/home/fredson/openWordnet-PT/dump/outfile.json",
+#     ["arademaker","vcvpaiva"])
+
+cli_update_ownpt_from_dump(
+    "/home/fredson/openWordnet-PT/unzipped/own-pt.nt",
     "/home/fredson/openWordnet-PT/dump/outfile.json",
-    ["arademaker","vcvpaiva"])
+    "nt",
+    "/home/fredson/openWordnet-PT/unzipped/output.nt")
