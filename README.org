@@ -1,4 +1,4 @@
-#+title: Py-OpenWordnetPT
+#+title: Py-OpenWordnetPT (Py-OWNPT)
 
 This package contains a set of usefull features for manipulation, representation and releasing [[http://wn.mybluemix.net/][OpenWordnet-PT]].
 
