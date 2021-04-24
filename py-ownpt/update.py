@@ -1,23 +1,55 @@
 # -*- coding: utf-8 -*-
 
-import json
-from itertools import groupby
+from json import loads, dump
 
-def dump_update(
-    filepath_wn:str,
-    filepath_suggestions:str,
-    filepath_votes:str,
-    filepath_output:str="wn_output.json",
+def cli_dump_update(
+    wn_filepath:str,
+    suggestions_filepath:str,
+    votes_filepath:str,
+    output_filepath:str,
     users_senior=[],
     trashold_senior=1,
     trashold_junior=2):
     """"""
 
     # loads the data    
-    doc_wn = [json.loads(line) for line in open(filepath_wn).readlines()]
-    doc_votes = [json.loads(line) for line in open(filepath_votes).readlines()]
-    doc_suggestions = [json.loads(line) for line in open(filepath_suggestions).readlines()]
+    doc_wn = _read_jsonl(wn_filepath)
+    doc_votes = _read_jsonl(votes_filepath)
+    doc_suggestions = _read_jsonl(suggestions_filepath)
 
+    # updates wn docs
+    dump_update(doc_wn, doc_suggestions, doc_votes, users_senior, trashold_senior, trashold_junior)
+
+    # saves results
+    _write_jsonl(doc_wn, output_filepath)
+
+
+def cli_update_ownpt_from_dump(
+    ownpt_filapath:str,
+    wn_filepath:str,
+    ownpt_format:str="nt",
+    output_filepath:str="output.xml",
+    output_format:str="xml"):
+    """"""
+
+    wn = [item["_source"] for item in _read_jsonl(wn_filepath)]
+    ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
+    update_ownpt_from_dump(ownpt, wn)
+
+    # saves results
+    ownpt.serialize(output_filepath, format=output_format, encoding="utf8")
+
+
+def dump_update(
+    doc_wn = [],
+    doc_suggestions = [],
+    doc_votes = [],
+    users_senior=[],
+    trashold_senior=1,
+    trashold_junior=2):
+    """"""
+
+    # acesses only sources
     wn = [item["_source"] for item in doc_wn]
     votes = [item["_source"] for item in doc_votes]
     suggestions = [item["_source"] for item in doc_suggestions]
@@ -34,15 +66,12 @@ def dump_update(
     for synset, suggestions in zipped:
         apply_suggestions(synset, suggestions)
     
-    # saves results
-    with open(filepath_output, "w") as outfile:
-        for item in doc_wn:
-            json.dump(item, outfile)
-            outfile.write("\n")
+    return doc_wn
 
 def apply_suggestions(synset:dict, suggestions:list):
     for suggestion in suggestions:
         apply_suggestion(synset, suggestion)
+
 
 def apply_suggestion(synset:dict, suggestion):
     action = suggestion["action"]
@@ -68,12 +97,16 @@ def apply_suggestion(synset:dict, suggestion):
 
 
 def _add_parameter(synset, key, params):
+    """"""
+
     if key in synset:
         synset[key].append(params)
     else:
         synset[key] = [params]
 
 def _remove_parameter(synset, key, params):
+    """"""
+
     if key in synset:
         if params in synset[key]:
             synset[key].remove(params)
@@ -115,6 +148,7 @@ def _rules(suggestion, votes:list, users_senior:list, trashold_senior:int, trash
 
 def _left_zip_by_id(listl, listr, f_idl, f_idr):
     """"""
+
     # review eficiency
     zipped = {f_idl(l):{"l":l,"r":[]} for l in listl}
     for itemr in listr:
@@ -128,8 +162,17 @@ def _left_zip_by_id(listl, listr, f_idl, f_idr):
     return [(item["l"],item["r"]) for item in zipped.values()]
 
 
+def _read_jsonl(filepath):
+    return [loads(line) for line in open(filepath).readlines()]
+
+def _write_jsonl(items, filepath):
+    outfile = open(filepath, "w")
+    for item in items:
+        dump(item, outfile)
+        outfile.write("\n")
+
 # test
-dump_update(
+cli_dump_update(
     "/home/fredson/openWordnet-PT/dump/wn.json",
     "/home/fredson/openWordnet-PT/dump/suggestion.json",
     "/home/fredson/openWordnet-PT/dump/votes.json",
