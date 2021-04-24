@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from json import loads, dump
-from logging import Logger  
-from rdflib import Graph, Namespace, URIRef, Literal, XSD, RDF, RDFS, SKOS, OWL
-
+from rdflib import Graph, Namespace, URIRef
+from rdflib import Literal, XSD, RDF, RDFS, SKOS, OWL
 
 # global
 OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
@@ -11,43 +9,6 @@ OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
 WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
 SYNSET_PT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
-
-def cli_dump_update(
-    wn_filepath:str,
-    suggestions_filepath:str,
-    votes_filepath:str,
-    output_filepath:str,
-    users_senior=[],
-    trashold_senior=1,
-    trashold_junior=2):
-    """"""
-
-    # loads the data    
-    doc_wn = _read_jsonl(wn_filepath)
-    doc_votes = _read_jsonl(votes_filepath)
-    doc_suggestions = _read_jsonl(suggestions_filepath)
-
-    # updates wn docs
-    dump_update(doc_wn, doc_suggestions, doc_votes, users_senior, trashold_senior, trashold_junior)
-
-    # saves results
-    _write_jsonl(doc_wn, output_filepath)
-
-
-def cli_update_ownpt_from_dump(
-    ownpt_filapath:str,
-    wn_filepath:str,
-    ownpt_format:str="nt",
-    output_filepath:str="output.xml",
-    output_format:str="xml"):
-    """"""
-
-    wn = [item["_source"] for item in _read_jsonl(wn_filepath)]
-    ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
-    update_ownpt_from_dump(ownpt, wn)
-
-    # saves results
-    ownpt.serialize(output_filepath, format=output_format, encoding="utf8")
 
 
 def update_ownpt_from_dump(ownpt:Graph, wn:dict):
@@ -73,12 +34,12 @@ def update_ownpt_from_dump(ownpt:Graph, wn:dict):
     
     # updates synsets
     for synset in wn:
-        update_synset(ownpt, synset)
+        _update_synset(ownpt, synset)
 
     return ownpt
 
 
-def update_synset(ownpt:Graph, synset:dict):
+def _update_synset(ownpt:Graph, synset:dict):
     """"""
 
     doc_id = synset["doc_id"]
@@ -129,7 +90,7 @@ def dump_update(
     suggestions = [item["_source"] for item in doc_suggestions]
 
     # filter suggestions
-    suggestions = filter_suggestions(suggestions, votes, users_senior, trashold_senior, trashold_junior)
+    suggestions = _filter_suggestions(suggestions, votes, users_senior, trashold_senior, trashold_junior)
 
     # joins synsets and suggestions
     f_idl = lambda x: x["doc_id"]
@@ -138,16 +99,16 @@ def dump_update(
 
     # apply suggestions
     for synset, suggestions in zipped:
-        apply_suggestions(synset, suggestions)
+        _apply_suggestions(synset, suggestions)
     
     return doc_wn
 
-def apply_suggestions(synset:dict, suggestions:list):
+
+def _apply_suggestions(synset:dict, suggestions:list):
     for suggestion in suggestions:
-        apply_suggestion(synset, suggestion)
+        _apply_suggestion(synset, suggestion)
 
-
-def apply_suggestion(synset:dict, suggestion):
+def _apply_suggestion(synset:dict, suggestion):
     action = suggestion["action"]
     params = suggestion["params"]
 
@@ -192,7 +153,7 @@ def _remove_parameter(synset, key, params):
         # raise Exception(f"Key not in synset: {key}")
 
 
-def filter_suggestions(
+def _filter_suggestions(
     suggestions:list,
     votes:list,
     users_senior:list,
@@ -234,28 +195,3 @@ def _left_zip_by_id(listl, listr, f_idl, f_idr):
             # raise Exception(f"Got invalid id to zip: {_id}")
 
     return [(item["l"],item["r"]) for item in zipped.values()]
-
-
-def _read_jsonl(filepath):
-    return [loads(line) for line in open(filepath).readlines()]
-
-def _write_jsonl(items, filepath):
-    outfile = open(filepath, "w")
-    for item in items:
-        dump(item, outfile)
-        outfile.write("\n")
-
-# test
-# cli_dump_update(
-#     "/home/fredson/openWordnet-PT/dump/wn.json",
-#     "/home/fredson/openWordnet-PT/dump/suggestion.json",
-#     "/home/fredson/openWordnet-PT/dump/votes.json",
-#     "/home/fredson/openWordnet-PT/dump/outfile.json",
-#     ["arademaker","vcvpaiva"])
-
-cli_update_ownpt_from_dump(
-    "/home/fredson/openWordnet-PT/unzipped/own-pt.nt",
-    "/home/fredson/openWordnet-PT/dump/outfile.json",
-    "nt",
-    "/home/fredson/openWordnet-PT/unzipped/output.nt",
-    "nt")
