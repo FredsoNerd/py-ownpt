@@ -81,11 +81,12 @@ def update_ownpt_from_dump(ownpt:Graph, wn:dict):
 def update_synset(ownpt:Graph, synset:dict):
     """"""
 
-    doc_id = SYNSET_PT["doc_id"]
+    doc_id = synset["doc_id"]
     synset_pt = SYNSET_PT[doc_id]
     
     # adding word-pt
-    for i, word in enumerate(synset["word_pt"]):
+    word_pt = synset["word_pt"] if "word_pt" in synset else []
+    for i, word in enumerate(word_pt, start=1):
         word_pt = WORD[word.replace(" ", "_")]  
         word_sense = WORDSENSE[f"{doc_id}-{i}"]
 
@@ -94,7 +95,7 @@ def update_synset(ownpt:Graph, synset:dict):
         # word sense
         ownpt.add((word_sense, RDF.type, OWNPT.WordSense))
         ownpt.add((word_sense, OWNPT.wordNumber, Literal(i)))
-        ownpt.add((word_sense, RDF.label, Literal(word, lang="pt")))
+        ownpt.add((word_sense, RDFS.label, Literal(word, lang="pt")))
 
         # word form
         ownpt.add((word_sense, OWNPT.word, word_pt))
@@ -103,11 +104,13 @@ def update_synset(ownpt:Graph, synset:dict):
 
 
     # adding gloss-pt
-    for i, gloss in enumerate(synset["gloss_pt"]):
+    gloss_pt = synset["gloss_pt"] if "gloss_pt" in synset else []
+    for i, gloss in enumerate(gloss_pt, start=1):
         ownpt.add((synset_pt, OWNPT.gloss, Literal(gloss, lang="pt")))
 
     # adding example-pt
-    for i, example in enumerate(synset["example_pt"]):
+    example_pt = synset["example_pt"] if "example_pt" in synset else []
+    for i, example in enumerate(example_pt, start=1):
         ownpt.add((synset_pt, OWNPT.example, Literal(example, lang="pt")))
 
 
@@ -254,4 +257,5 @@ cli_update_ownpt_from_dump(
     "/home/fredson/openWordnet-PT/unzipped/own-pt.nt",
     "/home/fredson/openWordnet-PT/dump/outfile.json",
     "nt",
-    "/home/fredson/openWordnet-PT/unzipped/output.nt")
+    "/home/fredson/openWordnet-PT/unzipped/output.nt",
+    "nt")
