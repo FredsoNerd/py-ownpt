@@ -31,12 +31,65 @@ def update_ownpt_from_dump(ownpt:Graph, wn:dict):
 
     # removing example from from Synset
     ownpt.remove((None, OWNPT.example, None))
+
+    # removing antonymOf
+    ownpt.remove((None, OWNPT.antonymOf, None))
     
     # updates synsets
     for synset in wn:
         _update_synset(ownpt, synset)
 
+    # update relations
+    _update_pointers(ownpt, wn, {"wn30_pt_antonymOf":OWNPT.antonymOf})
+
     return ownpt
+
+
+def _update_pointers(ownpt:Graph, synsets, pointer_uri_map:dict=dict()):
+    """"""
+
+    for pointer, predicate in pointer_uri_map.items():
+        _update_pointer(ownpt, synsets, pointer, predicate)
+
+def _update_pointer(ownpt:Graph, synsets, pointer_name:str, predicate:URIRef):
+    """"""
+
+    # join pairs
+    doc_id_map = {synset["doc_id"]:synset for synset in synsets}
+    pairs_sense_id = []
+    for source_synset in synsets:
+        if pointer_name not in source_synset:
+            continue
+        for pointer in source_synset[pointer_name]:
+            source_senses = _get_wordsenses(source_synset, pointer, "source_word")
+            
+            target_doc_id = pointer["target_synset"]
+            target_synset = doc_id_map[target_doc_id]
+            target_senses = _get_wordsenses(target_synset, pointer, "target_word")
+
+            pairs_sense_id += [(s, t) for s in source_senses for t in target_senses]
+    
+    # add relations
+    for source_sense_id, target_sense_id in pairs_sense_id:
+        source_wordsense = WORDSENSE[source_sense_id]
+        target_wordsense = WORDSENSE[target_sense_id]
+        ownpt.add((source_wordsense, predicate, target_wordsense))
+
+def _get_wordsenses(synset, pointer, key):
+    """"""
+    
+    word = pointer[key] if key in pointer else None
+    words = synset["word_pt"] if "word_pt" in synset else []
+    doc_id = synset["doc_id"]
+
+    # if not source/target word
+    if word is None:
+        return [f"{doc_id}-{i+1}" for i in range(len(words))]
+    # if source/target word in synset
+    if word in words:
+        return [f"{doc_id}-{1+words.index(word)}"]
+    # other cases
+    return []
 
 
 def _update_synset(ownpt:Graph, synset:dict):
