@@ -4,8 +4,7 @@ This package contains a set of usefull features for manipulation, representation
 
 ## Features
 
-Py-OWNPT contains the folowing features: updating `dump`, and updating `own-pt` given dump. See the directoy `cli` com command-line-interfaces.
-
+Py-OWNPT contains features for updating `dump`, `own-pt` and `morphosemantic-links-pt` given dump. The directoy `cli` contains the folowing commands: `update_dump`, `update_morpho` and `update_ownpt`.
 
 ## Development
 
