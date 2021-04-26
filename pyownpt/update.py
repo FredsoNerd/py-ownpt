@@ -5,6 +5,7 @@ from rdflib import Literal, XSD, RDF, RDFS, SKOS, OWL
 
 # global
 OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
+NOMLEX = Namespace("https://w3id.org/own-pt/nomlex/schema/")
 
 WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
 SYNSET_PT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
@@ -40,9 +41,66 @@ def update_ownpt_from_dump(ownpt:Graph, wn:dict):
         _update_synset(ownpt, synset)
 
     # update relations
-    _update_pointers(ownpt, wn, {"wn30_pt_antonymOf":OWNPT.antonymOf})
+    pointers_uri_map = {"wn30_pt_antonymOf":OWNPT.antonymOf}
+    _update_pointers(ownpt, wn, pointers_uri_map)
 
     return ownpt
+
+def update_morpho_from_dump(wn:dict):
+    """"""
+    
+    ownpt = Graph()
+
+    # morphosemantic links
+    pointers_uri_map = {  
+        "wn30_pt_property": NOMLEX.property,
+        "wn30_pt_result": NOMLEX.result,
+        "wn30_pt_state": NOMLEX.state,
+        "wn30_pt_undergoer": NOMLEX.undergoer,
+        "wn30_pt_uses": NOMLEX.uses,
+        "wn30_pt_vehicle": NOMLEX.vehicle,
+        "wn30_pt_event": NOMLEX.event,
+        "wn30_pt_instrument": NOMLEX.instrument,
+        "wn30_pt_location": NOMLEX.location,
+        "wn30_pt_material": NOMLEX.material,
+        "wn30_pt_agent": NOMLEX.agent,
+        "wn30_pt_bodyPart": NOMLEX.bodyPart,
+        "wn30_pt_byMeansOf": NOMLEX.byMeansOf
+    }
+
+    # update links
+    _update_pointers(ownpt, wn, pointers_uri_map)
+    
+    return ownpt
+
+
+def dump_update(
+    doc_wn = [],
+    doc_suggestions = [],
+    doc_votes = [],
+    users_senior=[],
+    trashold_senior=1,
+    trashold_junior=2):
+    """"""
+
+    # acesses only sources
+    wn = [item["_source"] for item in doc_wn]
+    votes = [item["_source"] for item in doc_votes]
+    suggestions = [item["_source"] for item in doc_suggestions]
+
+    # filter suggestions
+    suggestions = _filter_suggestions(suggestions, votes, users_senior, trashold_senior, trashold_junior)
+
+    # joins synsets and suggestions
+    f_idl = lambda x: x["doc_id"]
+    f_idr = lambda x: x["doc_id"]
+    zipped = _left_zip_by_id(wn, suggestions, f_idl, f_idr)
+
+    # apply suggestions
+    for synset, suggestions in zipped:
+        _apply_suggestions(synset, suggestions)
+    
+    return doc_wn
 
 
 def _update_pointers(ownpt:Graph, synsets, pointer_uri_map:dict=dict()):
@@ -50,6 +108,7 @@ def _update_pointers(ownpt:Graph, synsets, pointer_uri_map:dict=dict()):
 
     for pointer, predicate in pointer_uri_map.items():
         _update_pointer(ownpt, synsets, pointer, predicate)
+
 
 def _update_pointer(ownpt:Graph, synsets, pointer_name:str, predicate:URIRef):
     """"""
@@ -74,6 +133,7 @@ def _update_pointer(ownpt:Graph, synsets, pointer_name:str, predicate:URIRef):
         source_wordsense = WORDSENSE[source_sense_id]
         target_wordsense = WORDSENSE[target_sense_id]
         ownpt.add((source_wordsense, predicate, target_wordsense))
+
 
 def _get_wordsenses(synset, pointer, key):
     """"""
@@ -128,38 +188,10 @@ def _update_synset(ownpt:Graph, synset:dict):
         ownpt.add((synset_pt, OWNPT.example, Literal(example, lang="pt")))
 
 
-def dump_update(
-    doc_wn = [],
-    doc_suggestions = [],
-    doc_votes = [],
-    users_senior=[],
-    trashold_senior=1,
-    trashold_junior=2):
-    """"""
-
-    # acesses only sources
-    wn = [item["_source"] for item in doc_wn]
-    votes = [item["_source"] for item in doc_votes]
-    suggestions = [item["_source"] for item in doc_suggestions]
-
-    # filter suggestions
-    suggestions = _filter_suggestions(suggestions, votes, users_senior, trashold_senior, trashold_junior)
-
-    # joins synsets and suggestions
-    f_idl = lambda x: x["doc_id"]
-    f_idr = lambda x: x["doc_id"]
-    zipped = _left_zip_by_id(wn, suggestions, f_idl, f_idr)
-
-    # apply suggestions
-    for synset, suggestions in zipped:
-        _apply_suggestions(synset, suggestions)
-    
-    return doc_wn
-
-
 def _apply_suggestions(synset:dict, suggestions:list):
     for suggestion in suggestions:
         _apply_suggestion(synset, suggestion)
+
 
 def _apply_suggestion(synset:dict, suggestion):
     action = suggestion["action"]
@@ -191,6 +223,7 @@ def _add_parameter(synset, key, params):
         synset[key].append(params)
     else:
         synset[key] = [params]
+
 
 def _remove_parameter(synset, key, params):
     """"""
