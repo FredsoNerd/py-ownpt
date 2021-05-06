@@ -124,6 +124,10 @@ def compare_ownpt_dump(ownpt:Graph, wn:dict):
                             f"\n\twords {words} found in both documents")
 
             # generate report as jsonl
+    
+    # compare antonymOf
+    logger.debug("comparing relation antonymOf...")
+    
 
 def _compare_words(ownpt:Graph, synset:dict):
     """"""  
@@ -138,13 +142,13 @@ def _compare_words(ownpt:Graph, synset:dict):
     doc_id = synset["doc_id"]
     synset_uri = SYNSET_PT[doc_id]
     
-    query = "SELECT ?s ?w ?wl WHERE{{ {} {} ?s . ?s {} ?w . ?w {} ?wl . }}"
+    query = "SELECT ?wl WHERE{{ {} {} ?s . ?s {} ?w . ?w {} ?wl . }}"
     result = ownpt.query(query.format(
                 synset_uri.n3(), OWNPT.containsWordSense.n3(),
                 OWNPT.word.n3(), OWNPT.lexicalForm.n3()))
     
     # compares words in synset with dump
-    for sense, word, wordl in result:
+    for wordl in result:
         wordl = wordl.toPython().strip()
 
         # checks if word exists in dump
@@ -152,12 +156,11 @@ def _compare_words(ownpt:Graph, synset:dict):
             words.append(wordl)
             wordsd.remove(wordl)
         else:
-            compare = False
             wordso.append(wordl)
 
-    # checks if dump was consumed
-    if len(wordsd) > 0:
-        compare = False
+    # check if unique words are void
+    if len(wordsd) > 0: compare = False
+    if len(wordso) > 0: compare = False
     
     return compare, words, wordsd, wordso
 
