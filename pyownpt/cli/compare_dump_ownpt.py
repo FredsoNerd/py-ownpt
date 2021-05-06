@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+
+import argparse
+import logging
+
+from json import loads
+from rdflib import Graph
+from pyownpt.update import compare_ownpt_dump
+
+
+def _parse(args):
+    ownpt_filapath = args.owp
+    wn_filepath = args.wnd
+    ownpt_format = args.fmt
+
+    # sets verbosity level
+    logging.basicConfig(level= 30-10*args.v)
+
+    # calls main function
+    cli_compare_ownpt_dump(ownpt_filapath, wn_filepath, ownpt_format)
+
+def cli_compare_ownpt_dump(
+    ownpt_filapath:str,
+    wn_filepath:str,
+    ownpt_format:str="nt"):
+    """"""
+
+    doc_wn = [loads(line) for line in open(wn_filepath).readlines()]
+    wn = [item["_source"] for item in doc_wn]
+
+    ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
+    
+    compare_ownpt_dump(ownpt, wn)
+
+
+# sets parser and interface function
+parser = argparse.ArgumentParser()
+
+# sets the user options
+parser.add_argument("owp", help="rdf file from own-pt")
+parser.add_argument("wnd", help="jsonl dump file wn.json")
+parser.add_argument("fmt", help="own-pt rdf format (default: xml)", default="xml")
+
+parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)
+
+# cals the parser
+_parse(parser.parse_args())

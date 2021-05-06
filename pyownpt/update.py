@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from rdflib import Graph, Namespace, URIRef
+import logging
+logger = logging.getLogger(__name__)
+
+from rdflib import Graph, Namespace, URIRef, BNode
 from rdflib import Literal, XSD, RDF, RDFS, SKOS, OWL
 
 # global
@@ -45,6 +48,7 @@ def update_ownpt_from_dump(ownpt:Graph, wn:dict):
     _update_pointers(ownpt, wn, pointers_uri_map)
 
     return ownpt
+
 
 def update_morpho_from_dump(wn:dict):
     """"""
@@ -101,6 +105,65 @@ def dump_update(
         _apply_suggestions(synset, suggestions)
     
     return doc_wn
+
+
+def compare_ownpt_dump(ownpt:Graph, wn:dict):
+    """"""
+
+    # compare words
+    logger.debug("comparing words...")
+    for synset in wn:
+        doc_id = synset['doc_id']
+        result, words, wordsd, wordso = _compare_words(ownpt, synset)
+
+        if not result:
+            logger.warning(f"synset {doc_id} comparing words resulted FALSE")
+            logger.debug(f"synset {doc_id} results:"
+                            f"\n\twords {wordsd} found only in dump"
+                            f"\n\twords {wordso} found only in ownpt"
+                            f"\n\twords {words} found in both documents")
+
+            # generate report as jsonl
+
+def _compare_words(ownpt:Graph, synset:dict):
+    """"""  
+    compare = True
+    
+    # report words
+    words = []
+    wordso = []
+    wordsd = synset["word_pt"] if "word_pt" in synset else []
+
+    # finds all wordsenses, and its words
+    doc_id = synset["doc_id"]
+    synset_uri = SYNSET_PT[doc_id]
+    
+    query = "SELECT ?s ?w ?wl WHERE{{ {} {} ?s . ?s {} ?w . ?w {} ?wl . }}"
+    result = ownpt.query(query.format(
+                synset_uri.n3(), OWNPT.containsWordSense.n3(),
+                OWNPT.word.n3(), OWNPT.lexicalForm.n3()))
+    
+    # compares words in synset with dump
+    for sense, word, wordl in result:
+        wordl = wordl.toPython().strip()
+
+        # checks if word exists in dump
+        if wordl in wordsd:
+            words.append(wordl)
+            wordsd.remove(wordl)
+        else:
+            compare = False
+            wordso.append(wordl)
+
+    # checks if dump was consumed
+    if len(wordsd) > 0:
+        compare = False
+    
+    return compare, words, wordsd, wordso
+
+
+def _compare_antonyms(ownpt:Graph, synset:dict):
+    pass
 
 
 def _update_pointers(ownpt:Graph, synsets, pointer_uri_map:dict=dict()):
