@@ -4,8 +4,7 @@ import tqdm
 import logging
 logger = logging.getLogger(__name__)
 
-from rdflib import Graph, Namespace, URIRef, BNode
-from rdflib import Literal, XSD, RDF, RDFS, SKOS, OWL
+from rdflib import Graph, URIRef, Namespace
 
 # global
 OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
