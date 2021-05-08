@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import argparse
 import logging
+logger = logging.getLogger()
 
 from json import loads
 from rdflib import Graph
-from pyownpt.update import compare_ownpt_dump
+from pyownpt.compare import compare_ownpt_dump
 
 
 def _parse(args):
@@ -14,10 +16,11 @@ def _parse(args):
     ownpt_format = args.fmt
 
     # sets verbosity level
-    logging.basicConfig(level= 30-10*args.v)
+    logging.basicConfig(stream=sys.stdout, level= 30-10*args.v)
 
     # calls main function
     cli_compare_ownpt_dump(ownpt_filapath, wn_filepath, ownpt_format)
+    
 
 def cli_compare_ownpt_dump(
     ownpt_filapath:str,
@@ -25,12 +28,13 @@ def cli_compare_ownpt_dump(
     ownpt_format:str="nt"):
     """"""
 
-    doc_wn = [loads(line) for line in open(wn_filepath).readlines()]
-    wn = [item["_source"] for item in doc_wn]
-
+    logger.info(f"loading data from file '{ownpt_filapath}'")
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
+
+    logger.info(f"loading data from file '{wn_filepath}'")
+    wn = [loads(line)["_source"] for line in open(wn_filepath).readlines()]
     
-    compare_ownpt_dump(ownpt, wn)
+    _, report_words, _, report_anto = compare_ownpt_dump(ownpt, wn)
 
 
 # sets parser and interface function

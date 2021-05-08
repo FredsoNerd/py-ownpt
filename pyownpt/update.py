@@ -107,68 +107,6 @@ def dump_update(
     return doc_wn
 
 
-def compare_ownpt_dump(ownpt:Graph, wn:dict):
-    """"""
-
-    # compare words
-    logger.debug("comparing words...")
-    for synset in wn:
-        doc_id = synset['doc_id']
-        result, words, wordsd, wordso = _compare_words(ownpt, synset)
-
-        if not result:
-            logger.warning(f"synset {doc_id} comparing words resulted FALSE")
-            logger.debug(f"synset {doc_id} results:"
-                            f"\n\twords {wordsd} found only in dump"
-                            f"\n\twords {wordso} found only in ownpt"
-                            f"\n\twords {words} found in both documents")
-
-            # generate report as jsonl
-    
-    # compare antonymOf
-    logger.debug("comparing relation antonymOf...")
-    
-
-def _compare_words(ownpt:Graph, synset:dict):
-    """"""  
-    compare = True
-    
-    # report words
-    words = []
-    wordso = []
-    wordsd = synset["word_pt"] if "word_pt" in synset else []
-
-    # finds all wordsenses, and its words
-    doc_id = synset["doc_id"]
-    synset_uri = SYNSET_PT[doc_id]
-    
-    query = "SELECT ?wl WHERE{{ {} {} ?s . ?s {} ?w . ?w {} ?wl . }}"
-    result = ownpt.query(query.format(
-                synset_uri.n3(), OWNPT.containsWordSense.n3(),
-                OWNPT.word.n3(), OWNPT.lexicalForm.n3()))
-    
-    # compares words in synset with dump
-    for wordl in result:
-        wordl = wordl.toPython().strip()
-
-        # checks if word exists in dump
-        if wordl in wordsd:
-            words.append(wordl)
-            wordsd.remove(wordl)
-        else:
-            wordso.append(wordl)
-
-    # check if unique words are void
-    if len(wordsd) > 0: compare = False
-    if len(wordso) > 0: compare = False
-    
-    return compare, words, wordsd, wordso
-
-
-def _compare_antonyms(ownpt:Graph, synset:dict):
-    pass
-
-
 def _update_pointers(ownpt:Graph, synsets, pointer_uri_map:dict=dict()):
     """"""
 
@@ -204,9 +142,10 @@ def _update_pointer(ownpt:Graph, synsets, pointer_name:str, predicate:URIRef):
 def _get_wordsenses(synset, pointer, key):
     """"""
     
+    doc_id = synset["doc_id"]
+
     word = pointer[key] if key in pointer else None
     words = synset["word_pt"] if "word_pt" in synset else []
-    doc_id = synset["doc_id"]
 
     # if not source/target word
     if word is None:
