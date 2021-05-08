@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import sys
 import argparse
 import logging
 logger = logging.getLogger()
@@ -16,7 +15,7 @@ def _parse(args):
     ownpt_format = args.fmt
 
     # sets verbosity level
-    logging.basicConfig(stream=sys.stdout, level= 30-10*args.v)
+    logging.basicConfig(level= 30-10*args.v)
 
     # calls main function
     cli_compare_ownpt_dump(ownpt_filapath, wn_filepath, ownpt_format)
