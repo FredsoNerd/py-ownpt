@@ -4,7 +4,7 @@ import tqdm
 import logging
 logger = logging.getLogger(__name__)
 
-from rdflib import Graph, Namespace, Literal, RDFS
+from rdflib import Graph, Namespace, Literal, RDFS, RDF
 
 # global
 OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
@@ -13,11 +13,47 @@ WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
 SYNSET_PT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
 
+HAS_TYPE = RDF.type
 HAS_LABEL = RDFS.label
+
+TYPE_WORD = OWNPT.Word
+TYPE_WORDSENSE = OWNPT.WordSense
 
 CONTAINS_WORD = OWNPT.word
 CONTAINS_WORDSENSE = OWNPT.containsWordSense
 CONTAINS_LEXICAL_FORM = OWNPT.lexicalForm
+
+
+def add_types(ownpt:Graph):
+    """"""
+
+    # find and fix Word without type
+    logger.info("start fixing Words without type")
+    query = (
+        "SELECT ?s ?w "
+        "WHERE{{ ?s {hasword} ?w ."
+        "FILTER NOT EXISTS {{ ?w {hastype} ?t .}} }}")
+    result = ownpt.query(query.format(
+                hastype = HAS_TYPE.n3(),
+                hasword = CONTAINS_WORD.n3()))
+    
+    # just add tripples
+    for _, word in tqdm.tqdm(result):
+        ownpt.add((word, HAS_TYPE, TYPE_WORD))
+
+    # find and fix Word without type
+    logger.info("start fixing WordSenses without type")
+    query = (
+        "SELECT ?ss ?s "
+        "WHERE{{ ?ss {hassense} ?s ."
+        "FILTER NOT EXISTS {{ ?s {hastype} ?t .}} }}")
+    result = ownpt.query(query.format(
+                hastype = HAS_TYPE.n3(),
+                hassense = CONTAINS_WORDSENSE.n3()))
+    
+    # just add tripples
+    for _, sense in tqdm.tqdm(result):
+        ownpt.add((sense, HAS_TYPE, TYPE_WORD))
 
 
 def add_sense_labels(ownpt:Graph):
@@ -199,12 +235,3 @@ def _replace_node(ownpt, old_node, new_node):
     for p, o in result:
         ownpt.add((new_node,p,o))
         ownpt.remove((old_node,p,o))
-
-# 1. expand all blank nodes ok
-# 2. remove "useless" words ok
-# 3. fix void sense words ok
-# 4. add labels to senses ok
-# 5. grant well typed nodes
-# 6. grant no duplicates
-# 7. grant well connectedness
-# 7.1. found words and senses desconnected
