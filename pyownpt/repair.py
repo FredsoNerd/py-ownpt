@@ -20,6 +20,27 @@ CONTAINS_WORDSENSE = OWNPT.containsWordSense
 CONTAINS_LEXICAL_FORM = OWNPT.lexicalForm
 
 
+def add_sense_labels(ownpt:Graph):
+    """"""
+
+    # find expand Senses without Word by label
+    logger.info("start adding labels to Senses")
+    query = (
+        "SELECT ?ss ?s "
+        "WHERE{{ ?ss {hassense} ?s ."
+        "FILTER NOT EXISTS {{ ?s {haslabel} ?l .}} }}")
+    result = ownpt.query(query.format(
+                haslabel = HAS_LABEL.n3(),
+                hassense = CONTAINS_WORDSENSE.n3()))
+    
+    # create label based on Word/LexicalForm
+    for _, sense in tqdm.tqdm(result):
+        word = ownpt.value(sense, CONTAINS_WORD)
+        label = ownpt.value(word, CONTAINS_LEXICAL_FORM)
+        label = Literal(label.toPython())
+        ownpt.add((sense, HAS_LABEL, label))
+
+
 def expand_sense_words(ownpt:Graph):
     """"""
 
@@ -66,7 +87,8 @@ def fix_blank_nodes(ownpt:Graph):
     query = (
         "SELECT ?s ?o "
         "WHERE {{ ?s {predicate} ?o . FILTER (isBlank(?o)) }}")
-    result = ownpt.query(query.format(predicate = CONTAINS_WORD.n3()))
+    result = ownpt.query(query.format(
+                predicate = CONTAINS_WORD.n3()))
 
     for sense, word in tqdm.tqdm(result):
         new_word = _word_uri(ownpt, sense, word)
@@ -82,7 +104,8 @@ def fix_blank_nodes(ownpt:Graph):
     query = (
         "SELECT ?s ?o "
         "WHERE {{ ?s {predicate} ?o . FILTER (isBlank(?o)) }}")
-    result = ownpt.query(query.format(predicate = CONTAINS_WORDSENSE.n3()))
+    result = ownpt.query(query.format(
+                predicate = CONTAINS_WORDSENSE.n3()))
 
     for synset, sense in tqdm.tqdm(result):
         new_sense = _new_sense(ownpt, synset, sense)
@@ -176,3 +199,12 @@ def _replace_node(ownpt, old_node, new_node):
     for p, o in result:
         ownpt.add((new_node,p,o))
         ownpt.remove((old_node,p,o))
+
+# 1. expand all blank nodes ok
+# 2. remove "useless" words ok
+# 3. fix void sense words ok
+# 4. add labels to senses ok
+# 5. grant well typed nodes
+# 6. grant no duplicates
+# 7. grant well connectedness
+# 7.1. found words and senses desconnected

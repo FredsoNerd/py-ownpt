@@ -8,6 +8,7 @@ from json import loads
 from rdflib import Graph
 
 from pyownpt.repair import fix_blank_nodes
+from pyownpt.repair import add_sense_labels
 from pyownpt.repair import remove_void_words
 from pyownpt.repair import expand_sense_words
 
@@ -42,6 +43,8 @@ def cli_repair_ownpt(
     remove_void_words(ownpt)
     # words to senses by label
     expand_sense_words(ownpt)
+    # # add labels to senses
+    # add_sense_labels(ownpt)
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
