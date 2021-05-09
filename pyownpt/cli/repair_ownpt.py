@@ -9,6 +9,7 @@ from rdflib import Graph
 
 from pyownpt.repair import fix_blank_nodes
 from pyownpt.repair import remove_void_words
+from pyownpt.repair import expand_sense_words
 
 
 def _parse(args):
@@ -39,7 +40,8 @@ def cli_repair_ownpt(
     fix_blank_nodes(ownpt)
     # removing void words
     remove_void_words(ownpt)
-    # 
+    # words to senses by label
+    expand_sense_words(ownpt)
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")

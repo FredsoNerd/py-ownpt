@@ -20,6 +20,23 @@ CONTAINS_WORDSENSE = OWNPT.containsWordSense
 CONTAINS_LEXICAL_FORM = OWNPT.lexicalForm
 
 
+def expand_sense_words(ownpt:Graph):
+    """"""
+
+    # find expand Senses without Word by label
+    logger.info("start expanding Senses without Word")
+    query = (
+        "SELECT ?ss ?s "
+        "WHERE{{ ?ss {hassense} ?s ."
+        "FILTER NOT EXISTS {{ ?s {hasword} ?w .}} }}")
+    result = ownpt.query(query.format(
+                hasword = CONTAINS_WORD.n3(),
+                hassense = CONTAINS_WORDSENSE.n3()))
+    
+    # create word, lexicalform and connect
+    for _, sense in tqdm.tqdm(result):
+        word = _word_by_sense(ownpt, sense, True)
+        ownpt.add((sense, CONTAINS_WORD, word))
 
 
 def remove_void_words(ownpt:Graph):
@@ -104,20 +121,8 @@ def _word_uri(ownpt, sense, word):
         lexical_form = lexical_form.toPython()
         return _new_word(ownpt, lexical_form)
 
-    # if sense has lexical form on label
-    sense_label = ownpt.value(sense, HAS_LABEL)
-    if sense_label is not None:
-        # searchs a suitable word on graph
-        sense_label = sense_label.toPython()
-        word = _get_word(ownpt, sense_label)
-        
-        if word is not None: return word
-
-        # defines new suitable word
-        return _new_word(ownpt, sense_label)
-    
     # otherwise
-    return None
+    return _word_by_sense(ownpt, sense)
 
 
 def _get_word(ownpt, lexical_form:str):
@@ -127,14 +132,34 @@ def _get_word(ownpt, lexical_form:str):
     return ownpt.value(predicate=CONTAINS_LEXICAL_FORM, object=lexical_form)
 
 
-def _new_word(ownpt, lexical_form:str):
+def _new_word(ownpt, lexical_form:str, add_lexical=False):
     """"""
 
     word = WORD[lexical_form.replace(" ", "_")]
-    # lexical_form = Literal(lexical_form, lang="pt")
-    # ownpt.add((word, CONTAINS_LEXICAL_FORM, lexical_form))
+    if add_lexical:
+        lexical_form = Literal(lexical_form, lang="pt")
+        ownpt.add((word, CONTAINS_LEXICAL_FORM, lexical_form))
 
     return word
+
+
+def _word_by_sense(ownpt, sense, add_lexical=False):
+    """"""
+
+    # if sense has lexical form on label
+    sense_label = ownpt.value(sense, HAS_LABEL)
+    if sense_label is not None:
+        # searchs a suitable word on graph
+        sense_label = sense_label.toPython()
+        word = _get_word(ownpt, sense_label)
+        
+        if word is not None:return word
+
+        # defines new suitable word
+        return _new_word(ownpt, sense_label, add_lexical)
+    
+    # otherwise
+    return None
 
 
 def _replace_node(ownpt, old_node, new_node):
@@ -151,12 +176,3 @@ def _replace_node(ownpt, old_node, new_node):
     for p, o in result:
         ownpt.add((new_node,p,o))
         ownpt.remove((old_node,p,o))
-
-# 1. expand all blank nodes ok
-# 2. remove "useless" words
-# 3. fix void sense words
-# 4. add labels to senses
-# 5. grant well typed nodes
-# 6. grant no duplicates
-# 7. grant well connectedness
-# 7.1. found words and senses desconnected
