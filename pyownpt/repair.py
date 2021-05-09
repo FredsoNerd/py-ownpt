@@ -20,6 +20,26 @@ CONTAINS_WORDSENSE = OWNPT.containsWordSense
 CONTAINS_LEXICAL_FORM = OWNPT.lexicalForm
 
 
+
+
+def remove_void_words(ownpt:Graph):
+    """"""
+    
+    # find and remove Words without LexicalForm
+    logger.info("start removing Words without LexicalForm")
+    query = (
+        "SELECT ?s ?w "
+        "WHERE{{ ?s {hasword} ?w ."
+        "FILTER NOT EXISTS {{ ?w {lexical} ?wl .}} }}")
+    result = ownpt.query(query.format(
+                hasword = CONTAINS_WORD.n3(),
+                lexical = CONTAINS_LEXICAL_FORM.n3()))
+    
+    # remove connection from WordSense to Word
+    for sense, word in tqdm.tqdm(result):
+        ownpt.remove((sense, CONTAINS_WORD, word))
+
+
 def fix_blank_nodes(ownpt:Graph):
     """"""
     
@@ -32,7 +52,7 @@ def fix_blank_nodes(ownpt:Graph):
     result = ownpt.query(query.format(predicate = CONTAINS_WORD.n3()))
 
     for sense, word in tqdm.tqdm(result):
-        new_word = _get_new_word(ownpt, sense, word)
+        new_word = _word_uri(ownpt, sense, word)
         if new_word is not None:
             _replace_node(ownpt, word, new_word)
         else:
@@ -75,7 +95,7 @@ def _new_sense(ownpt, synset, sense):
     return new_sense
 
 
-def _get_new_word(ownpt, sense, word):
+def _word_uri(ownpt, sense, word):
     """"""
 
     # if word has lexical form
@@ -111,8 +131,8 @@ def _new_word(ownpt, lexical_form:str):
     """"""
 
     word = WORD[lexical_form.replace(" ", "_")]
-    lexical_form = Literal(lexical_form, lang="pt")
-    ownpt.add((word, CONTAINS_LEXICAL_FORM, lexical_form))
+    # lexical_form = Literal(lexical_form, lang="pt")
+    # ownpt.add((word, CONTAINS_LEXICAL_FORM, lexical_form))
 
     return word
 
@@ -131,3 +151,12 @@ def _replace_node(ownpt, old_node, new_node):
     for p, o in result:
         ownpt.add((new_node,p,o))
         ownpt.remove((old_node,p,o))
+
+# 1. expand all blank nodes ok
+# 2. remove "useless" words
+# 3. fix void sense words
+# 4. add labels to senses
+# 5. grant well typed nodes
+# 6. grant no duplicates
+# 7. grant well connectedness
+# 7.1. found words and senses desconnected

@@ -35,10 +35,11 @@ def cli_repair_ownpt(
     logger.info(f"loading data from file '{ownpt_filapath}'")
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
-    logger.info(f"replacing blank nodes")
+    # replacing blank nodes
     fix_blank_nodes(ownpt)
-    # logger.info(f"removing void words")
-    # remove_void_words(ownpt)
+    # removing void words
+    remove_void_words(ownpt)
+    # 
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
