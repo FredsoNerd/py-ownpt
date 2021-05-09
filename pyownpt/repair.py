@@ -24,7 +24,45 @@ CONTAINS_WORDSENSE = OWNPT.containsWordSense
 CONTAINS_LEXICAL_FORM = OWNPT.lexicalForm
 
 
-def add_types(ownpt:Graph):
+def remove_sense_duplicates(ownpt:Graph):
+    """"""
+
+    # replace Senses with same label from same Synset
+    logger.info("start unifying Senses with same label from same Synset")
+    query = (
+        "SELECT ?s1 ?s2 "
+        "WHERE{{"
+        "?s1 {haslabel} ?l . ?ss {hassense} ?s1 . "
+        "?s2 {haslabel} ?l . ?ss {hassense} ?s2 . "
+        "FILTER (?s1 != ?s2) }}")
+    result = ownpt.query(query.format(
+                haslabel = HAS_LABEL.n3(),
+                hassense = CONTAINS_WORDSENSE.n3()))
+    
+    # just replaces nodes
+    for word1, word2 in tqdm.tqdm(result):
+        _replace_node(ownpt, word2, word1)
+
+def remove_word_duplicates(ownpt:Graph):
+    """"""
+
+    # replace Words with same LexicalForm
+    logger.info("start unifying Words with same LexicalForm")
+    query = (
+        "SELECT ?w1 ?w2 "
+        "WHERE{{"
+        "?w1 {lexical} ?l ."
+        "?w2 {lexical} ?l ."
+        "FILTER (?w1 != ?w2) }}")
+    result = ownpt.query(query.format(
+                lexical = CONTAINS_LEXICAL_FORM.n3()))
+    
+    # just replaces nodes
+    for word1, word2 in tqdm.tqdm(result):
+        _replace_node(ownpt, word2, word1)
+
+
+def add_word_types(ownpt:Graph):
     """"""
 
     # find and fix Word without type
@@ -40,6 +78,10 @@ def add_types(ownpt:Graph):
     # just add tripples
     for _, word in tqdm.tqdm(result):
         ownpt.add((word, HAS_TYPE, TYPE_WORD))
+
+
+def add_sense_types(ownpt:Graph):
+    """"""
 
     # find and fix Word without type
     logger.info("start fixing WordSenses without type")
@@ -60,7 +102,7 @@ def add_sense_labels(ownpt:Graph):
     """"""
 
     # find expand Senses without Word by label
-    logger.info("start adding labels to Senses")
+    logger.info("start adding labels to Senses without label")
     query = (
         "SELECT ?ss ?s "
         "WHERE{{ ?ss {hassense} ?s ."
@@ -81,7 +123,7 @@ def expand_sense_words(ownpt:Graph):
     """"""
 
     # find expand Senses without Word by label
-    logger.info("start expanding Senses without Word")
+    logger.info("start expanding labels from Senses without Word")
     query = (
         "SELECT ?ss ?s "
         "WHERE{{ ?ss {hassense} ?s ."
@@ -114,7 +156,7 @@ def remove_void_words(ownpt:Graph):
         ownpt.remove((sense, CONTAINS_WORD, word))
 
 
-def fix_blank_nodes(ownpt:Graph):
+def fix_word_blank_nodes(ownpt:Graph):
     """"""
     
     # replace BlankNode Word's
@@ -134,6 +176,9 @@ def fix_blank_nodes(ownpt:Graph):
             logger.warning(f"could not define word for {word.n3()} fom sense {sense.n3( )}")
 
 
+def fix_sense_blank_nodes(ownpt:Graph):
+    """"""
+    
     # replace BlankNode WordSense's
     logger.info(f"start replacing BlankNodes type WordSense")
 

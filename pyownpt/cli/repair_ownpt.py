@@ -7,11 +7,15 @@ logger = logging.getLogger()
 from json import loads
 from rdflib import Graph
 
-from pyownpt.repair import fix_blank_nodes
+from pyownpt.repair import fix_word_blank_nodes
+from pyownpt.repair import fix_sense_blank_nodes
 from pyownpt.repair import add_sense_labels
 from pyownpt.repair import remove_void_words
 from pyownpt.repair import expand_sense_words
-from pyownpt.repair import add_types
+from pyownpt.repair import add_word_types
+from pyownpt.repair import add_sense_types
+from pyownpt.repair import remove_word_duplicates
+from pyownpt.repair import remove_sense_duplicates
 
 def _parse(args):
     ownpt_filapath = args.owp
@@ -38,7 +42,8 @@ def cli_repair_ownpt(
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
     # replacing blank nodes
-    fix_blank_nodes(ownpt)
+    fix_word_blank_nodes(ownpt)
+    fix_sense_blank_nodes(ownpt)
     # removing void words
     remove_void_words(ownpt)
     # words to senses by label
@@ -46,7 +51,12 @@ def cli_repair_ownpt(
     # add labels to senses
     add_sense_labels(ownpt)
     # type Words and WordSenses
-    add_types(ownpt)
+    add_word_types(ownpt)
+    add_sense_types(ownpt)
+    # removing duplicates
+    remove_word_duplicates(ownpt)
+    remove_sense_duplicates(ownpt)
+
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
