@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import argparse
 import logging
 logger = logging.getLogger()
@@ -16,6 +17,9 @@ from pyownpt.repair import add_word_types
 from pyownpt.repair import add_sense_types
 from pyownpt.repair import remove_word_duplicates
 from pyownpt.repair import remove_sense_duplicates
+from pyownpt.repair import remove_desconex_sense_nodes
+from pyownpt.repair import remove_desconex_word_nodes
+
 
 def _parse(args):
     ownpt_filapath = args.owp
@@ -23,8 +27,13 @@ def _parse(args):
     output_filepath = args.o
     output_format = args.f
 
-    # sets verbosity level
-    logging.basicConfig(level= 30-10*args.v)
+    # configs logging
+    fileHandler = logging.FileHandler(filename="repair.log", mode="w")
+    fileHandler.setLevel(logging.DEBUG)
+    streamHandler = logging.StreamHandler(stream=sys.stdout)
+    streamHandler.setLevel(level=30-10*args.v)
+
+    logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
     cli_repair_ownpt(ownpt_filapath=ownpt_filapath, ownpt_format=ownpt_format,
@@ -56,7 +65,9 @@ def cli_repair_ownpt(
     # removing duplicates
     remove_word_duplicates(ownpt)
     remove_sense_duplicates(ownpt)
-
+    # remove desconex nodes
+    remove_desconex_sense_nodes(ownpt)
+    remove_desconex_word_nodes(ownpt)
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
