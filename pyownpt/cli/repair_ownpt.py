@@ -28,7 +28,7 @@ def _parse(args):
     output_format = args.f
 
     # configs logging
-    fileHandler = logging.FileHandler(filename="repair.log", mode="w")
+    fileHandler = logging.FileHandler(filename="log", mode="w")
     fileHandler.setLevel(logging.DEBUG)
     streamHandler = logging.StreamHandler(stream=sys.stdout)
     streamHandler.setLevel(level=30-10*args.v)

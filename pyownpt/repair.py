@@ -7,14 +7,21 @@ from rdflib import Graph, Namespace, Literal, RDFS, RDF
 
 # global
 OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
+NOMELEX = Namespace("https://w3id.org/own-pt/nomlex/schema/")
+
 WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
 SYNSET_PT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
 
 HAS_TYPE = RDF.type
 HAS_LABEL = RDFS.label
+
 TYPE_WORD = OWNPT.Word
 TYPE_WORDSENSE = OWNPT.WordSense
+
+NOMLEX_NOUN = NOMELEX.noun
+NOMLEX_VERB = NOMELEX.verb
+
 CONTAINS_WORD = OWNPT.word
 CONTAINS_WORDSENSE = OWNPT.containsWordSense
 CONTAINS_LEXICAL_FORM = OWNPT.lexicalForm
@@ -30,17 +37,22 @@ def remove_desconex_word_nodes(ownpt:Graph):
         "WHERE{{ "
             "{{ ?w {haslexical} ?l . }} UNION "
             "{{ ?w {hastype} {typeword} . }}"
-        "FILTER NOT EXISTS {{ ?s {hasword} ?w . }} }} ")
+        "FILTER NOT EXISTS {{ "
+            "{{ ?s {hasword} ?w . }} UNION  "
+            "{{ ?s {nomlexnoum} ?w . }} UNION "
+            "{{ ?s {nomlexverb} ?w . }} }} }} ")
     result = ownpt.query(query.format(
                 hastype = HAS_TYPE.n3(),
                 hasword = CONTAINS_WORD.n3(),
                 typeword = TYPE_WORD.n3(),
-                haslexical = CONTAINS_LEXICAL_FORM.n3()))
+                haslexical = CONTAINS_LEXICAL_FORM.n3(),
+                nomlexnoum = NOMLEX_NOUN.n3(),
+                nomlexverb = NOMLEX_VERB.n3()))
     
     # drop node
     logger.info(f"removing Words without Sense (actions to apply: {len(result)})")
     for word, in result:
-        _drop_node(ownpt, word)
+        _drop_node(ownpt, word, "remove_desconex_word_nodes")
 
 
 def remove_desconex_sense_nodes(ownpt:Graph):
@@ -53,7 +65,8 @@ def remove_desconex_sense_nodes(ownpt:Graph):
         "WHERE{{ "
             "{{ ?s {hasword} ?w . }} UNION "
             "{{ ?s {hastype} {typesense} . }}"
-        "FILTER NOT EXISTS {{ ?ss {hassense} ?s . }} }} ")
+        "FILTER NOT EXISTS {{ "
+            "{{ ?ss {hassense} ?s . }} }} }} ")
     result = ownpt.query(query.format(
                 hastype = HAS_TYPE.n3(),
                 hasword = CONTAINS_WORD.n3(),
@@ -63,7 +76,7 @@ def remove_desconex_sense_nodes(ownpt:Graph):
     # drop node
     logger.info(f"removing Senses without Synset (actions to apply: {len(result)})")
     for sense, in result:
-        _drop_node(ownpt, sense)
+        _drop_node(ownpt, sense, "remove_desconex_sense_nodes")
 
 
 def remove_sense_duplicates(ownpt:Graph):
@@ -84,7 +97,7 @@ def remove_sense_duplicates(ownpt:Graph):
     # just replaces nodes
     logger.info(f"unifying Senses with same label Synset (actions to apply: {len(result)})")
     for word1, word2 in result:
-        _replace_node(ownpt, word2, word1)
+        _replace_node(ownpt, word2, word1, "remove_sense_duplicates")
 
 
 def remove_word_duplicates(ownpt:Graph):
@@ -104,7 +117,7 @@ def remove_word_duplicates(ownpt:Graph):
     # just replaces nodes
     logger.info(f"unifying Words with same LexicalForm (actions to apply: {len(result)})")
     for word1, word2 in result:
-        _replace_node(ownpt, word2, word1)
+        _replace_node(ownpt, word2, word1, "remove_word_duplicates")
 
 
 def add_word_types(ownpt:Graph):
@@ -123,7 +136,8 @@ def add_word_types(ownpt:Graph):
     # just add tripples
     logger.info(f"typing Words (actions to apply: {len(result)})")
     for _, word in result:
-        ownpt.add((word, HAS_TYPE, TYPE_WORD))
+        _add_triple(ownpt, (word, HAS_TYPE, TYPE_WORD), "add_word_types")
+        # ownpt.add((word, HAS_TYPE, TYPE_WORD))
 
 
 def add_sense_types(ownpt:Graph):
@@ -143,7 +157,8 @@ def add_sense_types(ownpt:Graph):
     # just add tripples
     logger.info(f"typing WordSenses (actions to apply: {len(result)})")
     for _, sense in result:
-        ownpt.add((sense, HAS_TYPE, TYPE_WORDSENSE))
+        _add_triple(ownpt, (sense, HAS_TYPE, TYPE_WORDSENSE), "add_sense_types")
+        # ownpt.add((sense, HAS_TYPE, TYPE_WORDSENSE))
 
 
 def add_sense_labels(ownpt:Graph):
@@ -165,7 +180,8 @@ def add_sense_labels(ownpt:Graph):
         word = ownpt.value(sense, CONTAINS_WORD)
         label = ownpt.value(word, CONTAINS_LEXICAL_FORM)
         label = Literal(label.toPython())
-        ownpt.add((sense, HAS_LABEL, label))
+        _add_triple(ownpt, (sense, HAS_LABEL, label), "add_sense_labels")
+        # ownpt.add((sense, HAS_LABEL, label))
 
 
 def expand_sense_words(ownpt:Graph):
@@ -185,7 +201,8 @@ def expand_sense_words(ownpt:Graph):
     logger.info(f"expanding Senses without Word (actions to apply: {len(result)})")
     for _, sense in result:
         word = _word_by_sense(ownpt, sense, True)
-        ownpt.add((sense, CONTAINS_WORD, word))
+        _add_triple(ownpt, (sense, CONTAINS_WORD, word), "expand_sense_words")
+        # ownpt.add((sense, CONTAINS_WORD, word))
 
 
 def remove_void_words(ownpt:Graph):
@@ -204,7 +221,8 @@ def remove_void_words(ownpt:Graph):
     # remove connection from WordSense to Word
     logger.info(f"removing Words without LexicalForm (actions to apply: {len(result)})")
     for sense, word in result:
-        ownpt.remove((sense, CONTAINS_WORD, word))
+        _drop_triple(ownpt, (sense, CONTAINS_WORD, word), "remove_void_words")
+        # ownpt.remove((sense, CONTAINS_WORD, word))
 
 
 def fix_word_blank_nodes(ownpt:Graph):
@@ -223,7 +241,7 @@ def fix_word_blank_nodes(ownpt:Graph):
     for sense, word in result:
         new_word = _word_uri(ownpt, sense, word)
         if new_word is not None:
-            _replace_node(ownpt, word, new_word)
+            _replace_node(ownpt, word, new_word, "fix_word_blank_nodes")
         else:
             logger.warning(f"could not replace {word.n3()} from sense {sense.n3()}")
 
@@ -243,7 +261,7 @@ def fix_sense_blank_nodes(ownpt:Graph):
     logger.info(f"replacing WordSense BlankNodes (actions to apply: {len(result)})")
     for synset, sense in result:
         new_sense = _new_sense(ownpt, synset, sense)
-        _replace_node(ownpt, sense, new_sense)
+        _replace_node(ownpt, sense, new_sense, "fix_sense_blank_nodes")
 
 
 def _new_sense(ownpt, synset, sense):
@@ -295,7 +313,8 @@ def _new_word(ownpt, lexical_form:str, add_lexical=False):
     word = WORD[lexical_form.replace(" ", "_")]
     if add_lexical:
         lexical_form = Literal(lexical_form, lang="pt")
-        ownpt.add((word, CONTAINS_LEXICAL_FORM, lexical_form))
+        _add_triple(ownpt, (word, CONTAINS_LEXICAL_FORM, lexical_form), "new_word")
+        # ownpt.add((word, CONTAINS_LEXICAL_FORM, lexical_form))
 
     return word
 
@@ -319,30 +338,47 @@ def _word_by_sense(ownpt, sense, add_lexical=False):
     return None
 
 
-def _replace_node(ownpt, old_node, new_node):
+def _replace_node(ownpt, old_node, new_node, prefix="replace"):
     """"""
+
+    logger.debug(f"{prefix}:repacing node '{old_node.n3()}' by '{new_node.n3()}'")
 
     # replaces objects
     result = ownpt.subject_predicates(old_node)
     for s,p in result:
-        ownpt.add((s,p,new_node))
-        ownpt.remove((s,p,old_node))
+        _add_triple(ownpt, (s,p,new_node), prefix)
+        _drop_triple(ownpt, (s,p,old_node), prefix)
+        # ownpt.add((s,p,new_node))
+        # ownpt.remove((s,p,old_node))
     
     # replaces subjects
     result = ownpt.predicate_objects(old_node)
     for p, o in result:
-        ownpt.add((new_node,p,o))
-        ownpt.remove((old_node,p,o))
+        _add_triple(ownpt, (new_node,p,o), prefix)
+        _drop_triple(ownpt, (old_node,p,o), prefix)
+        # ownpt.add((new_node,p,o))
+        # ownpt.remove((old_node,p,o))
 
 
-def _drop_node(ownpt, node):
+def _drop_node(ownpt, node, prefix="drop_node"):
     """"""
     
-    ownpt.remove((node,None,None))
-    ownpt.remove((None,None,node))
-    # for triple in ownpt.triples((node,None,None)):
-    #     logger.debug(f"removing triple: {triple}")
-    #     ownpt.remove(triple)
-    # for triple in ownpt.triples((None,None,node)):
-    #     logger.debug(f"removing triple: {triple}")
-    #     ownpt.remove(triple)
+    logger.debug(f"{prefix}:dropping node '{node.n3()}'")
+
+    # ownpt.remove((node,None,None))
+    # ownpt.remove((None,None,node))
+    for triple in ownpt.triples((node,None,None)):
+        _drop_triple(ownpt, triple, prefix)
+    for triple in ownpt.triples((None,None,node)):
+        _drop_triple(ownpt, triple, prefix)
+
+
+def _add_triple(ownpt, triple, prefix="add_triple"):
+    s,p,o = triple
+    logger.debug(f"{prefix}:adding triple: {s.n3()} {p.n3()} {o.n3()}")
+    ownpt.add(triple)
+
+def _drop_triple(ownpt, triple, prefix="drop_triple"):
+    s,p,o = triple
+    logger.debug(f"{prefix}:removing triple: {s.n3()} {p.n3()} {o.n3()}")
+    ownpt.remove(triple)
