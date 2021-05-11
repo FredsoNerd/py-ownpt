@@ -8,17 +8,7 @@ logger = logging.getLogger()
 from json import loads
 from rdflib import Graph
 
-from pyownpt.repair import fix_word_blank_nodes
-from pyownpt.repair import fix_sense_blank_nodes
-from pyownpt.repair import add_sense_labels
-from pyownpt.repair import remove_void_words
-from pyownpt.repair import expand_sense_words
-from pyownpt.repair import add_word_types
-from pyownpt.repair import add_sense_types
-from pyownpt.repair import remove_word_duplicates
-from pyownpt.repair import remove_sense_duplicates
-from pyownpt.repair import remove_desconex_sense_nodes
-from pyownpt.repair import remove_desconex_word_nodes
+from pyownpt.repair import RepairGraph
 
 
 def _parse(args):
@@ -50,24 +40,8 @@ def cli_repair_ownpt(
     logger.info(f"loading data from file '{ownpt_filapath}'")
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
-    # replacing blank nodes
-    fix_word_blank_nodes(ownpt)
-    fix_sense_blank_nodes(ownpt)
-    # removing void words
-    remove_void_words(ownpt)
-    # words to senses by label
-    expand_sense_words(ownpt)
-    # add labels to senses
-    add_sense_labels(ownpt)
-    # type Words and WordSenses
-    add_word_types(ownpt)
-    add_sense_types(ownpt)
-    # removing duplicates
-    remove_word_duplicates(ownpt)
-    remove_sense_duplicates(ownpt)
-    # remove desconex nodes
-    remove_desconex_sense_nodes(ownpt)
-    remove_desconex_word_nodes(ownpt)
+    # repairs graph by rules
+    RepairGraph(ownpt).repair()
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
