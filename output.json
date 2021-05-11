@@ -1,0 +1,798 @@
+{
+  "docs": {
+    "01233027-v": {
+      "compare": false,
+      "both": [
+        "dar_um_tapa"
+      ],
+      "dump": [],
+      "ownpt": [
+        "dar um tapa"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01560984-v": {
+      "compare": false,
+      "both": [
+        "dividir",
+        "separar",
+        "terminar",
+        "apartar",
+        "apartar-se",
+        "separar-se",
+        "cortar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "separar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01203234-v": {
+      "compare": false,
+      "both": [
+        "alimentar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "alimentar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "15255195-n": {
+      "compare": false,
+      "both": [
+        "período glacial",
+        "era glacial",
+        "era do gelo"
+      ],
+      "dump": [
+        "idade do gelo"
+      ],
+      "ownpt": [
+        "período_glacial",
+        "era_do_gelo"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00503237-n": {
+      "compare": false,
+      "both": [
+        "xadrez"
+      ],
+      "dump": [
+        "jogo de xadrez"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00928947-n": {
+      "compare": false,
+      "both": [
+        "programação"
+      ],
+      "dump": [
+        "programação de computadores"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00351485-n": {
+      "compare": false,
+      "both": [],
+      "dump": [
+        "mudança de magnitude"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00023100-n": {
+      "compare": false,
+      "both": [
+        "característica psicológica"
+      ],
+      "dump": [],
+      "ownpt": [
+        "característica_psicológica"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00898691-v": {
+      "compare": false,
+      "both": [
+        "curvar-se",
+        "inclinar-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "inclinar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01179865-v": {
+      "compare": false,
+      "both": [
+        "alimentar-se",
+        "comer"
+      ],
+      "dump": [],
+      "ownpt": [
+        "alimentar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00729378-v": {
+      "compare": false,
+      "both": [
+        "ponderar",
+        "perguntar-se",
+        "interrogar",
+        "questionar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "perguntar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02033295-v": {
+      "compare": false,
+      "both": [
+        "inclinar-se",
+        "virar",
+        "tender a",
+        "dirigir-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "inclinar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02054541-v": {
+      "compare": false,
+      "both": [
+        "unir-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "unir se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00046534-v": {
+      "compare": false,
+      "both": [
+        "vestir-se",
+        "arrumar-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "arrumar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01038666-v": {
+      "compare": false,
+      "both": [
+        "fofocar",
+        "papear",
+        "confabular",
+        "prosear",
+        "conversar",
+        "boquejar"
+      ],
+      "dump": [
+        "bater papo"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00775831-v": {
+      "compare": false,
+      "both": [
+        "opor",
+        "opor-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "opor se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02631659-v": {
+      "compare": false,
+      "both": [
+        "gabar-se",
+        "constar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "gabar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02666060-v": {
+      "compare": false,
+      "both": [
+        "aproximar",
+        "aproximar-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "aproximar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01091427-v": {
+      "compare": false,
+      "both": [
+        "resistir",
+        "brigar",
+        "lutar",
+        "opor se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "opor-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01168369-n": {
+      "compare": false,
+      "both": [
+        "protesto"
+      ],
+      "dump": [
+        "ação direta"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "13386614-n": {
+      "compare": false,
+      "both": [
+        "em espécie",
+        "numerário",
+        "dinheiro",
+        "cache"
+      ],
+      "dump": [],
+      "ownpt": [
+        "caixa"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "08709704-n": {
+      "compare": false,
+      "both": [
+        "Antígua e Barbuda"
+      ],
+      "dump": [
+        "Reino das Ilhas de Antígua e Barbuda"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00032823-n": {
+      "compare": false,
+      "both": [
+        "relação social"
+      ],
+      "dump": [],
+      "ownpt": [
+        "relação_social"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00797878-n": {
+      "compare": false,
+      "both": [
+        "empreendimento de risco"
+      ],
+      "dump": [],
+      "ownpt": [
+        "empreendimento_de_risco"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02431320-v": {
+      "compare": false,
+      "both": [
+        "separar",
+        "partir",
+        "separar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "separar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01848718-v": {
+      "compare": false,
+      "both": [
+        "ausentar-se",
+        "afastar-se",
+        "ir-se embora",
+        "partir"
+      ],
+      "dump": [],
+      "ownpt": [
+        "afastar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02598765-v": {
+      "compare": false,
+      "both": [
+        "filiar",
+        "filiar-se",
+        "incorporar-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "filiar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00014201-v": {
+      "compare": false,
+      "both": [
+        "tremelicar",
+        "tremer",
+        "tiritar"
+      ],
+      "dump": [
+        "bater queixo"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "15138903-n": {
+      "compare": false,
+      "both": [
+        "lua-de-mel"
+      ],
+      "dump": [],
+      "ownpt": [
+        "lua de mel"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00688377-v": {
+      "compare": false,
+      "both": [
+        "crer"
+      ],
+      "dump": [],
+      "ownpt": [
+        "acreditar"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00358431-v": {
+      "compare": false,
+      "both": [
+        "perecer",
+        "falecer",
+        "morrer",
+        "bater as botas"
+      ],
+      "dump": [
+        "comer capim pela raiz"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02435311-v": {
+      "compare": false,
+      "both": [
+        "afiliar",
+        "afiliar-se",
+        "associar-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "afiliar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00690501-n": {
+      "compare": false,
+      "both": [
+        "cirurgia plástica"
+      ],
+      "dump": [],
+      "ownpt": [
+        "cirurgia_plástica"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "08718391-n": {
+      "compare": false,
+      "both": [
+        "Ilhas Malvinas"
+      ],
+      "dump": [
+        "Ilhas Falkland"
+      ],
+      "ownpt": [
+        "Ilhas_Malvinas"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00065495-v": {
+      "compare": false,
+      "both": [
+        "estar bem",
+        "sentir-se bem"
+      ],
+      "dump": [],
+      "ownpt": [
+        "estar_bem"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01831308-v": {
+      "compare": false,
+      "both": [
+        "perguntar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "perguntar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02719399-v": {
+      "compare": false,
+      "both": [
+        "inclinar se",
+        "tender",
+        "estar inclinado a"
+      ],
+      "dump": [],
+      "ownpt": [
+        "inclinar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02434976-v": {
+      "compare": false,
+      "both": [
+        "associar-se",
+        "juntar-se",
+        "afiliar se",
+        "ingressar",
+        "filiar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "juntar se",
+        "afiliar-se",
+        "filiar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01822248-v": {
+      "compare": false,
+      "both": [
+        "comiserar",
+        "compadecer se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "compadecer-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "03740161-n": {
+      "compare": false,
+      "both": [
+        "produtos farmacêuticos",
+        "medicamento",
+        "remédio",
+        "droga medicinal"
+      ],
+      "dump": [],
+      "ownpt": [
+        "droga medicional"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00106960-v": {
+      "compare": false,
+      "both": [
+        "atropelar",
+        "passar_por_cima"
+      ],
+      "dump": [],
+      "ownpt": [
+        "passar por cima"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00780191-v": {
+      "compare": false,
+      "both": [
+        "intrometer",
+        "intrometer-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "intrometer se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01994442-v": {
+      "compare": false,
+      "both": [
+        "afastar se",
+        "retroceder",
+        "voltar atrás",
+        "recuar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "afastar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "10611117-n": {
+      "compare": false,
+      "both": [],
+      "dump": [
+        "Bela Adormecida"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02592111-v": {
+      "compare": false,
+      "both": [
+        "unir se",
+        "juntar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "unir-se",
+        "juntar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02592250-v": {
+      "compare": false,
+      "both": [
+        "juntar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "juntar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00044149-v": {
+      "compare": false,
+      "both": [
+        "emperequetar se",
+        "arrumar se",
+        "vestir",
+        "vestir formalmente"
+      ],
+      "dump": [],
+      "ownpt": [
+        "arrumar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02148109-v": {
+      "compare": false,
+      "both": [
+        "caiar",
+        "passar por cima",
+        "acobertar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "passar_por_cima"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "08124971-n": {
+      "compare": false,
+      "both": [
+        "CIA",
+        "Agência Central de Inteligência"
+      ],
+      "dump": [],
+      "ownpt": [
+        "Agência_Central_de_Inteligência"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01416871-v": {
+      "compare": false,
+      "both": [
+        "estapear",
+        "dar um tapa"
+      ],
+      "dump": [],
+      "ownpt": [
+        "dar_um_tapa"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02742842-v": {
+      "compare": false,
+      "both": [
+        "lavar",
+        "lavar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "lavar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02018524-v": {
+      "compare": false,
+      "both": [
+        "penetrar",
+        "meter o nariz em assunto alheio",
+        "intrometer-se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "intrometer se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00036362-v": {
+      "compare": false,
+      "both": [
+        "lavar-se",
+        "limpar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "lavar se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01033189-v": {
+      "compare": false,
+      "both": [
+        "comentar"
+      ],
+      "dump": [
+        "comentar"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "00857517-v": {
+      "compare": false,
+      "both": [
+        "gabar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "gabar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02538086-v": {
+      "compare": false,
+      "both": [
+        "criar laços emocionais",
+        "ligar se",
+        "aproximar se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "aproximar-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "02169119-v": {
+      "compare": false,
+      "both": [
+        "intrometer se"
+      ],
+      "dump": [],
+      "ownpt": [
+        "intrometer-se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "06134716-n": {
+      "compare": false,
+      "both": [],
+      "dump": [
+        "engenharia mecânica"
+      ],
+      "ownpt": [],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    },
+    "01821996-v": {
+      "compare": false,
+      "both": [
+        "compadecer",
+        "apiedar-se",
+        "apiedar",
+        "compadecer-se",
+        "lastimar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "compadecer se"
+      ],
+      "add-word-pt": [],
+      "remove-word-pt": []
+    }
+  },
+  "count": {
+    "dump": 13,
+    "ownpt": 52,
+    "both": 79040
+  }
+}
