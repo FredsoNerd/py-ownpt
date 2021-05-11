@@ -46,6 +46,7 @@ class RepairGraph():
             self.add_sense_labels,
             self.add_word_types,
             self.add_sense_types,
+            self.add_literal_tag_pt,
             self.remove_word_duplicates,
             self.remove_sense_duplicates,
             self.remove_desconex_sense_nodes,
@@ -163,6 +164,29 @@ class RepairGraph():
         logger.info(f"unifying Words with same LexicalForm (actions to apply: {len(result)})")
         for word1, word2 in result:
             self._replace_node(word2, word1, "remove_word_duplicates")
+
+
+    def add_literal_tag_pt(self):
+        """"""
+
+        # find and fix Literal without @pt tag
+        logger.debug("searching lexicalForms and labels without '@pt' tag")
+        query = (
+            "SELECT ?s ?p ?w "
+            "WHERE{{ "
+                "{{ ?s ?p ?w . FILTER (?p = {haslabel}) }} UNION "
+                "{{ ?s ?p ?w . FILTER (?p = {haslexical}) }} "
+            "FILTER ( lang(?w) != 'pt') }}")
+        result = self.graph.query(query.format(
+                    haslabel = HAS_LABEL.n3(),
+                    haslexical = CONTAINS_LEXICAL_FORM.n3()))
+        
+        # just add tripples
+        logger.info(f"adding '@pt' tag (actions to apply: {len(result)})")
+        for s, p, lexical in result:
+            new_lexical = Literal(lexical.toPython(), lang="pt")
+            self._add_triple((s,p,new_lexical), "add_literal_tag_pt")
+            self._drop_triple((s, p, lexical), "add_literal_tag_pt")
 
 
     def add_word_types(self):
