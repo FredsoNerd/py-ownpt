@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import argparse
 import logging
 logger = logging.getLogger()
@@ -7,8 +8,7 @@ logger = logging.getLogger()
 from json import loads
 from rdflib import Graph
 
-from pyownpt.repair import fix_blank_nodes
-from pyownpt.repair import remove_void_words
+from pyownpt.repair import RepairGraph
 
 
 def _parse(args):
@@ -17,8 +17,13 @@ def _parse(args):
     output_filepath = args.o
     output_format = args.f
 
-    # sets verbosity level
-    logging.basicConfig(level= 30-10*args.v)
+    # configs logging
+    fileHandler = logging.FileHandler(filename="log", mode="w")
+    fileHandler.setLevel(logging.DEBUG)
+    streamHandler = logging.StreamHandler(stream=sys.stdout)
+    streamHandler.setLevel(level=30-10*args.v)
+
+    logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
     cli_repair_ownpt(ownpt_filapath=ownpt_filapath, ownpt_format=ownpt_format,
@@ -35,10 +40,8 @@ def cli_repair_ownpt(
     logger.info(f"loading data from file '{ownpt_filapath}'")
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
-    logger.info(f"replacing blank nodes")
-    fix_blank_nodes(ownpt)
-    # logger.info(f"removing void words")
-    # remove_void_words(ownpt)
+    # repairs graph by rules
+    RepairGraph(ownpt).repair()
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
