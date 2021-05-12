@@ -1,6 +1,7 @@
 {
-  "docs": {
-    "01233027-v": {
+  "01233027-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "dar_um_tapa"
@@ -8,29 +9,143 @@
       "dump": [],
       "ownpt": [
         "dar um tapa"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01560984-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "bater levemente; \"de um tapa no ombro dele\""
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01560984-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "dividir",
-        "separar",
-        "terminar",
-        "apartar",
-        "apartar-se",
         "separar-se",
-        "cortar"
+        "cortar",
+        "terminar",
+        "dividir",
+        "apartar-se",
+        "separar",
+        "apartar"
       ],
       "dump": [],
       "ownpt": [
         "separar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01203234-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00834259-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "mentir"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "dizer uma mentira; fingir com intenção de enganar"
+      ],
+      "dump": [],
+      "ownpt": [
+        "dizer uma coisa que nao é verdade; fingir com intenção de enganar; \"não minta para seus pais\"; \"Ela mentiu quando disse que tinha apenas 29\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "não minta para seus pais",
+        "Ela mentiu quando disse que tinha apenas 29 anos."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01212230-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "passar",
+        "correr"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "passar por cima, do lado ou através de algo"
+      ],
+      "dump": [],
+      "ownpt": [
+        "passar por cima, do lado ou através de algo; \"Ele passou os olhos no corpo dela\"; \"Ela passou os dedos ao longo da estatueta esculpida\"; \"Ele passou seu cabelo por entre os dedos \""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Ele correu os olhos no corpo dela.",
+        "Ela passou os dedos ao longo da estatueta esculpida.",
+        "Ele passou seu cabelo por entre os dedos."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01203234-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "alimentar se"
@@ -38,28 +153,68 @@
       "dump": [],
       "ownpt": [
         "alimentar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "15255195-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "ser sustentado por"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "15255195-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "período glacial",
+        "era do gelo",
         "era glacial",
-        "era do gelo"
+        "período glacial"
       ],
       "dump": [
         "idade do gelo"
       ],
       "ownpt": [
-        "período_glacial",
-        "era_do_gelo"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+        "era_do_gelo",
+        "período_glacial"
+      ]
     },
-    "00503237-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00503237-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "xadrez"
@@ -67,11 +222,32 @@
       "dump": [
         "jogo de xadrez"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "00928947-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "um jogo de tabuleiro para dois jogadores que movem suas 16 peças de acordo com regras específicas; o objetivo é o xeque-mate no rei do adversário"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00928947-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "programação"
@@ -79,21 +255,61 @@
       "dump": [
         "programação de computadores"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "00351485-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00351485-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [],
       "dump": [
         "mudança de magnitude"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "00023100-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "o ato de mudar o tamanho ou a quantidade de algo"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00023100-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "característica psicológica"
@@ -101,67 +317,168 @@
       "dump": [],
       "ownpt": [
         "característica_psicológica"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00898691-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "uma característica da vida mental de um organismo vivo"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00898691-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "curvar-se",
-        "inclinar-se"
+        "inclinar-se",
+        "curvar-se"
       ],
       "dump": [],
       "ownpt": [
         "inclinar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01179865-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "dobrar o joelho ou corpo, ficar com a cabeça baixa; \"Ele se curvou diante do Rei\"; \"Ela inclinou a cabeça com vergonha\""
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01179865-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "alimentar-se",
-        "comer"
+        "comer",
+        "alimentar-se"
       ],
       "dump": [],
       "ownpt": [
         "alimentar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00729378-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "ingerir comida; usado só por animais; \"esse cachorro não se alimenta com certos tipos de carne\"; \"oque as baleias comem?\""
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00729378-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "ponderar",
         "perguntar-se",
+        "ponderar",
         "interrogar",
         "questionar"
       ],
       "dump": [],
       "ownpt": [
         "perguntar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02033295-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02033295-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "inclinar-se",
+        "dirigir-se",
         "virar",
-        "tender a",
-        "dirigir-se"
+        "tender a"
       ],
       "dump": [],
       "ownpt": [
         "inclinar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02054541-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02054541-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "unir-se"
@@ -169,54 +486,176 @@
       "dump": [],
       "ownpt": [
         "unir se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00046534-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00046534-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "vestir-se",
-        "arrumar-se"
+        "arrumar-se",
+        "vestir-se"
       ],
       "dump": [],
       "ownpt": [
         "arrumar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01038666-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "botar a roupa; \"nós temos que nos vestir rapidamente\"; \"vista o paciente\"; \"as crianças conseguem se vestir por conta própria?\""
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01038666-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "fofocar",
         "papear",
-        "confabular",
         "prosear",
+        "fofocar",
+        "boquejar",
         "conversar",
-        "boquejar"
+        "confabular"
       ],
       "dump": [
         "bater papo"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "00775831-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "falar socialmente sem trocar muita informação; \"os homens estavam sentados no café batendo papo\"",
+        "falar socialmente sem trocar muita informação"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Os homens estavam sentados no café e batendo papo."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00376106-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "amolecer",
+        "derreter",
+        "descongelar",
+        "degelar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [],
+      "dump": [],
+      "ownpt": [
+        "tornar ou causar tornando mole ou líquido"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "descongelar a carne",
+        "O sorvete derreteu",
+        "O iceberg gigante se dissolveu com o passar dos anos durante a fase de aquecimento global.",
+        "O calor amoleceu a cera."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00775831-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "opor",
-        "opor-se"
+        "opor-se",
+        "opor"
       ],
       "dump": [],
       "ownpt": [
         "opor se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02631659-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02631659-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "gabar-se",
@@ -225,11 +664,30 @@
       "dump": [],
       "ownpt": [
         "gabar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02666060-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02666060-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "aproximar",
@@ -238,26 +696,69 @@
       "dump": [],
       "ownpt": [
         "aproximar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01091427-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01091427-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "resistir",
-        "brigar",
         "lutar",
-        "opor se"
+        "opor se",
+        "brigar",
+        "resistir"
       ],
       "dump": [],
       "ownpt": [
         "opor-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01168369-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "combater ou resistir fortemente"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Não brigue contra isso!",
+        "O senador disse que ele ia opor-se ao projeto de lei."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01168369-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "protesto"
@@ -265,26 +766,101 @@
       "dump": [
         "ação direta"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "13386614-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "uma ação de protesto por grupos de minoria ou de trabalho para obter suas reivindicações"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00382635-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "transubstanciar",
+        "transformar",
+        "transmudar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "mudar ou alterar a forma, natureza ou aparência"
+      ],
+      "dump": [],
+      "ownpt": [
+        "mudar ou aterar a forma, natureza ou aparência"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "13386614-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "em espécie",
         "numerário",
-        "dinheiro",
-        "cache"
+        "cache",
+        "dinheiro"
       ],
       "dump": [],
       "ownpt": [
         "caixa"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "08709704-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "08709704-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "Antígua e Barbuda"
@@ -292,11 +868,32 @@
       "dump": [
         "Reino das Ilhas de Antígua e Barbuda"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "00032823-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "Antígua e Barbuda (mais raramente Antiga e Barbuda) é uma nação das Caraíbas, constituída pelas ilhas de Antígua (280 km²), Barbuda\n    (161 km²) e Redonda (1,5 km²). Os vizinhos mais próximos são Guadalupe (a sul) e dependências (a noroeste), Montserrat a sudoeste, e São\n    Cristóvão e Nevis a oeste. A capital é Saint John's."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00032823-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "relação social"
@@ -304,11 +901,32 @@
       "dump": [],
       "ownpt": [
         "relação_social"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00797878-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "uma relação entre organismos vivos (principalmente entre pessoas)"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00797878-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "empreendimento de risco"
@@ -316,68 +934,207 @@
       "dump": [],
       "ownpt": [
         "empreendimento_de_risco"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02431320-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "qualquer empreendimento ousado especialmente um com um resultado incerto"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01362736-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "pintar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
       "compare": false,
       "both": [
-        "separar",
+        "aplicar tinta; revestir com tinta"
+      ],
+      "dump": [],
+      "ownpt": [
+        "aplicar tinta; revestir com tinta; \"Nós pintamos os quartos de amarelo\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Nós pintamos os quartos de amarelo."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02431320-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": false,
+      "both": [
         "partir",
-        "separar se"
+        "separar se",
+        "separar"
       ],
       "dump": [],
       "ownpt": [
         "separar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01848718-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "descontinuar uma associação ou relação; seguir caminhos diferentes"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01848718-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
+        "partir",
         "ausentar-se",
-        "afastar-se",
         "ir-se embora",
-        "partir"
+        "afastar-se"
       ],
       "dump": [],
       "ownpt": [
         "afastar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02598765-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02598765-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
+        "incorporar-se",
         "filiar",
-        "filiar-se",
-        "incorporar-se"
+        "filiar-se"
       ],
       "dump": [],
       "ownpt": [
         "filiar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00014201-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00014201-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "tremelicar",
+        "tiritar",
         "tremer",
-        "tiritar"
+        "tremelicar"
       ],
       "dump": [
         "bater queixo"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "15138903-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "tremer, por causa do frio; \"as crianças estão tremendo -- ligue o aquecedor!\"",
+        "tremer, por causa do frio"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "As crianças estão tremendo -- ligue o aquecedor!"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "15138903-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "lua-de-mel"
@@ -385,11 +1142,30 @@
       "dump": [],
       "ownpt": [
         "lua de mel"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00688377-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00688377-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "crer"
@@ -397,11 +1173,32 @@
       "dump": [],
       "ownpt": [
         "acreditar"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00358431-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "ter confiança ou fé em"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00358431-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "perecer",
@@ -412,11 +1209,64 @@
       "dump": [
         "comer capim pela raiz"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "02435311-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "passar da vida física, perder todos os atributos corporais e funções necessárias para sustentar a vida"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00208055-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "acordar",
+        "resolver"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [],
+      "dump": [],
+      "ownpt": [
+        "resolver ou acordar; \"nos precisamos resolver nossas diferencas\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02435311-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "afiliar",
@@ -426,11 +1276,32 @@
       "dump": [],
       "ownpt": [
         "afiliar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00690501-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "tornar-se membro de um grupo"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00690501-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "cirurgia plástica"
@@ -438,11 +1309,30 @@
       "dump": [],
       "ownpt": [
         "cirurgia_plástica"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "08718391-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "08718391-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "Ilhas Malvinas"
@@ -452,11 +1342,32 @@
       ],
       "ownpt": [
         "Ilhas_Malvinas"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00065495-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "As Ilhas Malvinas (em inglês Falklands Islands) são territórios britânicos ultramarinos no Atlântico Sul, constituída por duas\n    ilhas principais e um número elevado de ilhas menores, situadas ao largo da costa da Argentina, mais ou menos à latitude de Río Gallegos. Sua\n    capital é a localidade de Stanley."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00065495-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "estar bem",
@@ -465,11 +1376,71 @@
       "dump": [],
       "ownpt": [
         "estar_bem"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01831308-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "estar saudável; sentir-se bem; \"ela não tem se sentido bem recentemente\""
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00197590-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "destripar",
+        "desventrar",
+        "desentranhar",
+        "desviscerar",
+        "eviscerar",
+        "esventrar",
+        "estripar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [],
+      "dump": [],
+      "ownpt": [
+        "remover as entranhas de alguma coisa; \"desentranhar uma galinha\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "desentranhar uma galinha"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01831308-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "perguntar se"
@@ -477,71 +1448,353 @@
       "dump": [],
       "ownpt": [
         "perguntar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02719399-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00069879-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "lesar",
+        "ferir",
+        "machucar",
+        "lesionar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
       "compare": false,
       "both": [
-        "inclinar se",
+        "provocar ferimentos ou danos corporais em alguém"
+      ],
+      "dump": [],
+      "ownpt": [
+        "provocar ferimentos ou danos corporais em alguem"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02719399-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": false,
+      "both": [
         "tender",
-        "estar inclinado a"
+        "estar inclinado a",
+        "inclinar se"
       ],
       "dump": [],
       "ownpt": [
         "inclinar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02434976-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02434976-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
+        "afiliar se",
+        "filiar se",
         "associar-se",
         "juntar-se",
-        "afiliar se",
-        "ingressar",
-        "filiar se"
+        "ingressar"
       ],
       "dump": [],
       "ownpt": [
-        "juntar se",
         "afiliar-se",
-        "filiar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+        "filiar-se",
+        "juntar se"
+      ]
     },
-    "01822248-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "tornar-se parte de; tornar-se um membro de um grupo ou organização"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01822248-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "comiserar",
-        "compadecer se"
+        "compadecer se",
+        "comiserar"
       ],
       "dump": [],
       "ownpt": [
         "compadecer-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "03740161-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "sentir ou expressar simpatia ou compaixão"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00360932-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "nascer",
+        "vir_ao_mundo",
+        "vir ao mundo"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
       "compare": false,
       "both": [
+        "vir a existir através do nascimento"
+      ],
+      "dump": [],
+      "ownpt": [
+        "vir à existir através do nascimento"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Ela nasceu em uma fazenda"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "14980579-n": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "petróleo",
+        "petróleo-bruto",
+        "óleo cru",
+        "óleo"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "Um óleo escuro que consiste principalmente de hidrocarbonetos."
+      ],
+      "dump": [],
+      "ownpt": [
+        "líquido produzido pela destilação do petróleo, formado por uma mistura de hidrocarbonetos alifáticos, naftênicos e aromáticos, é utilizado como combustível na aviação, solventes e como base de alguns inseticidas"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00846021-n": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "metida",
+        "foda",
+        "sexo",
+        "trepada"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "gíria para o ato sexual",
+        "uma palavra vulgar para atividade sexual"
+      ],
+      "dump": [],
+      "ownpt": [
+        "uma palavra fulgar para atividade sexual"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "03740161-n": {
+    "compare": false,
+    "word_pt": {
+      "compare": false,
+      "both": [
+        "droga medicinal",
         "produtos farmacêuticos",
-        "medicamento",
         "remédio",
-        "droga medicinal"
+        "medicamento"
       ],
       "dump": [],
       "ownpt": [
         "droga medicional"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00106960-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "(medicina) algo que trata ou impede ou minimiza os sintomas da doença"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "07487375-n": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "nostalgia",
+        "anelo",
+        "saudade"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "anseio por algo passado"
+      ],
+      "dump": [],
+      "ownpt": [
+        "descreve a mistura dos sentimentos de perda, falta, distância e amor"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00106960-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "atropelar",
@@ -550,11 +1803,32 @@
       "dump": [],
       "ownpt": [
         "passar por cima"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00780191-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "ferir ou matar por atropelamento, como acontece com um veículo"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00780191-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "intrometer",
@@ -563,36 +1837,96 @@
       "dump": [],
       "ownpt": [
         "intrometer se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01994442-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01994442-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "afastar se",
         "retroceder",
-        "voltar atrás",
-        "recuar"
+        "recuar",
+        "afastar se",
+        "voltar atrás"
       ],
       "dump": [],
       "ownpt": [
         "afastar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "10611117-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "andar para trás, recuar",
+        "andar  para trás ou se distanciar  ou retroceder"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "10611117-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [],
       "dump": [
         "Bela Adormecida"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "02592111-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02592111-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "unir se",
@@ -602,11 +1936,32 @@
       "ownpt": [
         "unir-se",
         "juntar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02592250-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "reunir e passar tempo juntos"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02592250-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "juntar se"
@@ -614,66 +1969,382 @@
       "dump": [],
       "ownpt": [
         "juntar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00044149-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "unir-se com um propósito comum"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00044149-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "emperequetar se",
-        "arrumar se",
         "vestir",
+        "arrumar se",
+        "emperequetar se",
         "vestir formalmente"
       ],
       "dump": [],
       "ownpt": [
         "arrumar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02148109-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "Colocar roupas especiais para aparecer particularmente atraente e atrativo"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01284461-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "desamarrar",
+        "desatar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "desfazer os laços de"
+      ],
+      "dump": [],
+      "ownpt": [
+        "desfazer os laços de algo; \"eles desataram o prisioneiro\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Eles desamararram o prisioneiro."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02148109-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "caiar",
-        "passar por cima",
-        "acobertar"
+        "acobertar",
+        "passar por cima"
       ],
       "dump": [],
       "ownpt": [
         "passar_por_cima"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "08124971-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "08124971-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "CIA",
-        "Agência Central de Inteligência"
+        "Agência Central de Inteligência",
+        "CIA"
       ],
       "dump": [],
       "ownpt": [
         "Agência_Central_de_Inteligência"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01416871-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00722232-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "centrar",
+        "focar",
+        "concentrar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
       "compare": false,
       "both": [
-        "estapear",
-        "dar um tapa"
+        "direcionar a atenção de alguém para algo"
+      ],
+      "dump": [],
+      "ownpt": [
+        "direcionar a atenção de alguém em alguam coisa"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01369758-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "destruir",
+        "arruinar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "arruinar completamente"
+      ],
+      "dump": [],
+      "ownpt": [
+        "arruinar completamente; \"Ele destruir meu rádio!\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Ele destruiu meu rádio!"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01082454-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "capturar",
+        "apanhar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "ser o apanhador"
+      ],
+      "dump": [],
+      "ownpt": [
+        "ser o apanhador; \"Quem está capturando?\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01416871-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": false,
+      "both": [
+        "dar um tapa",
+        "estapear"
       ],
       "dump": [],
       "ownpt": [
         "dar_um_tapa"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02742842-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "atingir com algo plano, como uma raquete ou a mão aberta"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01410223-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "acertar",
+        "golpear",
+        "bater"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "desferir um golpe forte com a mão, punho ou arma"
+      ],
+      "dump": [],
+      "ownpt": [
+        "desferir um golpe forte com a mão, punho ou arma; \"O professor bateu na criança\"; \"o oponente se recusou a bater\"; \"O boxiador golpeou o agressor morto \""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "O oponente se recusou a bater."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00520019-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "perturbar",
+        "interromper",
+        "disturbar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "destruir a paz ou tranquilidade"
+      ],
+      "dump": [],
+      "ownpt": [
+        "destroi a paz ou tranquilidade de"
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Não me perturbe enquanto eu estou lendo."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02742842-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "lavar",
@@ -682,38 +2353,104 @@
       "dump": [],
       "ownpt": [
         "lavar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02018524-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "ser capaz de ser lavado",
+        "Ser capaz de ser lavado"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Este material se lava?"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02018524-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "penetrar",
         "meter o nariz em assunto alheio",
-        "intrometer-se"
+        "intrometer-se",
+        "penetrar"
       ],
       "dump": [],
       "ownpt": [
         "intrometer se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "00036362-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "entrar sem ser convidado"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00036362-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "lavar-se",
-        "limpar"
+        "limpar",
+        "lavar-se"
       ],
       "dump": [],
       "ownpt": [
         "lavar se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "01033189-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "limpar (o seu próprio corpo) com  água e sabão"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01033189-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "comentar"
@@ -721,11 +2458,30 @@
       "dump": [
         "comentar"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "00857517-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00857517-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "gabar se"
@@ -733,25 +2489,134 @@
       "dump": [],
       "ownpt": [
         "gabar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02538086-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "00168658-n": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "mudança"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
       "compare": false,
       "both": [
-        "criar laços emocionais",
+        "ato de mudar de residência ou local de trabalho"
+      ],
+      "dump": [],
+      "ownpt": [
+        "ato de mudar de residência ou local de trabalho; \"dizem que tres mudancas correspondem  um incendio\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02538086-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": false,
+      "both": [
         "ligar se",
-        "aproximar se"
+        "aproximar se",
+        "criar laços emocionais"
       ],
       "dump": [],
       "ownpt": [
         "aproximar-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "02169119-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [
+        "criar laços sociais ou emocionais"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01303242-v": {
+    "compare": false,
+    "word_pt": {
+      "compare": true,
+      "both": [
+        "atar",
+        "amarrar"
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "gloss_pt": {
+      "compare": false,
+      "both": [
+        "vincular ou segurar, com ou como se com uma corda"
+      ],
+      "dump": [],
+      "ownpt": [
+        "vincular ou segurar, com ou como se com uma corda; \"Os chineses deveriam amarrar os pés de suas mulheres\""
+      ]
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [
+        "Os chineses costumavam amarrar os pés de suas mulheres, deformando-os."
+      ],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "02169119-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
         "intrometer se"
@@ -759,40 +2624,89 @@
       "dump": [],
       "ownpt": [
         "intrometer-se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      ]
     },
-    "06134716-n": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "06134716-n": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [],
       "dump": [
         "engenharia mecânica"
       ],
-      "ownpt": [],
-      "add-word-pt": [],
-      "remove-word-pt": []
+      "ownpt": []
     },
-    "01821996-v": {
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
+  },
+  "01821996-v": {
+    "compare": false,
+    "word_pt": {
       "compare": false,
       "both": [
-        "compadecer",
         "apiedar-se",
-        "apiedar",
         "compadecer-se",
-        "lastimar"
+        "lastimar",
+        "apiedar",
+        "compadecer"
       ],
       "dump": [],
       "ownpt": [
         "compadecer se"
-      ],
-      "add-word-pt": [],
-      "remove-word-pt": []
-    }
-  },
-  "count": {
-    "dump": 13,
-    "ownpt": 52,
-    "both": 79040
+      ]
+    },
+    "gloss_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "example_pt": {
+      "compare": true,
+      "both": [],
+      "dump": [],
+      "ownpt": []
+    },
+    "add-word-pt": [],
+    "remove-word-pt": [],
+    "add-gloss-pt": [],
+    "remove-gloss-pt": [],
+    "add-example-pt": [],
+    "remove-example-pt": []
   }
 }
