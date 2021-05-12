@@ -21,6 +21,35 @@ class Compare():
         self.docs = {synset["doc_id"]:synset for synset in self.dump}
 
 
+    def compare_items(self):
+        """"""
+
+        # compares items
+        _, report_word = self.compare_item_ownpt_dump(item_name="word_pt")
+        _, report_gloss = self.compare_item_ownpt_dump(item_name="gloss_pt")
+        _, report_example = self.compare_item_ownpt_dump(item_name="example_pt")
+        report_word = report_word["docs"]
+        report_gloss = report_gloss["docs"]
+        report_example = report_example["docs"]
+
+        # joins results
+        report = dict()
+        for doc_id in report_word:
+            report[doc_id] = dict()
+
+            report[doc_id]["compare"] = all({
+                report_word[doc_id]["word_pt"]["compare"],
+                report_gloss[doc_id]["gloss_pt"]["compare"],
+                report_example[doc_id]["example_pt"]["compare"]
+            })
+            
+            report[doc_id].update(report_word[doc_id])
+            report[doc_id].update(report_gloss[doc_id])
+            report[doc_id].update(report_example[doc_id])
+        
+        return report
+
+
     def compare_item_ownpt_dump(self, item_name="word_pt"):
         """"""
 
@@ -44,7 +73,9 @@ class Compare():
             report["count"]["both"] += len(items)
             report["count"]["dump"] += len(itemsd)
             report["count"]["ownpt"] += len(itemso)
-            report["docs"][doc_id] = {"compare":result, "both":items, "dump":itemsd, "ownpt":itemso}
+            
+            report["docs"][doc_id] = dict()
+            report["docs"][doc_id][item_name] = {"compare":result, "both":items, "dump":itemsd, "ownpt":itemso}
 
             # displays debug info
             if not result:

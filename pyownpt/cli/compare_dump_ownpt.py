@@ -42,26 +42,25 @@ def cli_compare_ownpt_dump(
     wn = [loads(line)["_source"] for line in open(wn_filepath).readlines()]
     
     # create and apply compare
-    compare = Compare(ownpt, wn)
-
-    _, _ = compare.compare_item_ownpt_dump(item_name="word_pt")
-    _, _ = compare.compare_item_ownpt_dump(item_name="gloss_pt")
-    _, _ = compare.compare_item_ownpt_dump(item_name="example_pt")
-
+    report = Compare(ownpt, wn).compare_items()
+    
     # makes json where docs differ
-    report_words["docs"]
-    for doc, doc_report in report_words["docs"].copy().items():
+    for doc, doc_report in report.copy().items():
         if doc_report["compare"]:
             # removes if comparing positive
-            report_words["docs"].pop(doc)
+            report.pop(doc)
         else:
             # adds actions to apply
-            report_words["docs"][doc]["add-word-pt"] = []
-            report_words["docs"][doc]["remove-word-pt"] = []
+            report[doc]["add-word-pt"] = []
+            report[doc]["remove-word-pt"] = []
+            report[doc]["add-gloss-pt"] = []
+            report[doc]["remove-gloss-pt"] = []
+            report[doc]["add-example-pt"] = []
+            report[doc]["remove-example-pt"] = []
     
     # serializes to output
-    logger.warning(f"serializing report to {output_filepath}")
-    dump(report_words, open(output_filepath, mode="w"))
+    logger.warning(f"serializing report to '{output_filepath}'")
+    dump(report, open(output_filepath, mode="w"), ensure_ascii=False)
 
 
 # sets parser and interface function
