@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import re
+from typing import ItemsView
 import tqdm
 import logging
 logger = logging.getLogger(__name__)
@@ -19,7 +21,36 @@ class Compare():
         self.docs = {synset["doc_id"]:synset for synset in self.dump}
 
 
-    def compare_words_ownpt_dump(self):
+    def compare_items(self):
+        """"""
+
+        # compares items
+        _, report_word = self.compare_item_ownpt_dump(item_name="word_pt")
+        _, report_gloss = self.compare_item_ownpt_dump(item_name="gloss_pt")
+        _, report_example = self.compare_item_ownpt_dump(item_name="example_pt")
+        report_word = report_word["docs"]
+        report_gloss = report_gloss["docs"]
+        report_example = report_example["docs"]
+
+        # joins results
+        report = dict()
+        for doc_id in report_word:
+            report[doc_id] = dict()
+
+            report[doc_id]["compare"] = all({
+                report_word[doc_id]["word_pt"]["compare"],
+                report_gloss[doc_id]["gloss_pt"]["compare"],
+                report_example[doc_id]["example_pt"]["compare"]
+            })
+            
+            report[doc_id].update(report_word[doc_id])
+            report[doc_id].update(report_gloss[doc_id])
+            report[doc_id].update(report_example[doc_id])
+        
+        return report
+
+
+    def compare_item_ownpt_dump(self, item_name="word_pt"):
         """"""
 
         # reports
@@ -27,31 +58,37 @@ class Compare():
         report = {
             "docs":dict(), 
             "count":{"dump":0, "ownpt":0, "both":0}}
+        
+        # query
+        query = self._get_query(item_name)
 
-        logger.warning(f"start comparing words:")
+        # start comparing
+        logger.warning(f"start comparing item {item_name}:")
         for synset in tqdm.tqdm(self.dump):
             doc_id = synset['doc_id']
 
-            result, words, wordsd, wordso = self._compare_words(synset)
+            result, items, itemsd, itemso = self._compare_item(synset, item_name, query)
             
             # update report
-            report["count"]["both"] += len(words)
-            report["count"]["dump"] += len(wordsd)
-            report["count"]["ownpt"] += len(wordso)
-            report["docs"][doc_id] = {"compare":result, "both":words, "dump":wordsd, "ownpt":wordso}
+            report["count"]["both"] += len(items)
+            report["count"]["dump"] += len(itemsd)
+            report["count"]["ownpt"] += len(itemso)
+            
+            report["docs"][doc_id] = dict()
+            report["docs"][doc_id][item_name] = {"compare":result, "both":items, "dump":itemsd, "ownpt":itemso}
 
             # displays debug info
             if not result:
                 compare = False
                 logger.debug(f"synset {doc_id}:words: comparing resulted False:"
-                                f"\n\t words {wordsd} found only in dump"
-                                f"\n\t words {wordso} found only in ownpt"
-                                f"\n\t words {words} found in both documents")
+                                f"\n\t {item_name} {itemsd} found only in dump"
+                                f"\n\t {item_name} {itemso} found only in ownpt"
+                                f"\n\t {item_name} {items} found in both documents")
         
-        logger.info(f"words: comparing resulted '{compare}':"
-                        f"\n\t {report['count']['dump']} words found only in dump"
-                        f"\n\t {report['count']['ownpt']} words found only in ownpt"
-                        f"\n\t {report['count']['both']} words found in both documents")
+        logger.info(f"{item_name}: comparing resulted '{compare}':"
+                        f"\n\t {item_name}:{report['count']['dump']} found only in dump"
+                        f"\n\t {item_name}:{report['count']['ownpt']} found only in ownpt"
+                        f"\n\t {item_name}:{report['count']['both']} found in both documents")
 
         # returns report
         return compare, report
@@ -117,45 +154,44 @@ class Compare():
         return compare, report
 
 
-    def _compare_words(self, synset:dict):
+    def _compare_item(self, synset:dict, item_name:str, query:str):
         """"""  
         compare = True
         
         # report words
-        words = []
-        wordso = []
-        wordsd = synset["word_pt"].copy() if "word_pt" in synset else []
+        items = []
+        itemso = []
+        itemsd = synset[item_name].copy() if item_name in synset else []
+        itemsd = [item.strip() for item in itemsd]
 
         # finds all wordsenses, and its words
         doc_id = synset["doc_id"]
         synset_uri = SYNSET_PT[doc_id]
         
-        query = ("SELECT ?s ?w ?wl WHERE{{ "
-                    "{synset} {hassens} ?s ."
-                    "?s {hasword} ?w ."
-                    "?w {lexical} ?wl . }}")
         result = self.graph.query(query.format(
                     synset = synset_uri.n3(),
                     hassens = OWNPT.containsWordSense.n3(),
                     hasword = OWNPT.word.n3(),
-                    lexical = OWNPT.lexicalForm.n3()))
+                    lexical = OWNPT.lexicalForm.n3(),
+                    hasgloss = OWNPT.gloss.n3(),
+                    hasexample = OWNPT.example.n3()))
         
         # compares words in synset with dump
-        for _, _, wordl in result:
-            wordl = wordl.toPython().strip()
+        for item, in result:
+            item = item.toPython().strip()
 
             # checks if word exists in dump
-            if wordl in wordsd:
-                words.append(wordl)
-                wordsd.remove(wordl)
+            if item in itemsd:
+                items.append(item)
+                itemsd.remove(item)
             else:
-                wordso.append(wordl)
+                itemso.append(item)
 
         # check if unique words are void
-        if len(wordsd) > 0: compare = False
-        if len(wordso) > 0: compare = False
+        if len(itemsd) > 0: compare = False
+        if len(itemso) > 0: compare = False
         
-        return compare, words, wordsd, wordso
+        return compare, items, itemsd, itemso
 
 
     def _compare_pointers(self, synset:dict, pointer_name:str, pointer_uri:URIRef):
@@ -225,3 +261,17 @@ class Compare():
         if word in words: return word
         
         return None
+
+
+    def _get_query(self, item_name):
+        """"""
+
+        if item_name == "word_pt":
+            return "SELECT ?wl WHERE {{ {synset} {hassens} ?s . ?s {hasword} ?w . ?w {lexical} ?wl . }}"
+        if item_name == "gloss_pt":
+            return "SELECT ?gl WHERE {{ {synset} {hasgloss} ?gl . }}"
+        if item_name == "example_pt":
+            return "SELECT ?ex WHERE {{ {synset} {hasexample} ?ex . }}"
+        
+        raise Exception(f"not a valid option for comparing: {item_name}")
+
