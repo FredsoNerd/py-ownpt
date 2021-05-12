@@ -43,7 +43,10 @@ def cli_compare_ownpt_dump(
     
     # create and apply compare
     compare = Compare(ownpt, wn)
-    _, report_words = compare.compare_words_ownpt_dump()
+
+    _, _ = compare.compare_item_ownpt_dump(item_name="word_pt")
+    _, _ = compare.compare_item_ownpt_dump(item_name="gloss_pt")
+    _, _ = compare.compare_item_ownpt_dump(item_name="example_pt")
 
     # makes json where docs differ
     report_words["docs"]
