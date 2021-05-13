@@ -10,6 +10,8 @@ from rdflib import Graph, URIRef, Namespace
 
 # global
 OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
+NOMLEX = Namespace("https://w3id.org/own-pt/nomlex/schema/")
+
 SYNSET_PT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 
 
@@ -98,23 +100,48 @@ class Compare():
         """"""
 
         map_pointers = {"wn30_pt_antonymOf":OWNPT.antonymOf}
-        return self.compare_pointers_ownpt_dump(map_pointers)
+        return self._compare_pointers_ownpt_dump(map_pointers)
+
+    
+    def compare_morpho_ownpt_dump(self):
+        """"""
+
+        ownpt = Graph()
+
+        # morphosemantic links
+        pointers_uri_map = {  
+            "wn30_pt_property": NOMLEX.property,
+            "wn30_pt_result": NOMLEX.result,
+            "wn30_pt_state": NOMLEX.state,
+            "wn30_pt_undergoer": NOMLEX.undergoer,
+            "wn30_pt_uses": NOMLEX.uses,
+            "wn30_pt_vehicle": NOMLEX.vehicle,
+            "wn30_pt_event": NOMLEX.event,
+            "wn30_pt_instrument": NOMLEX.instrument,
+            "wn30_pt_location": NOMLEX.location,
+            "wn30_pt_material": NOMLEX.material,
+            "wn30_pt_agent": NOMLEX.agent,
+            "wn30_pt_bodyPart": NOMLEX.bodyPart,
+            "wn30_pt_byMeansOf": NOMLEX.byMeansOf
+        }
+
+        return self._compare_pointers_ownpt_dump(pointers_uri_map)
 
 
-    def compare_pointers_ownpt_dump(self, map_pointers:dict):
+    def _compare_pointers_ownpt_dump(self, map_pointers:dict):
         """"""
 
         compare = True
         reports = dict()
 
         for pointer_name, pointer_uri in map_pointers.items():
-            compare_i, reports[pointer_name] = self._compare_pointers_ownpt_dump(pointer_name, pointer_uri)
+            compare_i, reports[pointer_name] = self._compare_pointer_ownpt_dump(pointer_name, pointer_uri)
             compare = compare if compare_i else False
         
         return compare, reports
 
 
-    def _compare_pointers_ownpt_dump(self, pointer_name, pointer_uri):
+    def _compare_pointer_ownpt_dump(self, pointer_name, pointer_uri):
         """"""
 
         # reports
