@@ -4,7 +4,7 @@ This package contains a set of usefull features for manipulation, representation
 
 ## Features
 
-Py-OWNPT contains features for `repair`, `compare` and `update` OWN-PT. The directoy `cli` contains the folowing commands: `repair_ownpt`, `compare_dump_ownpt` and `update_ownpt`.
+Py-OWNPT contains features for `repair`, `compare` and `update` OWN-PT. The directoy `pwownpt/cli` contains the folowing commands: `repair_ownpt`, `compare_dump_ownpt` and `update_ownpt`.
 
 ## Updating OWN-PT
 
