@@ -26,6 +26,7 @@ class Repair(OWNPT):
             self.add_sense_types, # grant well typed nodes
             self.add_sense_labels, # create labels by word
             self.format_lexicals, # well defined lexical form
+            self.replace_sense_labels, # match labels to words
             self.remove_word_duplicates, # with same lexical form
             self.remove_sense_duplicates, # same label in a synset
             self.remove_desconex_sense_nodes, # without a synset
@@ -180,6 +181,20 @@ class Repair(OWNPT):
         
         for sense, in result:
             self._add_triple((sense, HAS_TYPE, TYPE_WORDSENSE), "add_sense_types")
+
+        # how many actions
+        return len(result)
+
+
+    def replace_sense_labels(self):
+        """"""
+
+        query = "SELECT ?s ?sl ?wl WHERE{{ ?s {haslabel} ?sl . ?s {hasword} ?w . ?w {haslexical} ?wl . FILTER (?sl != ?wl)}}"
+        result = self.graph.query(query.format(haslabel = HAS_LABEL.n3(), hasword = CONTAINS_WORD.n3(), haslexical = CONTAINS_LEXICAL_FORM.n3()))
+        
+        for sense, label, lexical in result:
+            self._drop_triple((sense, HAS_LABEL, label), "fix_sense_labels")
+            self._add_triple((sense, HAS_LABEL, lexical), "fix_sense_labels")
 
         # how many actions
         return len(result)
