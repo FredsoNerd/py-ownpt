@@ -7,14 +7,14 @@ logger = logging.getLogger()
 
 from json import loads, dump
 from rdflib import Graph
+from rdflib.util import guess_format
 from pyownpt.compare import Compare
 
 
 def _parse(args):
     ownpt_filapath = args.owp
-    morpho_filapath = args.mph
     wn_filepath = args.wnd
-    format = args.fmt
+    morpho_filapath = args.m
     output_filepath = args.o
 
     # sets verbosity level
@@ -26,22 +26,26 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_compare_ownpt_dump(ownpt_filapath, morpho_filapath, wn_filepath, format, output_filepath)
+    cli_compare_ownpt_dump(ownpt_filapath, wn_filepath, morpho_filapath, output_filepath)
     
 
 def cli_compare_ownpt_dump(
     ownpt_filapath:str,
-    morpho_filapath:str,
     wn_filepath:str,
-    format:str="nt",
+    morpho_filapath:str,
     output_filepath:str = "output.json"):
     """"""
 
     ownpt = Graph()
+
     logger.info(f"loading data from file '{ownpt_filapath}'")
-    ownpt.parse(ownpt_filapath, format=format)
-    logger.info(f"loading data from file '{morpho_filapath}'")
-    ownpt.parse(morpho_filapath, format=format)
+    ownpt_format = _get_format(ownpt_filapath)
+    ownpt.parse(ownpt_filapath, format=ownpt_format)
+
+    if morpho_filapath:
+        logger.info(f"loading data from file '{morpho_filapath}'")
+        morpho_format = _get_format(morpho_filapath)
+        ownpt.parse(morpho_filapath, format=morpho_format)
 
     logger.info(f"loading data from file '{wn_filepath}'")
     wn = [loads(line)["_source"] for line in open(wn_filepath).readlines()]
@@ -50,7 +54,8 @@ def cli_compare_ownpt_dump(
     compare = Compare(ownpt, wn)
     report = compare.compare_items()
     compare.compare_antonymof_ownpt_dump()
-    compare.compare_morpho_ownpt_dump()
+    if morpho_filapath:
+        compare.compare_morpho_ownpt_dump()
 
     # makes json where docs differ
     for doc, doc_report in report.copy().items():
@@ -72,14 +77,20 @@ def cli_compare_ownpt_dump(
     dump(report, open(output_filepath, mode="w"), ensure_ascii=False)
 
 
+def _get_format(filepath:str):
+    """"""
+
+    filepath_format = guess_format(filepath, {"jsonld":"json-ld"})
+    return filepath_format if filepath_format else filepath.split(".")[-1]
+
+
 # sets parser and interface function
 parser = argparse.ArgumentParser()
 
 # sets the user options
 parser.add_argument("owp", help="rdf file from own-pt")
-parser.add_argument("mph", help="rdf file from morpho-pt")
 parser.add_argument("wnd", help="jsonl dump file wn.json")
-parser.add_argument("fmt", help="rdf format (default: xml)", default="xml")
+parser.add_argument("-m", help="compare morphosemantic-liks-pt")
 parser.add_argument("-o", help="output file (default: output.json)", default="output.json")
 
 parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)
