@@ -8,7 +8,7 @@ logger = logging.getLogger()
 from json import loads
 from rdflib import Graph
 
-from pyownpt.repair import RepairGraph
+from pyownpt.repair import Repair
 
 
 def _parse(args):
@@ -18,7 +18,7 @@ def _parse(args):
     output_format = args.f
 
     # configs logging
-    fileHandler = logging.FileHandler(filename="log", mode="w")
+    fileHandler = logging.FileHandler(filename="log-repair", mode="w")
     fileHandler.setLevel(logging.DEBUG)
     streamHandler = logging.StreamHandler(stream=sys.stdout)
     streamHandler.setLevel(level=30-10*args.v)
@@ -41,7 +41,7 @@ def cli_repair_ownpt(
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
     # repairs graph by rules
-    RepairGraph(ownpt).repair()
+    Repair(ownpt).repair()
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
