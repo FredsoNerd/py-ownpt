@@ -1,18 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import re
-from typing import ItemsView
 import tqdm
 import logging
-logger = logging.getLogger(__name__)
 
-from rdflib import Graph, URIRef, Namespace
-
-# global
-OWNPT = Namespace("https://w3id.org/own-pt/wn30/schema/")
-NOMLEX = Namespace("https://w3id.org/own-pt/nomlex/schema/")
-
-SYNSET_PT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
+from rdflib import Graph, URIRef
+from pyownpt.ownpt import SCHEMA, NOMLEX, SYNSETPT
 
 
 class Compare():
@@ -21,6 +13,9 @@ class Compare():
         self.graph = graph
         self.dump = dump
         self.docs = {synset["doc_id"]:synset for synset in self.dump}
+
+        # logging
+        self.logger = logging.getLogger("compare")
 
 
     def compare_items(self):
@@ -65,7 +60,7 @@ class Compare():
         query = self._get_query(item_name)
 
         # start comparing
-        logger.warning(f"start comparing item {item_name}:")
+        self.logger.warning(f"start comparing item {item_name}:")
         for synset in tqdm.tqdm(self.dump):
             doc_id = synset['doc_id']
 
@@ -82,12 +77,12 @@ class Compare():
             # displays debug info
             if not result:
                 compare = False
-                logger.debug(f"synset {doc_id}:words: comparing resulted False:"
+                self.logger.debug(f"synset {doc_id}:words: comparing resulted False:"
                                 f"\n\t {item_name} {itemsd} found only in dump"
                                 f"\n\t {item_name} {itemso} found only in ownpt"
                                 f"\n\t {item_name} {items} found in both documents")
         
-        logger.info(f"{item_name}: comparing resulted '{compare}':"
+        self.logger.info(f"{item_name}: comparing resulted '{compare}':"
                         f"\n\t {item_name}:{report['count']['dump']} found only in dump"
                         f"\n\t {item_name}:{report['count']['ownpt']} found only in ownpt"
                         f"\n\t {item_name}:{report['count']['both']} found in both documents")
@@ -99,7 +94,7 @@ class Compare():
     def compare_antonymof_ownpt_dump(self):
         """"""
 
-        map_pointers = {"wn30_pt_antonymOf":OWNPT.antonymOf}
+        map_pointers = {"wn30_pt_antonymOf":SCHEMA.antonymOf}
         return self._compare_pointers_ownpt_dump(map_pointers)
 
     
@@ -150,7 +145,7 @@ class Compare():
             "count":{"dump":0, "ownpt":0, "both":0},
             "pairs":{"dump":[], "ownpt":[], "both":[]}}
 
-        logger.warning(f"start comparing pointer '{pointer_name}':")
+        self.logger.warning(f"start comparing pointer '{pointer_name}':")
         for synset in tqdm.tqdm(self.dump):
             doc_id = synset['doc_id']
 
@@ -167,12 +162,12 @@ class Compare():
             # display debug
             if not result:
                 compare = False
-                logger.debug(f"synset {doc_id}:{pointer_name}: comparing resulted False:"
+                self.logger.debug(f"synset {doc_id}:{pointer_name}: comparing resulted False:"
                                 f"\n\t pairs {pairsd} found only in dump"
                                 f"\n\t pairs {pairso} found only in ownpt"
                                 f"\n\t pairs {pairs} found in both documents")
         
-        logger.info(f"{pointer_name}: comparing resulted '{compare}':"
+        self.logger.info(f"{pointer_name}: comparing resulted '{compare}':"
                         f"\n\t {report['count']['dump']} pairs found only in dump"
                         f"\n\t {report['count']['ownpt']} pairs found only in ownpt"
                         f"\n\t {report['count']['both']} pairs found in both documents")
@@ -193,15 +188,15 @@ class Compare():
 
         # finds all wordsenses, and its words
         doc_id = synset["doc_id"]
-        synset_uri = SYNSET_PT[doc_id]
+        synset_uri = SYNSETPT[doc_id]
         
         result = self.graph.query(query.format(
                     synset = synset_uri.n3(),
-                    hassens = OWNPT.containsWordSense.n3(),
-                    hasword = OWNPT.word.n3(),
-                    lexical = OWNPT.lexicalForm.n3(),
-                    hasgloss = OWNPT.gloss.n3(),
-                    hasexample = OWNPT.example.n3()))
+                    hassens = SCHEMA.containsWordSense.n3(),
+                    hasword = SCHEMA.word.n3(),
+                    lexical = SCHEMA.lexicalForm.n3(),
+                    hasgloss = SCHEMA.gloss.n3(),
+                    hasexample = SCHEMA.example.n3()))
         
         # compares words in synset with dump
         for item, in result:
@@ -235,15 +230,18 @@ class Compare():
             for pointer in synset[pointer_name]:
                 # source senses/synset
                 source = self._get_source_target(synset, pointer, "source_word")
+                
                 # target senses/synset
                 target_synset = self.docs[pointer["target_synset"]]
                 target = self._get_source_target(target_synset, pointer, "target_word")
+                
                 # pairs
-                pairsd.append((source, target))
+                if source and target:
+                    pairsd.append((source, target))
 
         # finds pointers
         doc_id = synset["doc_id"]
-        synset_uri = SYNSET_PT[doc_id]
+        synset_uri = SYNSETPT[doc_id]
         
         query = ("SELECT ?ss ?sw ?swl ?ts ?tw ?twl WHERE{{"
                     "?ss {pointer} ?ts ."
@@ -252,10 +250,10 @@ class Compare():
                     "?ts {hasword} ?tw . ?tw {lexical} ?twl . }}")
         result = self.graph.query(query.format(
                     synset = synset_uri.n3(),
-                    hassens = OWNPT.containsWordSense.n3(),
+                    hassens = SCHEMA.containsWordSense.n3(),
                     pointer = pointer_uri.n3(),
-                    hasword = OWNPT.word.n3(),
-                    lexical = OWNPT.lexicalForm.n3()))
+                    hasword = SCHEMA.word.n3(),
+                    lexical = SCHEMA.lexicalForm.n3()))
         
 
         # compares words in synset with dump
@@ -284,8 +282,10 @@ class Compare():
         word = pointer[key] if key in pointer else None
         words = synset["word_pt"] if "word_pt" in synset else []
 
-        if word is None: return synset
-        if word in words: return word
+        if word is None:
+            return synset
+        if word in words:
+            return word
         
         return None
 

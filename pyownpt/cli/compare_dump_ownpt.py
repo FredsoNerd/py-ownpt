@@ -14,11 +14,11 @@ def _parse(args):
     ownpt_filapath = args.owp
     morpho_filapath = args.mph
     wn_filepath = args.wnd
-    ownpt_format = args.fmt
+    format = args.fmt
     output_filepath = args.o
 
     # sets verbosity level
-    fileHandler = logging.FileHandler(filename="log", mode="w")
+    fileHandler = logging.FileHandler(filename="log-compare", mode="w")
     fileHandler.setLevel(logging.DEBUG)
     streamHandler = logging.StreamHandler(stream=sys.stdout)
     streamHandler.setLevel(level=30-10*args.v)
@@ -26,22 +26,22 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_compare_ownpt_dump(ownpt_filapath, morpho_filapath, wn_filepath, ownpt_format, output_filepath)
+    cli_compare_ownpt_dump(ownpt_filapath, morpho_filapath, wn_filepath, format, output_filepath)
     
 
 def cli_compare_ownpt_dump(
     ownpt_filapath:str,
     morpho_filapath:str,
     wn_filepath:str,
-    ownpt_format:str="nt",
+    format:str="nt",
     output_filepath:str = "output.json"):
     """"""
 
     ownpt = Graph()
     logger.info(f"loading data from file '{ownpt_filapath}'")
-    ownpt.parse(ownpt_filapath, format=ownpt_format)
+    ownpt.parse(ownpt_filapath, format=format)
     logger.info(f"loading data from file '{morpho_filapath}'")
-    ownpt.parse(morpho_filapath, format=ownpt_format)
+    ownpt.parse(morpho_filapath, format=format)
 
     logger.info(f"loading data from file '{wn_filepath}'")
     wn = [loads(line)["_source"] for line in open(wn_filepath).readlines()]
@@ -58,13 +58,14 @@ def cli_compare_ownpt_dump(
             # removes if comparing positive
             report.pop(doc)
         else:
-            # adds actions to apply
-            report[doc]["add-word-pt"] = []
-            report[doc]["remove-word-pt"] = []
-            report[doc]["add-gloss-pt"] = []
-            report[doc]["remove-gloss-pt"] = []
-            report[doc]["add-example-pt"] = []
-            report[doc]["remove-example-pt"] = []
+            # adds actions to apply to ownpt
+            report[doc]["actions"] = {
+                "add-word-pt": report[doc]["word_pt"]["dump"],
+                "remove-word-pt": report[doc]["word_pt"]["ownpt"],
+                "add-gloss-pt": report[doc]["gloss_pt"]["dump"],
+                "remove-gloss-pt": report[doc]["gloss_pt"]["ownpt"],
+                "add-example-pt": report[doc]["example_pt"]["dump"],
+                "remove-example-pt": report[doc]["example_pt"]["ownpt"]}
     
     # serializes to output
     logger.warning(f"serializing report to '{output_filepath}'")
