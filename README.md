@@ -23,11 +23,6 @@ $ python path/to/repair_ownpt.py path/to/own-pt.nt -o own-pt-repaired.nt -v
 ```bash
 $ python path/to/compare_dump_ownpt.py own-pt-repaired.nt path/to/wn.json -o compare.json -v
 ```
-- You might have a complete comparing, considering all morphosemantic-links. In this case add a `-m` flag: 
-
-```bash
-$ python path/to/compare_dump_ownpt.py own-pt-repaired.nt path/to/wn.json -m path/to/morphosemantic-links-pt.nt -o compare.json -v
-```
 
  - Finally, update the wordnet considering votes and suggestions. Add a `-a` flag for parsing previous output `compare.json` containing actions for unification, wich are applied before suggestions. In the following example, *arademaker* and *vcvpaiva* are the senior users responsible for the project:
 
