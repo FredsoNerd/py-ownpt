@@ -107,7 +107,7 @@ class Update(OWNPT):
             if item is None:
                 result = False
             else:
-                self._drop_triple((synset, CONTAINS_WORDSENSE, item), action)
+                self._drop_node(item, action)
         
         elif action == "remove-gloss-pt":
             # finds and removes suitable
