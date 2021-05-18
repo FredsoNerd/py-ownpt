@@ -65,9 +65,9 @@ class OWNPT():
 
         # connect sense
         if add_sense:
-            self._add_triple((synset, HAS_TYPE, TYPE_WORDSENSE))
+            self._add_triple((new_sense, HAS_TYPE, TYPE_WORDSENSE))
             self._add_triple((synset, CONTAINS_WORDSENSE, new_sense))
-            self._add_triple((synset, CONTAINS_WORD_NUMBER, Literal(str(sense_id))))
+            self._add_triple((new_sense, CONTAINS_WORD_NUMBER, Literal(str(sense_id))))
 
         return new_sense
 
