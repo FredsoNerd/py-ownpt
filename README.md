@@ -32,7 +32,7 @@ $ python path/to/compare_dump_ownpt.py own-pt-repaired.nt path/to/wn.json -m pat
  - Finally, update the wordnet considering votes and suggestions. Add a `-a` flag for parsing previous output `compare.json` containing actions for unification, wich are applied before suggestions. In the following example, *arademaker* and *vcvpaiva* are the senior users responsible for the project:
 
 ```bash
-$ python path/to/compare_dump_ownpt.py own-pt-repaired.nt path/to/suggestions.json path/to/votes.json -u arademaker vcvpaiva -a compare.json -o own-pt-updated.nt -v
+$ python path/to/update_ownpt.py own-pt-repaired.nt path/to/suggestions.json path/to/votes.json -u arademaker vcvpaiva -a compare.json -o own-pt-updated.nt -v
 ```
 
 After those steps, is advertisable to repair the updated file once more, adding types and removing desconex nodes.
