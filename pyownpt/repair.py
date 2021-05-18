@@ -194,8 +194,8 @@ class Repair(OWNPT):
         result = self.graph.query(query.format(haslabel = HAS_LABEL.n3(), hasword = CONTAINS_WORD.n3(), haslexical = CONTAINS_LEXICAL_FORM.n3()))
         
         for sense, label, lexical in result:
-            self._drop_triple((sense, HAS_LABEL, label), "fix_sense_labels")
-            self._add_triple((sense, HAS_LABEL, lexical), "fix_sense_labels")
+            self._drop_triple((sense, HAS_LABEL, label), "replace_sense_labels")
+            self._add_triple((sense, HAS_LABEL, lexical), "replace_sense_labels")
 
         # how many actions
         return len(result)
@@ -209,7 +209,7 @@ class Repair(OWNPT):
         for sense, in result:
             word_number = sense.split("-")[-1]
             word_number = Literal(word_number)
-            self._add_triple((sense, HAS_LABEL, word_number), "add_sense_labels")
+            self._add_triple((sense, CONTAINS_WORD_NUMBER, word_number), "add_sense_number")
 
         # how many actions
         return len(result)
