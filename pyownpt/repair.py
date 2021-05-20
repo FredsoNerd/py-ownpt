@@ -84,7 +84,7 @@ class Repair(OWNPT):
         result = self.graph.query(query)
         
         for word1, word2 in result:
-            self._replace_node(word2, word1, "remove_sense_duplicates")
+            self._drop_node(word2, "remove_sense_duplicates")
 
         # how many actions
         return len(result)
