@@ -1,14 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from logging import FATAL
-from sys import flags
-
-from pyownpt.ownpt import CONTAINS_EXAMPLE, CONTAINS_GLOSS, OWNPT, Literal
-from pyownpt.ownpt import HAS_TYPE, HAS_LABEL
-from pyownpt.ownpt import TYPE_WORD, TYPE_WORDSENSE
-from pyownpt.ownpt import NOMLEX_NOUN, NOMLEX_VERB
-from pyownpt.ownpt import CONTAINS_WORD, CONTAINS_WORDSENSE, CONTAINS_LEXICAL_FORM
-from pyownpt.ownpt import CONTAINS_GLOSS, CONTAINS_EXAMPLE, CONTAINS_WORD_NUMBER
+from pyownpt.ownpt import OWNPT, Literal, RDFS, RDF, SCHEMA
 
 
 class Repair(OWNPT):
@@ -21,7 +13,7 @@ class Repair(OWNPT):
             self.fix_word_blank_nodes,
             self.fix_sense_blank_nodes,
             self.remove_void_words, # without lexical form
-            self.expand_double_words, # more than one lexical form
+            self.remove_double_words, # more than one lexical form
             self.expand_sense_words, # create word by label
             self.add_word_types, # grant well typed nodes
             self.add_sense_types, # grant well typed nodes
@@ -62,8 +54,8 @@ class Repair(OWNPT):
     def remove_desconex_word_nodes(self):
         """"""
 
-        query = "SELECT ?w WHERE{{ {{ ?w {haslexical} ?l . }} UNION {{ ?w {hastype} {typeword} . }} FILTER NOT EXISTS {{ {{ ?s ?p ?w . }} }} }} "
-        result = self.graph.query(query.format(hastype = HAS_TYPE.n3(), hasword = CONTAINS_WORD.n3(), typeword = TYPE_WORD.n3(), haslexical = CONTAINS_LEXICAL_FORM.n3(), nomlexnoum = NOMLEX_NOUN.n3(), nomlexverb = NOMLEX_VERB.n3()))
+        query = "SELECT ?w WHERE{ { ?w wn30:lexicalForm ?l . } UNION { ?w rdf:type wn30:Word . } FILTER NOT EXISTS { { ?s ?p ?w . } } } "
+        result = self.graph.query(query)
         
         for word, in result:
             self._drop_node(word, "remove_desconex_word_nodes")
@@ -75,8 +67,8 @@ class Repair(OWNPT):
     def remove_desconex_sense_nodes(self):
         """"""
 
-        query = "SELECT ?s WHERE{{ {{ ?s {hasword} ?w . }} UNION {{ ?s {hastype} {typesense} . }} FILTER NOT EXISTS {{ {{ ?ss {hassense} ?s . }} }} }} "
-        result = self.graph.query(query.format(hastype = HAS_TYPE.n3(), hasword = CONTAINS_WORD.n3(), hassense = CONTAINS_WORDSENSE.n3(), typesense = TYPE_WORDSENSE.n3()))
+        query = "SELECT ?s WHERE{ { ?s wn30:word ?w . } UNION { ?s rdf:type wn30:WordSense . } FILTER NOT EXISTS { { ?ss wn30:containsWordSense ?s . } } } "
+        result = self.graph.query(query)
         
         for sense, in result:
             self._drop_node(sense, "remove_desconex_sense_nodes")
@@ -88,8 +80,8 @@ class Repair(OWNPT):
     def remove_sense_duplicates(self):
         """"""
 
-        query = "SELECT ?s1 ?s2 WHERE{{ ?s1 {haslabel} ?l . ?ss {hassense} ?s1 . ?s2 {haslabel} ?l . ?ss {hassense} ?s2 . FILTER ( STR(?s1) < STR(?s2) ) }}"
-        result = self.graph.query(query.format(haslabel = HAS_LABEL.n3(), hassense = CONTAINS_WORDSENSE.n3()))
+        query = "SELECT ?s1 ?s2 WHERE{ ?s1 rdfs:label ?l . ?ss wn30:containsWordSense ?s1 . ?s2 rdfs:label ?l . ?ss wn30:containsWordSense ?s2 . FILTER ( ?s1 < ?s2 ) }"
+        result = self.graph.query(query)
         
         for word1, word2 in result:
             self._replace_node(word2, word1, "remove_sense_duplicates")
@@ -101,8 +93,8 @@ class Repair(OWNPT):
     def remove_word_duplicates(self):
         """"""
 
-        query = "SELECT ?w1 ?w2 WHERE{{ ?w1 {lexical} ?l . ?w2 {lexical} ?l . FILTER ( ?w1 < ?w2 ) }}"
-        result = self.graph.query(query.format(lexical = CONTAINS_LEXICAL_FORM.n3()))
+        query = "SELECT ?w1 ?w2 WHERE{ ?w1 wn30:lexicalForm ?l . ?w2 wn30:lexicalForm ?l . FILTER ( ?w1 < ?w2 ) }"
+        result = self.graph.query(query)
         for word1, word2 in result:
             self._replace_node(word2, word1, "remove_word_duplicates")
 
@@ -110,27 +102,11 @@ class Repair(OWNPT):
         return len(result)
 
 
-    # def expand_duple_senses(self):
-    #     """"""
-
-    #     query = "SELECT ?ss ?s ?w1 ?w2 WHERE{{ ?s {hasword} ?w1 . ?s {hasword} ?w2 . ?ss {hassense} ?s . FILTER ( ?w1 != ?w2 ) }}"
-    #     result = self.graph.query(query.format(hasword = CONTAINS_WORD.n3(), hassense = CONTAINS_WORDSENSE.n3()))
-        
-    #     for synset, sense1, word1, word2 in result: 
-    #         sense2 = self._new_sense(synset)
-    #         self._drop_triple((sense1, CONTAINS_WORD, word2), "expand_duple_senses")
-    #         self._add_triple((sense2, CONTAINS_WORD, word2), "expand_duple_senses")
-    #         self._add_triple((synset, CONTAINS_WORDSENSE, sense2), "expand_duple_senses")
-
-    #     # how many actions
-    #     return len(result)
-
-
-    def expand_double_words(self):
+    def remove_double_words(self):
         """"""
         
-        query = "SELECT ?w WHERE{{ ?ss {hassense} ?s . ?s {hasword} ?w . ?w {haslexical} ?l1 . ?w {haslexical} ?l2 . FILTER ( ?l1 != ?l2 ) }}"
-        result = self.graph.query(query.format(hassense = CONTAINS_WORDSENSE.n3(), hasword = CONTAINS_WORD.n3(), haslexical = CONTAINS_LEXICAL_FORM.n3()))
+        query = "SELECT ?w WHERE{ ?ss wn30:containsWordSense ?s . ?s wn30:word ?w . ?w wn30:lexicalForm ?l1 . ?w wn30:lexicalForm ?l2 . FILTER ( ?l1 != ?l2 ) }"
+        result = self.graph.query(query)
 
         for word, in result:
             self._drop_node(word, "expand_double_words")
@@ -139,8 +115,7 @@ class Repair(OWNPT):
             # if sense_label.toPython() == lexical.toPython():
             #     new_sense = sense
             #     word = self._get_word(lexical.toPython(), True)
-            #     self._add_triple((new_sense, CONTAINS_WORD, word), "expand_double_words")
-
+            #     self._add_triple((new_sense, SCHEMA.word, word), "expand_double_words")
 
         # how many actions
         return len(result)
@@ -149,8 +124,8 @@ class Repair(OWNPT):
     def format_lexicals(self):
         """"""
 
-        query = "SELECT ?s ?p ?o WHERE{{ ?s ?p ?o . FILTER ( ?p = {haslabel} || ?p = {haslexical} || ?p = {hasgloss} || ?p = {hasexample} ) FILTER ( lang(?o) != 'pt') }}"
-        result = self.graph.query(query.format(haslabel = HAS_LABEL.n3(), haslexical = CONTAINS_LEXICAL_FORM.n3(), hasgloss = CONTAINS_GLOSS.n3(), hasexample = CONTAINS_EXAMPLE.n3()))
+        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lexicalForm wn30:gloss wn30:example } ?s ?p ?o . FILTER ( lang(?o) != 'pt') }"
+        result = self.graph.query(query)
         
         for s, p, lexical in result:
             self._drop_triple((s, p, lexical), "add_literal_tag_pt")
@@ -164,11 +139,11 @@ class Repair(OWNPT):
     def add_word_types(self):
         """"""
 
-        query = "SELECT ?w WHERE{{ ?s {hasword} ?w . FILTER NOT EXISTS {{ ?w {hastype} ?t .}} }}"
-        result = self.graph.query(query.format(hastype = HAS_TYPE.n3(), hasword = CONTAINS_WORD.n3()))
+        query = "SELECT ?w WHERE{ ?s wn30:word ?w . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
+        result = self.graph.query(query)
         
         for word, in result:
-            self._add_triple((word, HAS_TYPE, TYPE_WORD), "add_word_types")
+            self._add_triple((word, RDF.type, SCHEMA.Word), "add_word_types")
 
         # how many actions
         return len(result)
@@ -177,11 +152,11 @@ class Repair(OWNPT):
     def add_sense_types(self):
         """"""
 
-        query = "SELECT ?s WHERE{{ {{ ?ss {hassense} ?s . }} FILTER NOT EXISTS {{ ?s {hastype} ?t .}} }}"
-        result = self.graph.query(query.format(hastype = HAS_TYPE.n3(), hassense = CONTAINS_WORDSENSE.n3()))
+        query = "SELECT ?s WHERE{ { ?ss wn30:containsWordSense ?s . } FILTER NOT EXISTS { ?s rdf:type ?t .} }"
+        result = self.graph.query(query)
         
         for sense, in result:
-            self._add_triple((sense, HAS_TYPE, TYPE_WORDSENSE), "add_sense_types")
+            self._add_triple((sense, RDF.type, SCHEMA.WordSense), "add_sense_types")
 
         # how many actions
         return len(result)
@@ -190,12 +165,12 @@ class Repair(OWNPT):
     def replace_sense_labels(self):
         """"""
 
-        query = "SELECT ?s ?sl ?wl WHERE{{ ?s {haslabel} ?sl . ?s {hasword} ?w . ?w {haslexical} ?wl . FILTER (?sl != ?wl)}}"
-        result = self.graph.query(query.format(haslabel = HAS_LABEL.n3(), hasword = CONTAINS_WORD.n3(), haslexical = CONTAINS_LEXICAL_FORM.n3()))
+        query = "SELECT ?s ?sl ?wl WHERE{ ?s rdfs:label ?sl . ?s wn30:word ?w . ?w wn30:lexicalForm ?wl . FILTER ( ?sl != ?wl )}"
+        result = self.graph.query(query)
         
         for sense, label, lexical in result:
-            self._drop_triple((sense, HAS_LABEL, label), "replace_sense_labels")
-            self._add_triple((sense, HAS_LABEL, lexical), "replace_sense_labels")
+            self._drop_triple((sense, RDFS.label, label), "replace_sense_labels")
+            self._add_triple((sense, RDFS.label, lexical), "replace_sense_labels")
 
         # how many actions
         return len(result)
@@ -203,13 +178,13 @@ class Repair(OWNPT):
     def add_sense_number(self):
         """"""
 
-        query = "SELECT ?s WHERE{{ ?ss {hassense} ?s . FILTER NOT EXISTS {{ ?s {hasnumber} ?n .}} }}"
-        result = self.graph.query(query.format(hasnumber = CONTAINS_WORD_NUMBER.n3(), hassense = CONTAINS_WORDSENSE.n3()))
+        query = "SELECT ?s WHERE{ ?ss wn30:containsWordSense ?s . FILTER NOT EXISTS { ?s wn30:wordNumber ?n .} }"
+        result = self.graph.query(query)
         
         for sense, in result:
             word_number = sense.split("-")[-1]
             word_number = Literal(word_number)
-            self._add_triple((sense, CONTAINS_WORD_NUMBER, word_number), "add_sense_number")
+            self._add_triple((sense, SCHEMA.wordNumber, word_number), "add_sense_number")
 
         # how many actions
         return len(result)
@@ -219,14 +194,14 @@ class Repair(OWNPT):
     def add_sense_labels(self):
         """"""
 
-        query = "SELECT ?s WHERE{{ ?ss {hassense} ?s . FILTER NOT EXISTS {{ ?s {haslabel} ?l .}} }}"
-        result = self.graph.query(query.format(haslabel = HAS_LABEL.n3(), hassense = CONTAINS_WORDSENSE.n3()))
+        query = "SELECT ?s WHERE{ ?ss wn30:containsWordSense ?s . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
+        result = self.graph.query(query)
         
         for sense, in result:
-            word = self.graph.value(sense, CONTAINS_WORD)
-            label = self.graph.value(word, CONTAINS_LEXICAL_FORM)
-            label = self._new_lexical_literal(label.toPython())
-            self._add_triple((sense, HAS_LABEL, label), "add_sense_labels")
+            word = self.graph.value(sense, SCHEMA.word)
+            label = self.graph.value(word, SCHEMA.containsWordSense)
+            label = self._new_lexical_literal(label.toPython(), False)
+            self._add_triple((sense, RDFS.label, label), "add_sense_labels")
 
         # how many actions
         return len(result)
@@ -235,13 +210,13 @@ class Repair(OWNPT):
     def expand_sense_words(self):
         """"""
 
-        query = "SELECT ?s ?l WHERE{{ ?ss {hassense} ?s . ?s {haslabel} ?l . FILTER NOT EXISTS {{ ?s {hasword} ?w . }} }}"
-        result = self.graph.query(query.format(hasword = CONTAINS_WORD.n3(), haslabel = HAS_LABEL.n3(), hassense = CONTAINS_WORDSENSE.n3()))
+        query = "SELECT ?s ?l WHERE{ ?ss wn30:containsWordSense ?s . ?s rdfs:label ?l . FILTER NOT EXISTS { ?s wn30:word ?w . } }"
+        result = self.graph.query(query)
         
         for sense, label in result:
             lexical = label.toPython()
             word = self._get_word(lexical, True)
-            self._add_triple((sense, CONTAINS_WORD, word), "expand_sense_words")
+            self._add_triple((sense, SCHEMA.word, word), "expand_sense_words")
 
         # how many actions
         return len(result)
@@ -250,11 +225,11 @@ class Repair(OWNPT):
     def remove_void_words(self):
         """"""
         
-        query = ("SELECT ?s ?w WHERE{{ ?s {hasword} ?w . FILTER NOT EXISTS {{ ?w {lexical} ?wl .}} }}")
-        result = self.graph.query(query.format(hasword = CONTAINS_WORD.n3(), lexical = CONTAINS_LEXICAL_FORM.n3()))
+        query = "SELECT ?s ?w WHERE{ ?s wn30:word ?w . FILTER NOT EXISTS { ?w wn30:lexicalForm ?l .} }"
+        result = self.graph.query(query)
         
         for sense, word in result:
-            self._drop_triple((sense, CONTAINS_WORD, word), "remove_void_words")
+            self._drop_triple((sense, SCHEMA.word, word), "remove_void_words")
 
         # how many actions
         return len(result)
@@ -263,8 +238,8 @@ class Repair(OWNPT):
     def fix_word_blank_nodes(self):
         """"""
         
-        query = "SELECT ?s ?o WHERE {{ ?s {predicate} ?o . FILTER ( isBlank(?o) ) }}"
-        result = self.graph.query(query.format(predicate = CONTAINS_WORD.n3()))
+        query = "SELECT ?s ?w WHERE { ?s wn30:word ?w . FILTER ( isBlank(?w) ) }"
+        result = self.graph.query(query)
 
         for sense, word in result:
             new_word = self._word_uri_by_blank(sense, word)
@@ -277,8 +252,8 @@ class Repair(OWNPT):
     def fix_sense_blank_nodes(self):
         """"""
         
-        query = "SELECT ?s ?o WHERE {{ ?s {predicate} ?o . FILTER ( isBlank(?o) ) }}"
-        result = self.graph.query(query.format(predicate = CONTAINS_WORDSENSE.n3()))
+        query = "SELECT ?ss ?s WHERE { ?ss wn30:containsWordSense ?s . FILTER ( isBlank(?s) ) }"
+        result = self.graph.query(query)
 
         for synset, sense in result:
             new_sense = self._new_sense(synset, False)

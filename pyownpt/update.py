@@ -4,8 +4,7 @@ import logging
 from typing import AbstractSet
 import tqdm
 
-from pyownpt.ownpt import CONTAINS_EXAMPLE, CONTAINS_GLOSS, CONTAINS_WORD, CONTAINS_WORDSENSE, OWNPT
-from pyownpt.ownpt import HAS_LABEL, SYNSETPT, SCHEMA
+from pyownpt.ownpt import OWNPT, RDFS, SYNSETPT, SCHEMA
 
 
 class Update(OWNPT):
@@ -80,8 +79,8 @@ class Update(OWNPT):
                 word = self._get_word(params, True)
                 sense = self._new_sense(synset, True)
                 label = self._new_lexical_literal(params)
-                self._add_triple((sense, HAS_LABEL, label), action)
-                self._add_triple((sense, CONTAINS_WORD, word), action)
+                self._add_triple((sense, RDFS.label, label), action)
+                self._add_triple((sense, SCHEMA.word, word), action)
             
         elif action == "add-gloss-pt":
             # checks and adds suitable
@@ -90,7 +89,7 @@ class Update(OWNPT):
                 result = False
             else:
                 item = self._new_lexical_literal(params, True)
-                self._add_triple((synset, CONTAINS_EXAMPLE, item), action)
+                self._add_triple((synset, SCHEMA.example, item), action)
 
         elif action == "add-example-pt":
             # checks and adds suitable
@@ -99,7 +98,7 @@ class Update(OWNPT):
                 result = False
             else:
                 item = self._new_lexical_literal(params, True)
-                self._add_triple((synset, CONTAINS_EXAMPLE, item), action)
+                self._add_triple((synset, SCHEMA.example, item), action)
 
         elif action == "remove-word-pt":
             # finds and removes suitable
@@ -115,7 +114,7 @@ class Update(OWNPT):
             if item is None:
                 result = False
             else:
-                self._drop_triple((synset, CONTAINS_GLOSS, item), action)
+                self._drop_triple((synset, SCHEMA.gloss, item), action)
             
         elif action == "remove-example-pt":
             # finds and removes suitable
@@ -123,7 +122,7 @@ class Update(OWNPT):
             if item is None:
                 result = False
             else:
-                self._drop_triple((synset, CONTAINS_EXAMPLE, item), action)
+                self._drop_triple((synset, SCHEMA.example, item), action)
             
         else:
             self.logger.warning(f"invalid action: {action}")

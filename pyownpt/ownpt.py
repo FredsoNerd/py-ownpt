@@ -3,8 +3,8 @@
 import re
 import logging
 
-from rdflib import Graph, Namespace, URIRef, Literal, BNode
-from rdflib import XSD, RDF, RDFS, SKOS, OWL
+from rdflib import Graph, Namespace, Literal, RDF, RDFS
+from rdflib.plugins.sparql import prepareQuery
 
 # global
 SCHEMA = Namespace("https://w3id.org/own-pt/wn30/schema/")
@@ -14,26 +14,11 @@ WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
 SYNSETPT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
 
-HAS_TYPE = RDF.type
-HAS_LABEL = RDFS.label
-
-TYPE_WORD = SCHEMA.Word
-TYPE_WORDSENSE = SCHEMA.WordSense
-
-NOMLEX_NOUN = NOMLEX.noun
-NOMLEX_VERB = NOMLEX.verb
-
-CONTAINS_WORD = SCHEMA.word
-CONTAINS_GLOSS = SCHEMA.gloss
-CONTAINS_EXAMPLE = SCHEMA.example
-CONTAINS_WORDSENSE = SCHEMA.containsWordSense
-CONTAINS_WORD_NUMBER = SCHEMA.wordNumber
-CONTAINS_LEXICAL_FORM = SCHEMA.lexicalForm
-
 
 class OWNPT():
     def __init__(self, graph:Graph):
         self.graph = graph
+        self.graph.bind("wn30", SCHEMA)
 
         # statistics
         self.added_triples = 0
@@ -54,7 +39,7 @@ class OWNPT():
         while True:
             # new sense to add
             new_sense = WORDSENSE[f"{synset_id}-{sense_id}"]
-            new_triple = (synset, CONTAINS_WORDSENSE, new_sense)
+            new_triple = (synset, SCHEMA.containsWordSense, new_sense)
 
             # validate new sense
             if new_triple not in self.graph:
@@ -65,9 +50,9 @@ class OWNPT():
 
         # connect sense
         if add_sense:
-            self._add_triple((new_sense, HAS_TYPE, TYPE_WORDSENSE))
-            self._add_triple((synset, CONTAINS_WORDSENSE, new_sense))
-            self._add_triple((new_sense, CONTAINS_WORD_NUMBER, Literal(str(sense_id))))
+            self._add_triple((new_sense, RDF.type, SCHEMA.WordSense))
+            self._add_triple((synset, SCHEMA.containsWordSense, new_sense))
+            self._add_triple((new_sense, SCHEMA.wordNumber, Literal(str(sense_id))))
 
         return new_sense
 
@@ -76,8 +61,8 @@ class OWNPT():
         """"""
 
         lexical = self._format_lexical(lexical)
-        for sense in self.graph.objects(synset, CONTAINS_WORDSENSE):
-            label = self.graph.value(sense, HAS_LABEL)
+        for sense in self.graph.objects(synset, SCHEMA.containsWordSense):
+            label = self.graph.value(sense, RDFS.label)
             label = self._format_lexical(label)
             if label == lexical:
                 return sense
@@ -89,13 +74,13 @@ class OWNPT():
         """"""
 
         # if word has lexical form
-        lexical_form = self.graph.value(word, CONTAINS_LEXICAL_FORM)
+        lexical_form = self.graph.value(word, SCHEMA.lexicalForm)
         if lexical_form is not None:
             lexical_form = lexical_form.toPython()
             return self._new_word(lexical_form)
 
         # otherwise
-        sense_label = self.graph.value(sense, HAS_LABEL)
+        sense_label = self.graph.value(sense, RDFS.label)
         lexical = sense_label.toPython()
         return self._get_word(lexical, True)
 
@@ -104,7 +89,7 @@ class OWNPT():
         """"""
 
         lexical_form = Literal(lexical_form, lang="pt")
-        word =  self.graph.value(predicate=CONTAINS_LEXICAL_FORM, object=lexical_form)
+        word =  self.graph.value(predicate=SCHEMA.lexicalForm, object=lexical_form)
         if word is None and create_new:
             return self._new_word(lexical_form, True)
         else:
@@ -117,25 +102,11 @@ class OWNPT():
         word = WORD[lexical_form.replace(" ", "+")]
         # word = WORD[lexical_form.replace(" ", "_")]
         if add_lexical:
-            self._add_triple((word, HAS_TYPE, TYPE_WORD))
+            self._add_triple((word, RDF.type, SCHEMA.Word))
             lexical_form = Literal(lexical_form, lang="pt")
-            self._add_triple((word, CONTAINS_LEXICAL_FORM, lexical_form), "new_word")
-            # self.graph.add((word, CONTAINS_LEXICAL_FORM, lexical_form))
+            self._add_triple((word, SCHEMA.lexicalForm, lexical_form), "new_word")
 
         return word
-
-
-    # def _word_by_sense(self, sense, add_lexical=False):
-    #     """"""
-
-    #     # if sense has lexical form on label
-    #     sense_label = self.graph.value(sense, HAS_LABEL)
-    #     if sense_label is not None:
-    #         sense_label = sense_label.toPython()
-    #         return self._get_word(sense_label, True)
-        
-    #     # otherwise
-    #     return None
 
 
     def _replace_node(self, old_node, new_node, prefix="replace"):
@@ -148,16 +119,12 @@ class OWNPT():
         for s,p in result:
             self._drop_triple((s,p,old_node), prefix)
             self._add_triple((s,p,new_node), prefix)
-            # self.graph.add((s,p,new_node))
-            # self.graph.remove((s,p,old_node))
         
         # replaces subjects
         result = self.graph.predicate_objects(old_node)
         for p, o in result:
             self._drop_triple((old_node,p,o), prefix)
             self._add_triple((new_node,p,o), prefix)
-            # self.graph.add((new_node,p,o))
-            # self.graph.remove((old_node,p,o))
 
 
     def _drop_node(self, node, prefix="drop_node"):
@@ -165,8 +132,6 @@ class OWNPT():
         
         self.logger.debug(f"{prefix}:dropping node '{node.n3()}'")
 
-        # self.graph.remove((node,None,None))
-        # self.graph.remove((None,None,node))
         for triple in self.graph.triples((node,None,None)):
             self._drop_triple(triple, prefix)
         for triple in self.graph.triples((None,None,node)):
@@ -219,7 +184,7 @@ class OWNPT():
         """"""
         
         lexical_form = self._format_lexical(lexical_form)
-        for gloss in self.graph.objects(synset, CONTAINS_GLOSS):
+        for gloss in self.graph.objects(synset, SCHEMA.gloss):
             lexical = gloss.toPython()
             if self._format_lexical(lexical) == lexical_form:
                 return gloss
@@ -231,7 +196,7 @@ class OWNPT():
         """"""
         
         lexical_form = self._format_lexical(lexical_form)
-        for example in self.graph.objects(synset, CONTAINS_EXAMPLE):
+        for example in self.graph.objects(synset, SCHEMA.example):
             lexical = example.toPython()
             if self._format_lexical(lexical) == lexical_form:
                 return example
