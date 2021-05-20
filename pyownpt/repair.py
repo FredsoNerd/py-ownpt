@@ -10,8 +10,8 @@ class Repair(OWNPT):
 
         # actions to apply
         repair_actions = [
-            self.fix_word_blank_nodes,
-            self.fix_sense_blank_nodes,
+            self.fix_sense_blank_nodes, 
+            self.remove_blank_words, # words that are blank nodes
             self.remove_void_words, # without lexical form
             self.remove_double_words, # more than one lexical form
             self.expand_sense_words, # create word by label
@@ -235,15 +235,16 @@ class Repair(OWNPT):
         return len(result)
 
 
-    def fix_word_blank_nodes(self):
+    def remove_blank_words(self):
         """"""
         
         query = "SELECT ?s ?w WHERE { ?s wn30:word ?w . FILTER ( isBlank(?w) ) }"
         result = self.graph.query(query)
 
         for sense, word in result:
-            new_word = self._word_uri_by_blank(sense, word)
-            self._replace_node(word, new_word, "fix_word_blank_nodes")
+            self._drop_node(word, "remove_blank_words")
+            # new_word = self._word_uri_by_blank(sense, word)
+            # self._replace_node(word, new_word, "fix_word_blank_nodes")
 
         # how many actions
         return len(result)
