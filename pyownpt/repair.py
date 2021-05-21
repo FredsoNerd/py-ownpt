@@ -54,7 +54,7 @@ class Repair(OWNPT):
     def remove_desconex_word_nodes(self):
         """"""
 
-        query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . MINUS { ?s ?p ?w . } } "
+        query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . FILTER NOT EXISTS { ?s ?p ?w . } } "
         result = self.graph.query(query)
         
         for word, in result:
