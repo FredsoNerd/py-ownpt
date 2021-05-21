@@ -14,11 +14,13 @@ class Repair(OWNPT):
             self.remove_blank_words, # words that are blank nodes
             self.remove_void_words, # without lexical form
             self.remove_double_words, # more than one lexical form
-            self.fix_sense_blank_nodes, 
+
+            self.add_sense_types,
+            self.replace_blank_senses, # senses that are blank nodes
             self.expand_sense_words, # create word by label
-            self.add_sense_types, # grant well typed nodes
             self.add_sense_labels, # create labels by word
             self.add_sense_number, # add sense word number
+
             self.format_lexicals, # well defined lexical form
             self.replace_sense_labels, # match labels to words
             self.remove_word_duplicates, # with same lexical form
@@ -67,7 +69,7 @@ class Repair(OWNPT):
     def remove_desconex_sense_nodes(self):
         """"""
 
-        query = "SELECT ?s WHERE{ { ?s wn30:word ?w . } UNION { ?s rdf:type wn30:WordSense . } FILTER NOT EXISTS { ?ss wn30:containsWordSense ?s . } } "
+        query = "SELECT ?s WHERE{ ?s rdf:type wn30:WordSense .   FILTER NOT EXISTS { ?ss wn30:containsWordSense ?s . } } "
         result = self.graph.query(query)
         
         for sense, in result:
@@ -80,7 +82,7 @@ class Repair(OWNPT):
     def remove_sense_duplicates(self):
         """"""
 
-        query = "SELECT ?s1 ?s2 WHERE{ ?s1 rdfs:label ?l . ?ss wn30:containsWordSense ?s1 . ?s2 rdfs:label ?l . ?ss wn30:containsWordSense ?s2 . FILTER ( STR(?s1) < STR(?s2) ) }"
+        query = "SELECT ?s1 ?s2 WHERE{ ?ss wn30:containsWordSense ?s1; ?s2 . ?s1 rdfs:label ?l . ?s2 rdfs:label ?l . FILTER ( STR(?s1) < STR(?s2) ) }"
         result = self.graph.query(query)
         
         for word1, word2 in result:
@@ -152,7 +154,7 @@ class Repair(OWNPT):
     def add_sense_types(self):
         """"""
 
-        query = "SELECT ?s WHERE{ { ?ss wn30:containsWordSense ?s . } FILTER NOT EXISTS { ?s rdf:type ?t .} }"
+        query = "SELECT ?s WHERE{ { ?ss wn30:containsWordSense ?s . } UNION { ?s wn30:word ?w } FILTER NOT EXISTS { ?s rdf:type ?t .} }"
         result = self.graph.query(query)
         
         for sense, in result:
@@ -178,7 +180,7 @@ class Repair(OWNPT):
     def add_sense_number(self):
         """"""
 
-        query = "SELECT ?s WHERE{ ?ss wn30:containsWordSense ?s . FILTER NOT EXISTS { ?s wn30:wordNumber ?n .} }"
+        query = "SELECT ?s WHERE{ ?s rdf:type wn30:WordSense . FILTER NOT EXISTS { ?s wn30:wordNumber ?n .} }"
         result = self.graph.query(query)
         
         for sense, in result:
@@ -194,7 +196,7 @@ class Repair(OWNPT):
     def add_sense_labels(self):
         """"""
 
-        query = "SELECT ?s WHERE{ ?ss wn30:containsWordSense ?s . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
+        query = "SELECT ?s WHERE{ ?s rdf:type wn30:WordSense . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
         result = self.graph.query(query)
         
         for sense, in result:
@@ -210,7 +212,7 @@ class Repair(OWNPT):
     def expand_sense_words(self):
         """"""
 
-        query = "SELECT ?s ?l WHERE{ ?ss wn30:containsWordSense ?s . ?s rdfs:label ?l . FILTER NOT EXISTS { ?s wn30:word ?w . } }"
+        query = "SELECT ?s ?l WHERE{ ?s rdf:type wn30:WordSense . ?s rdfs:label ?l . FILTER NOT EXISTS { ?s wn30:word ?w . } }"
         result = self.graph.query(query)
         
         for sense, label in result:
@@ -250,7 +252,7 @@ class Repair(OWNPT):
         return len(result)
 
 
-    def fix_sense_blank_nodes(self):
+    def replace_blank_senses(self):
         """"""
         
         query = "SELECT ?ss ?s WHERE { ?ss wn30:containsWordSense ?s . FILTER ( isBlank(?s) ) }"
