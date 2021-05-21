@@ -80,7 +80,7 @@ class Repair(OWNPT):
     def remove_sense_duplicates(self):
         """"""
 
-        query = "SELECT ?s1 ?s2 WHERE{ ?s1 rdfs:label ?l . ?ss wn30:containsWordSense ?s1 . ?s2 rdfs:label ?l . ?ss wn30:containsWordSense ?s2 . FILTER ( ?s1 < ?s2 ) }"
+        query = "SELECT ?s1 ?s2 WHERE{ ?s1 rdfs:label ?l . ?ss wn30:containsWordSense ?s1 . ?s2 rdfs:label ?l . ?ss wn30:containsWordSense ?s2 . FILTER ( STR(?s1) < STR(?s2) ) }"
         result = self.graph.query(query)
         
         for word1, word2 in result:
@@ -93,7 +93,7 @@ class Repair(OWNPT):
     def remove_word_duplicates(self):
         """"""
 
-        query = "SELECT ?w1 ?w2 WHERE{ ?w1 wn30:lexicalForm ?l . ?w2 wn30:lexicalForm ?l . FILTER ( ?w1 < ?w2 ) }"
+        query = "SELECT ?w1 ?w2 WHERE{ ?w1 wn30:lexicalForm ?l . ?w2 wn30:lexicalForm ?l . FILTER ( STR(?w1) < STR(?w2) ) }"
         result = self.graph.query(query)
         for word1, word2 in result:
             self._replace_node(word2, word1, "remove_word_duplicates")
