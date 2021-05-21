@@ -10,12 +10,12 @@ class Repair(OWNPT):
 
         # actions to apply
         repair_actions = [
-            self.fix_sense_blank_nodes, 
+            self.add_word_types,
             self.remove_blank_words, # words that are blank nodes
             self.remove_void_words, # without lexical form
             self.remove_double_words, # more than one lexical form
+            self.fix_sense_blank_nodes, 
             self.expand_sense_words, # create word by label
-            self.add_word_types, # grant well typed nodes
             self.add_sense_types, # grant well typed nodes
             self.add_sense_labels, # create labels by word
             self.add_sense_number, # add sense word number
@@ -139,7 +139,7 @@ class Repair(OWNPT):
     def add_word_types(self):
         """"""
 
-        query = "SELECT ?w WHERE{ ?s wn30:word ?w . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
+        query = "SELECT ?w WHERE{ { ?s wn30:word ?w } UNION { ?w wn30:lexicalForm ?l } . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
         result = self.graph.query(query)
         
         for word, in result:
@@ -225,7 +225,7 @@ class Repair(OWNPT):
     def remove_void_words(self):
         """"""
         
-        query = "SELECT ?s ?w WHERE{ ?s wn30:word ?w . FILTER NOT EXISTS { ?w wn30:lexicalForm ?l .} }"
+        query = "SELECT ?s ?w WHERE{ ?s rdf:type wn30:Word . FILTER NOT EXISTS { ?w wn30:lexicalForm ?l .} }"
         result = self.graph.query(query)
         
         for sense, word in result:
@@ -238,7 +238,7 @@ class Repair(OWNPT):
     def remove_blank_words(self):
         """"""
         
-        query = "SELECT ?s ?w WHERE { ?s wn30:word ?w . FILTER ( isBlank(?w) ) }"
+        query = "SELECT ?s ?w WHERE { ?s rdf:type wn30:Word . FILTER ( isBlank(?w) ) }"
         result = self.graph.query(query)
 
         for sense, word in result:
