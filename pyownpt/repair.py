@@ -67,7 +67,7 @@ class Repair(OWNPT):
     def remove_desconex_sense_nodes(self):
         """"""
 
-        query = "SELECT ?s WHERE{ { ?s wn30:word ?w . } UNION { ?s rdf:type wn30:WordSense . } FILTER NOT EXISTS { { ?ss wn30:containsWordSense ?s . } } } "
+        query = "SELECT ?s WHERE{ { ?s wn30:word ?w . } UNION { ?s rdf:type wn30:WordSense . } FILTER NOT EXISTS { ?ss wn30:containsWordSense ?s . } } "
         result = self.graph.query(query)
         
         for sense, in result:
