@@ -96,14 +96,21 @@ class OWNPT():
             return word
 
 
-    def _new_word(self, lexical_form:str, add_lexical=False):
+    def _new_word(self, lexical:str, add_word=False):
         """"""
 
-        word = WORD[lexical_form.replace(" ", "+")]
-        # word = WORD[lexical_form.replace(" ", "_")]
-        if add_lexical:
+        word = re.sub(r" ", "+", lexical).strip()
+        word = re.sub(r"\<", "_", word).strip()
+        word = re.sub(r"\>", "_", word).strip()
+        # word = re.sub(r"\?", "_", word).strip()
+        # word = re.sub(r"\!", "_", word).strip()
+        # word = re.sub(r"\(", "_", word).strip()
+        # word = re.sub(r"\)", "_", word).strip()
+        # word = re.sub(r"(\<|\>|\?|\!|\(|\))", "_", word).strip()
+        word = WORD[word]
+        if add_word:
             self._add_triple((word, RDF.type, SCHEMA.Word))
-            lexical_form = Literal(lexical_form, lang="pt")
+            lexical_form = Literal(lexical, lang="pt")
             self._add_triple((word, SCHEMA.lexicalForm, lexical_form), "new_word")
 
         return word
@@ -176,7 +183,9 @@ class OWNPT():
         return Literal(lexical, lang="pt")
 
 
-    def _format_lexical(self, lexical):
+    def _format_lexical(self, lexical, replace_punctuation=False):
+        if replace_punctuation:
+            lexical = re.sub(r"\_", " ", lexical).strip()
         return re.sub(r"\s+", " ", lexical).strip()
 
 

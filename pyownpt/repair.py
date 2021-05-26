@@ -22,6 +22,8 @@ class Repair(OWNPT):
             self.add_sense_number, # add sense word number
 
             self.format_lexicals, # well defined lexical form
+            self.replace_word_uris, # grant unique words uri
+            
             self.replace_sense_labels, # match labels to words
             self.remove_word_duplicates, # with same lexical form
             self.remove_sense_duplicates, # same label in a synset
@@ -30,17 +32,18 @@ class Repair(OWNPT):
 
         # apply actions 
         for action in repair_actions:
+            name = action.__name__
+            
             # computes added/removed before action
             before_added_triples = self.added_triples
             before_removed_triples = self.removed_triples
             # run action
-            action_cases = action()
+            action_cases = action(name)
             # computes added/removed after action
             after_added_triples = self.added_triples
             after_removed_triples = self.removed_triples
             
             # plots info
-            name = action.__name__
             self.logger.info(
                 f"action '{name}' applied to {action_cases} cases:"
                     f"\n\t{name}:{after_added_triples - before_added_triples} triples added"
@@ -53,212 +56,253 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
 
-    def remove_desconex_word_nodes(self):
+    def replace_word_uris(self, name=""):
         """"""
+        count = 0
+
+        query = "SELECT ?w ?l WHERE { ?w rdf:type wn30:Word . ?w wn30:lexicalForm ?l }"
+        result = self.graph.query(query)
+        
+        for word,lexical in result:
+            new_word = self._new_word(lexical, True)
+            if not new_word == word:
+                count += 1
+                self._replace_node(word, new_word, name)
+
+        # how many actions
+        return count
+
+
+    def remove_desconex_word_nodes(self, name=""):
+        """"""
+        count = 0
 
         query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . FILTER NOT EXISTS { ?s ?p ?w . } } "
         result = self.graph.query(query)
         
         for word, in result:
-            self._drop_node(word, "remove_desconex_word_nodes")
+            count += 1
+            self._drop_node(word, name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def remove_desconex_sense_nodes(self):
+    def remove_desconex_sense_nodes(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?s WHERE{ ?s rdf:type wn30:WordSense . FILTER NOT EXISTS { ?ss wn30:containsWordSense ?s . } } "
         result = self.graph.query(query)
         
         for sense, in result:
-            self._drop_node(sense, "remove_desconex_sense_nodes")
+            count += 1
+            self._drop_node(sense, name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def remove_sense_duplicates(self):
+    def remove_sense_duplicates(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?s2 WHERE{ ?ss wn30:containsWordSense ?s1; wn30:containsWordSense ?s2 . ?s1 rdfs:label ?l . ?s2 rdfs:label ?l . FILTER ( STR(?s1) < STR(?s2) ) }"
         result = self.graph.query(query)
         
         for sense2, in result:
-            self._drop_node(sense2, "remove_sense_duplicates")
+            count += 1
+            self._drop_node(sense2, name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def remove_word_duplicates(self):
+    def remove_word_duplicates(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?w1 ?w2 WHERE{ ?w1 wn30:lexicalForm ?l . ?w2 wn30:lexicalForm ?l . FILTER ( STR(?w1) < STR(?w2) ) }"
         result = self.graph.query(query)
         for word1, word2 in result:
-            self._replace_node(word2, word1, "remove_word_duplicates")
+            count += 1
+            self._replace_node(word2, word1, name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def remove_double_words(self):
+    def remove_double_words(self, name=""):
         """"""
+        count = 0
         
         query = "SELECT ?w WHERE{ ?w wn30:lexicalForm ?l1 . ?w wn30:lexicalForm ?l2 . FILTER ( ?l1 != ?l2 ) }"
         result = self.graph.query(query)
 
         for word, in result:
-            self._drop_node(word, "expand_double_words")
-
-            # sense_label = self.graph.value(sense, HAS_LABEL)
-            # if sense_label.toPython() == lexical.toPython():
-            #     new_sense = sense
-            #     word = self._get_word(lexical.toPython(), True)
-            #     self._add_triple((new_sense, SCHEMA.word, word), "expand_double_words")
+            count += 1
+            self._drop_node(word, name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def format_lexicals(self):
+    def format_lexicals(self, name=""):
         """"""
+        count = 0
 
-        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lexicalForm wn30:gloss wn30:example } ?s ?p ?o . FILTER ( lang(?o) != 'pt') }"
+        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lexicalForm wn30:gloss wn30:example } ?s ?p ?o . }"
         result = self.graph.query(query)
         
         for s, p, lexical in result:
-            self._drop_triple((s, p, lexical), "add_literal_tag_pt")
-            lexical = self._new_lexical_literal(lexical.toPython())
-            self._add_triple((s, p, lexical), "add_literal_tag_pt")
+            new_lexical = self._format_lexical(lexical.toPython(), True)
+            new_lexical = self._new_lexical_literal(new_lexical, True)
+            if not new_lexical == lexical:
+                count += 1
+                self._drop_triple((s, p, lexical), name)
+                self._add_triple((s, p, new_lexical), name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def add_word_types(self):
+    def add_word_types(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?w WHERE{ { ?s wn30:word ?w } UNION { ?w wn30:lexicalForm ?l } . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
         result = self.graph.query(query)
         
         for word, in result:
-            self._add_triple((word, RDF.type, SCHEMA.Word), "add_word_types")
+            count += 1
+            self._add_triple((word, RDF.type, SCHEMA.Word), name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def add_sense_types(self):
+    def add_sense_types(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?s WHERE{ { ?ss wn30:containsWordSense ?s . } UNION { ?s wn30:word ?w } FILTER NOT EXISTS { ?s rdf:type ?t .} }"
         result = self.graph.query(query)
         
         for sense, in result:
-            self._add_triple((sense, RDF.type, SCHEMA.WordSense), "add_sense_types")
+            count += 1
+            self._add_triple((sense, RDF.type, SCHEMA.WordSense), name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def replace_sense_labels(self):
+    def replace_sense_labels(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?s ?sl ?wl WHERE{ ?s rdfs:label ?sl . ?s wn30:word ?w . ?w wn30:lexicalForm ?wl . FILTER ( ?sl != ?wl )}"
         result = self.graph.query(query)
         
         for sense, label, lexical in result:
-            self._drop_triple((sense, RDFS.label, label), "replace_sense_labels")
-            self._add_triple((sense, RDFS.label, lexical), "replace_sense_labels")
+            count += 1
+            self._drop_triple((sense, RDFS.label, label), name)
+            self._add_triple((sense, RDFS.label, lexical), name)
 
         # how many actions
-        return len(result)
+        return count
 
-    def add_sense_number(self):
+    def add_sense_number(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?s WHERE{ ?ss wn30:containsWordSense ?s . FILTER NOT EXISTS { ?s wn30:wordNumber ?n .} }"
         result = self.graph.query(query)
         
         for sense, in result:
+            count += 1
             word_number = sense.split("-")[-1]
             word_number = Literal(word_number)
-            self._add_triple((sense, SCHEMA.wordNumber, word_number), "add_sense_number")
+            self._add_triple((sense, SCHEMA.wordNumber, word_number), name)
 
         # how many actions
-        return len(result)
+        return count
 
 
 
-    def add_sense_labels(self):
+    def add_sense_labels(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?s ?l WHERE{ ?s rdf:type wn30:WordSense . ?s wn30:word ?w . ?w wn30:lexicalForm ?l . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
         result = self.graph.query(query)
         
         for sense, label in result:
+            count += 1
             label = self._new_lexical_literal(label.toPython(), False)
-            self._add_triple((sense, RDFS.label, label), "add_sense_labels")
+            self._add_triple((sense, RDFS.label, label), name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def expand_sense_words(self):
+    def expand_sense_words(self, name=""):
         """"""
+        count = 0
 
         query = "SELECT ?s ?l WHERE{ ?s rdf:type wn30:WordSense . ?s rdfs:label ?l . FILTER NOT EXISTS { ?s wn30:word ?w . } }"
         result = self.graph.query(query)
         
         for sense, label in result:
+            count += 1
             lexical = label.toPython()
             word = self._get_word(lexical, True)
-            self._add_triple((sense, SCHEMA.word, word), "expand_sense_words")
+            self._add_triple((sense, SCHEMA.word, word), name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def remove_void_words(self):
+    def remove_void_words(self, name=""):
         """"""
+        count = 0
         
         query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . FILTER NOT EXISTS { ?w wn30:lexicalForm ?l .} }"
         result = self.graph.query(query)
         
         for word in result:
-            self._drop_node(word, "remove_void_words")
+            count += 1
+            self._drop_node(word, name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def remove_blank_words(self):
+    def remove_blank_words(self, name=""):
         """"""
+        count = 0
         
         query = "SELECT ?w WHERE { ?w rdf:type wn30:Word . FILTER ( isBlank(?w) ) }"
         result = self.graph.query(query)
 
         for word, in result:
-            self._drop_node(word, "remove_blank_words")
-            # new_word = self._word_uri_by_blank(sense, word)
-            # self._replace_node(word, new_word, "fix_word_blank_nodes")
+            count += 1
+            self._drop_node(word, name)
 
         # how many actions
-        return len(result)
+        return count
 
 
-    def replace_blank_senses(self):
+    def replace_blank_senses(self, name=""):
         """"""
+        count = 0
         
         query = "SELECT ?ss ?s WHERE { ?ss wn30:containsWordSense ?s . FILTER ( isBlank(?s) ) }"
         result = self.graph.query(query)
 
         for synset, sense in result:
+            count += 1
             new_sense = self._new_sense(synset, False)
-            self._replace_node(sense, new_sense, "fix_sense_blank_nodes")
+            self._replace_node(sense, new_sense, name)
 
         # how many actions
-        return len(result)
+        return count
