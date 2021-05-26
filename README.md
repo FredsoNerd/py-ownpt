@@ -18,10 +18,10 @@ For repairing and updating of OWN-PT, consider the following steps; if any doubt
 $ python path/to/repair_ownpt.py path/to/own-pt.nt -o own-pt-repaired.nt -v
 ```
 
- - Compare the result `own-pt-repaired.nt` and the current dump `wn.json`. This is going to generate an output `compare.json` containing the differences between documents, and actions for unification:
+ - Compare the result `own-pt-repaired.nt` and the current dump `wn.json`. This is going to generate an output `compare.json` containing the differences between documents, and actions for unification. If you need to compare includding morphosemantic-links, add a `-m` flag:
 
 ```bash
-$ python path/to/compare_dump_ownpt.py own-pt-repaired.nt path/to/wn.json -o compare.json -v
+$ python path/to/compare_dump_ownpt.py own-pt-repaired.nt path/to/wn.json -m -o compare.json -v
 ```
 
  - Finally, update the wordnet considering votes and suggestions. Add a `-a` flag for parsing previous output `compare.json` containing actions for unification, wich are applied before suggestions. In the following example, *arademaker* and *vcvpaiva* are the senior users responsible for the project:

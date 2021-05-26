@@ -14,6 +14,7 @@ from pyownpt.compare import Compare
 def _parse(args):
     ownpt_filapath = args.owp
     wn_filepath = args.wnd
+    compare_morpho = args.m
     output_filepath = args.o
 
     # sets verbosity level
@@ -25,12 +26,13 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_compare_ownpt_dump(ownpt_filapath, wn_filepath, output_filepath)
+    cli_compare_ownpt_dump(ownpt_filapath, wn_filepath, compare_morpho, output_filepath)
     
 
 def cli_compare_ownpt_dump(
     ownpt_filapath:str,
     wn_filepath:str,
+    compare_morpho:bool=False,
     output_filepath:str = "output.json"):
     """"""
 
@@ -47,7 +49,8 @@ def cli_compare_ownpt_dump(
     compare = Compare(ownpt, wn)
     report = compare.compare_items()
     compare.compare_antonymof_ownpt_dump()
-    compare.compare_morpho_ownpt_dump()
+    if compare_morpho:
+        compare.compare_morpho_ownpt_dump()
 
     # makes json where docs differ
     for doc, doc_report in report.copy().items():
@@ -82,6 +85,7 @@ parser = argparse.ArgumentParser()
 # sets the user options
 parser.add_argument("owp", help="rdf file from own-pt")
 parser.add_argument("wnd", help="jsonl dump file wn.json")
+parser.add_argument("-m", help="compare including morphosemantic", action="store_true")
 parser.add_argument("-o", help="output file (default: output.json)", default="output.json")
 
 parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)
