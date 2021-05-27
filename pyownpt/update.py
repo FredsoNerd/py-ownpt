@@ -28,7 +28,9 @@ class Update(OWNPT):
                         suggestions, votes, users_senior,
                         trashold_senior, trashold_junior)                
         # sort results
+        suggestions = sorted(suggestions, key=lambda x:x["action"], reverse=True)
         suggestions = sorted(suggestions, key=lambda x:x["date"])
+
 
         # apply suggestions
         self.logger.info("start applying suggestions")
@@ -42,6 +44,7 @@ class Update(OWNPT):
     def update_from_compare(self, report):
         """"""
 
+        # formats
         self.logger.info("formatting suggestions to apply")
         suggestions = []
         for doc_id, doc_report in report.items():
@@ -49,10 +52,12 @@ class Update(OWNPT):
                 for param in params:
                     suggestions.append({"doc_id":doc_id,"params":param,"action":action})
         
+        # sort results
+        suggestions = sorted(suggestions, key=lambda x:x["action"], reverse=True)
+
         # apply suggestions
         self.logger.info("start applying suggestions")
         self._apply_suggestions(suggestions)
-
 
 
     def _apply_suggestions(self, suggestions:list):
@@ -67,7 +72,7 @@ class Update(OWNPT):
         params = suggestion["params"]
         doc_id = suggestion["doc_id"]
         synset = SYNSETPT[doc_id]
-        
+
         result = True
 
         if action == "add-word-pt":
@@ -89,7 +94,7 @@ class Update(OWNPT):
                 result = False
             else:
                 item = self._new_lexical_literal(params, True)
-                self._add_triple((synset, SCHEMA.example, item), action)
+                self._add_triple((synset, SCHEMA.gloss, item), action)
 
         elif action == "add-example-pt":
             # checks and adds suitable
