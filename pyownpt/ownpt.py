@@ -3,7 +3,7 @@
 import re
 import logging
 
-from rdflib import Graph, URIRef, Namespace, Literal, RDF, RDFS
+from rdflib import Graph, URIRef, Namespace, Literal, RDF, RDFS, OWL
 from rdflib.plugins.sparql import prepareQuery
 
 # global
@@ -18,6 +18,9 @@ class OWNPT():
     def __init__(self, graph:Graph, lang="pt"):
         self.lang = lang
         self.graph = graph
+        self.graph.bind("owl", OWL)
+        self.graph.bind("rdf", RDF)
+        self.graph.bind("rdfs", RDFS)
         self.graph.bind("wn30", SCHEMA)
 
         # statistics
