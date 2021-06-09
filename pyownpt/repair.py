@@ -79,7 +79,7 @@ class Repair(OWNPT):
         count = 0
         
         # not necessary if english
-        if self.lang == "en": return 0
+        if self.lang == "en" or self.lang is None: return 0
 
         query = "SELECT ?w ?l WHERE { ?w rdf:type wn30:Word . ?w wn30:lexicalForm ?l }"
         result = self.graph.query(query)
