@@ -3,7 +3,7 @@
 import re
 import logging
 
-from rdflib import Graph, Namespace, Literal, RDF, RDFS
+from rdflib import Graph, URIRef, Namespace, Literal, RDF, RDFS
 from rdflib.plugins.sparql import prepareQuery
 
 # global
@@ -14,9 +14,9 @@ WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
 SYNSETPT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
 
-
 class OWNPT():
-    def __init__(self, graph:Graph):
+    def __init__(self, graph:Graph, lang="pt"):
+        self.lang = lang
         self.graph = graph
         self.graph.bind("wn30", SCHEMA)
 
@@ -180,7 +180,7 @@ class OWNPT():
     def _new_lexical_literal(self, lexical, format=False):
         if format:
             lexical = self._format_lexical(lexical)
-        return Literal(lexical, lang="pt")
+        return Literal(lexical, lang=self.lang)
 
 
     def _format_lexical(self, lexical, replace_punctuation=False):

@@ -15,6 +15,7 @@ from pyownpt.repair import Repair
 def _parse(args):
     ownpt_filapath = args.owp
     output_filepath = args.o
+    english_wordnet = args.e
 
     # configs logging
     fileHandler = logging.FileHandler(filename="log-repair", mode="w")
@@ -25,12 +26,13 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_repair_ownpt(ownpt_filapath=ownpt_filapath, output_filepath=output_filepath)
+    cli_repair_ownpt(ownpt_filapath, output_filepath, english_wordnet)
     
 
 def cli_repair_ownpt(
     ownpt_filapath:str,
-    output_filepath:str="output.xml"):
+    output_filepath:str="output.xml",
+    english_wordnet:bool=False):
     """"""
 
     logger.info(f"loading data from file '{ownpt_filapath}'")
@@ -38,7 +40,7 @@ def cli_repair_ownpt(
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
     # repairs graph by rules
-    Repair(ownpt).repair()
+    Repair(ownpt, "en" if english_wordnet else "pt").repair()
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
@@ -57,8 +59,9 @@ def _get_format(filepath:str):
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="rdf file from own-pt")
+parser.add_argument("owp", help="rdf file from wordnet")
 parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
+parser.add_argument("-e", help="repairing english wordnet", action="store_true")
 
 parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)
 

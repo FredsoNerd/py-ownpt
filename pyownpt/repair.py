@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pyownpt.ownpt import OWNPT, Literal, RDFS, RDF, SCHEMA
-
+from pyownpt.ownpt import OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
 
 class Repair(OWNPT):
 
@@ -28,7 +27,9 @@ class Repair(OWNPT):
             self.remove_word_duplicates, # with same lexical form
             self.remove_sense_duplicates, # same label in a synset
             self.remove_desconex_sense_nodes, # without a synset
-            self.remove_desconex_word_nodes] # without a sense
+            self.remove_desconex_word_nodes,
+            
+            self.fix_links_to_satelites] # without a sense
 
         # apply actions 
         for action in repair_actions:
@@ -56,14 +57,34 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
 
+    def fix_links_to_satelites(self, name=""):
+        """"""
+        count = 0
+
+        query = "SELECT ?s2 WHERE { VALUES ?p { wn30:adverbPertainsTo wn30:derivationallyRelated wn30:classifiesByUsage wn30:classifiesByTopic wn30:classifiesByRegion } ?s1 ?p ?s2 . FILTER NOT EXISTS { ?s2 a ?t . } }"
+        result = self.graph.query(query)
+
+        for sense, in result:
+            new_sense = URIRef(sense.replace("-a-", "-s-"))
+            if ((new_sense, RDF.type, SCHEMA.WordSense)) in self.graph:
+                count += 1
+                self._replace_node(sense, new_sense, name)
+
+        # how many actions
+        return count
+
+        
     def replace_word_uris(self, name=""):
         """"""
         count = 0
+        
+        # not necessary if english
+        if self.lang == "en": return 0
 
         query = "SELECT ?w ?l WHERE { ?w rdf:type wn30:Word . ?w wn30:lexicalForm ?l }"
         result = self.graph.query(query)
         
-        for word,lexical in result:
+        for word, lexical in result:
             new_word = self._new_word(lexical, True)
             if not new_word == word:
                 count += 1
