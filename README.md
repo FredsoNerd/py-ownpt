@@ -32,6 +32,16 @@ $ python path/to/update_ownpt.py own-pt-repaired.nt path/to/suggestions.json pat
 
 After those steps, is advertisable to repair the updated file once more, adding types and removing desconex nodes.
 
+## Repair OWN-PT (english)
+
+For repairing OWN-PT (english), we use similar step as before:
+
+```bash
+$ python path/to/repair_ownpt.py path/to/own-en-morpho.nt -e -o own-en-morpho-repaired.nt -v
+```
+
+The `-e` flag configures the environment to english specific resources.
+
 ## Development
 
 One may be able to install Py-OWNPT in developer mode, running
