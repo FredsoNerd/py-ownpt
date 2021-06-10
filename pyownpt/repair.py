@@ -69,6 +69,8 @@ class Repair(OWNPT):
             if ((new_sense, RDF.type, SCHEMA.WordSense)) in self.graph:
                 count += 1
                 self._replace_node(sense, new_sense, name)
+            else:
+                self.logger.warning(f"sense {sense.n3()} could not be replaced by {new_sense.n3()}: undefined new sense")
 
         # how many actions
         return count
