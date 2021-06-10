@@ -40,8 +40,8 @@ def cli_repair_ownpt(
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
     # repairs graph by rules
-    # Repair(ownpt, "en" if english_wordnet else "pt").repair()
-    Repair(ownpt, None if english_wordnet else "pt").repair()
+    Repair(ownpt, "en" if english_wordnet else "pt").repair()
+    # Repair(ownpt, None if english_wordnet else "pt").repair()
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
