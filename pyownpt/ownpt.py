@@ -14,6 +14,11 @@ WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
 SYNSETPT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
 
+WORD_EN = Namespace("https://w3id.org/own-pt/wn30-en/instances/word-")
+SYNSET_EN = Namespace("https://w3id.org/own-pt/wn30-en/instances/synset-")
+WORDSENSE_EN = Namespace("https://w3id.org/own-pt/wn30-en/instances/wordsense-")
+
+
 class OWNPT():
     def __init__(self, graph:Graph, lang="pt"):
         self.lang = lang
@@ -105,15 +110,17 @@ class OWNPT():
         word = re.sub(r" ", "+", lexical).strip()
         word = re.sub(r"\<", "_", word).strip()
         word = re.sub(r"\>", "_", word).strip()
+        # word = re.sub(r"\-", "_", word).strip()
         # word = re.sub(r"\?", "_", word).strip()
         # word = re.sub(r"\!", "_", word).strip()
         # word = re.sub(r"\(", "_", word).strip()
         # word = re.sub(r"\)", "_", word).strip()
         # word = re.sub(r"(\<|\>|\?|\!|\(|\))", "_", word).strip()
-        word = WORD[word]
+        if self.lang == "pt": word = WORD[word]
+        if self.lang == "en": word = WORD_EN[word]
         if add_word:
             self._add_triple((word, RDF.type, SCHEMA.Word))
-            lexical_form = Literal(lexical, lang="pt")
+            lexical_form = Literal(lexical, lang=self.lang)
             self._add_triple((word, SCHEMA.lexicalForm, lexical_form), "new_word")
 
         return word

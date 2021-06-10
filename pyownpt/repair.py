@@ -66,11 +66,13 @@ class Repair(OWNPT):
 
         for sense, in result:
             new_sense = URIRef(sense.replace("-a-", "-s-"))
+            if sense == new_sense:
+                continue
             if ((new_sense, RDF.type, SCHEMA.WordSense)) in self.graph:
                 count += 1
                 self._replace_node(sense, new_sense, name)
             else:
-                self.logger.warning(f"sense {sense.n3()} could not be replaced by {new_sense.n3()}: undefined new sense")
+                self.logger.warning(f"sense {sense.n3()} not replaced by {new_sense.n3()}: undefined new sense")
 
         # how many actions
         return count
@@ -79,9 +81,6 @@ class Repair(OWNPT):
     def replace_word_uris(self, name=""):
         """"""
         count = 0
-        
-        # not necessary if english
-        if self.lang == "en" or self.lang is None: return 0
 
         query = "SELECT ?w ?l WHERE { ?w rdf:type wn30:Word . ?w wn30:lexicalForm ?l }"
         result = self.graph.query(query)
@@ -174,7 +173,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lexicalForm wn30:gloss wn30:example } ?s ?p ?o . }"
+        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lexicalForm wn30:gloss wn30:example wn30:lemma } ?s ?p ?o . }"
         result = self.graph.query(query)
         
         for s, p, lexical in result:
