@@ -30,7 +30,8 @@ class Repair(OWNPT):
             self.remove_desconex_word_nodes, # without a sense
             
             self.fix_links_to_satelites,
-            self.fix_synset_id_types] 
+            self.fix_synset_id_types,
+            self.remove_lemma_property]
 
         # apply actions 
         for action in repair_actions:
@@ -56,6 +57,21 @@ class Repair(OWNPT):
             f"all {len(repair_actions)} actions applied"
                 f"\n\ttotal: {self.added_triples} triples added"
                 f"\n\ttotal: {self.removed_triples} triples removed")
+
+    
+    def remove_lemma_property(self, name=""):
+        """"""
+        count = 0
+
+        query = "SELECT ?s ?p ?o WHERE { VALUES ?p { wn30:lemma } ?s ?p ?o . }"
+        result = self.graph.query(query)
+
+        for triple in result:
+            count += 1
+            self._drop_triple(triple)
+
+        # how many actions
+        return count
 
 
     def fix_synset_id_types(self, name=""):
