@@ -27,9 +27,10 @@ class Repair(OWNPT):
             self.remove_word_duplicates, # with same lexical form
             self.remove_sense_duplicates, # same label in a synset
             self.remove_desconex_sense_nodes, # without a synset
-            self.remove_desconex_word_nodes,
+            self.remove_desconex_word_nodes, # without a sense
             
-            self.fix_links_to_satelites] # without a sense
+            self.fix_links_to_satelites,
+            self.fix_synset_id_types] 
 
         # apply actions 
         for action in repair_actions:
@@ -57,11 +58,32 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
 
+    def fix_synset_id_types(self, name=""):
+        """"""
+        count = 0
+
+        query = "SELECT ?s WHERE { VALUES ?t { wn30:Synset wn30:AdjectiveSatelliteSynset wn30:AdjectiveSynset wn30:AdverbSynset wn30:NounSynset wn30:VerbSynset } ?s a ?t . }"
+        result = self.graph.query(query)
+
+        for synset, in result:
+            synset_id = synset.split("/synset-")[-1].split("-")[0]
+            new_synset_id = Literal(synset_id)
+            old_synset_id = self.graph.value(synset, SCHEMA.synsetId)
+            if not old_synset_id == new_synset_id:
+                count += 1
+                if old_synset_id is not None:
+                    self._drop_triple((synset, SCHEMA.synsetId, old_synset_id), name)
+                self._add_triple((synset, SCHEMA.synsetId, new_synset_id), name)
+
+        # how many actions
+        return count
+
+
     def fix_links_to_satelites(self, name=""):
         """"""
         count = 0
 
-        query = "SELECT ?s2 WHERE { VALUES ?p { wn30:adverbPertainsTo wn30:derivationallyRelated wn30:classifiesByUsage wn30:classifiesByTopic wn30:classifiesByRegion } ?s1 ?p ?s2 . FILTER NOT EXISTS { ?s2 a ?t . } }"
+        query = "SELECT ?s2 WHERE { VALUES ?p { wn30:adverbPertainsTo wn30:derivationallyRelated wn30:classifiesByUsage wn30:classifiesByTopic wn30:classifiesByRegion } ?s1 ?p ?s2 . ?s1 a wn30:WordSense . FILTER NOT EXISTS { ?s2 a ?t . } }"
         result = self.graph.query(query)
 
         for sense, in result:
