@@ -27,6 +27,7 @@ class OWNPT():
         self.graph.bind("rdf", RDF)
         self.graph.bind("rdfs", RDFS)
         self.graph.bind("wn30", SCHEMA)
+        self.graph.bind("nomlex", NOMLEX)
 
         # statistics
         self.added_triples = 0
