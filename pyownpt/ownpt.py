@@ -7,6 +7,8 @@ from rdflib import Graph, URIRef, Namespace, Literal, RDF, RDFS, OWL
 from rdflib.plugins.sparql import prepareQuery
 
 # global
+PWN30 = Namespace("http://wordnet-rdf.princeton.edu/wn30/")
+
 SCHEMA = Namespace("https://w3id.org/own-pt/wn30/schema/")
 NOMLEX = Namespace("https://w3id.org/own-pt/nomlex/schema/")
 
@@ -27,6 +29,7 @@ class OWNPT():
         self.graph.bind("rdf", RDF)
         self.graph.bind("rdfs", RDFS)
         self.graph.bind("wn30", SCHEMA)
+        self.graph.bind("pwn30", PWN30)
         self.graph.bind("nomlex", NOMLEX)
 
         # statistics
