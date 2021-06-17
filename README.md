@@ -37,7 +37,7 @@ $ python path/to/repair_ownpt.py path/to/own-en-morpho.nt -e -o own-en-morpho-re
 We follow the [WN-LMF-1.1.dtd](https://globalwordnet.github.io/schemas/WN-LMF-1.1.dtd). For formatting, just follow:
 
 ```
-
+$ python oath/to/ownlmf_format.py own-pt-files/own-pt-* ili-map.ttl -v
 ```
 
 ## Development
