@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
 
+from posixpath import commonpath
 import tqdm
 import uuid
 
 from lxml.etree import Element, tostring
-
-from rdflib.graph import Graph
-from rdflib.namespace import OWL
-from pyownpt.ownpt import OWNPT, SCHEMA, PWN30, RDF, RDFS
+from pyownpt.ownpt import Graph, NOMLEX, OWNPT, OWL, SCHEMA, PWN30
 
 class OWNPT_LMF(OWNPT):
-    def __init__(self, own_pt:Graph, pwn:Graph, ili_map:Graph, lexicon_id="own-pt"):
+    def __init__(self, own_pt:Graph, ili_map:Graph, lexicon_id="own-pt"):
         super().__init__(own_pt)
-        self.pwn = pwn
         self.ili = ili_map
         self.ili.bind("owl", OWL)
         self.lexicon_id = lexicon_id
+        self.namespace = {"dc":"https://globalwordnet.github.io/schemas/dc/"}
         
         # statistics
         self.statistics = {    
@@ -25,13 +23,11 @@ class OWNPT_LMF(OWNPT):
             "lexical entries pos": 0,
             "sense relations": 0,
             "synset relations": 0,
+            "synset examples": 0,
             "synset definitions": 0,}
 
         # sense
-        # similar|other|simple_aspect_ip|secondary_aspect_ip|simple_aspect_pi|
-        # secondary_aspect_pi|feminine|has_feminine|masculine|has_masculine|young|
-        # has_young|diminutive|has_diminutive|augmentative|has_augmentative|
-        # anto_gradable|anto_simple|anto_converse
+        # antonym|also|participle|pertainym|derivation|domain_topic|has_domain_topic|domain_region|has_domain_region|exemplifies|is_exemplified_by|similar|other|simple_aspect_ip|secondary_aspect_ip|simple_aspect_pi|secondary_aspect_pi|feminine|has_feminine|masculine|has_masculine|young|has_young|diminutive|has_diminutive|augmentative|has_augmentative|anto_gradable|anto_simple|anto_converse
         self.sense_pointers = {
             SCHEMA.antonymOf:"antonym",
             SCHEMA.seeAlso:"also",
@@ -39,7 +35,6 @@ class OWNPT_LMF(OWNPT):
             SCHEMA.adjectivePertainsTo:"pertainym",
             SCHEMA.adverbPertainsTo :"pertainym",
             SCHEMA.derivationallyRelated:"derivation",
-
             SCHEMA.classifiesByRegion:"domain_region",
             SCHEMA.classifiedByRegion:"has_domain_region",
             SCHEMA.classifiedByTopic:"domain_topic",
@@ -47,24 +42,26 @@ class OWNPT_LMF(OWNPT):
             SCHEMA.classifiesByUsage:"exemplifies",
             SCHEMA.classifiedByUsage:"is_exemplified_by",
 
-            SCHEMA.agent:"other", 
-            SCHEMA.bodyPart:"other", 
-            SCHEMA.byMeansOf:"other", 
-            SCHEMA.destination:"other", 
-            SCHEMA.event:"other", 
-            SCHEMA.instrument:"other", 
-            SCHEMA.location:"other", 
-            SCHEMA.material:"other", 
-            SCHEMA.property:"other", 
-            SCHEMA.result:"other", 
-            SCHEMA.state:"other", 
-            SCHEMA.undergoer:"other", 
-            SCHEMA.uses:"other", 
-            SCHEMA.vehicle:"other", 
-            SCHEMA.sameVerbGroupAs:"other", #"verb_group",
+            SCHEMA.sameVerbGroupAs:"other",
+
+            NOMLEX.agent:"other", 
+            NOMLEX.bodyPart:"other", 
+            NOMLEX.byMeansOf:"other", 
+            NOMLEX.destination:"other", 
+            NOMLEX.event:"other", 
+            NOMLEX.instrument:"other", 
+            NOMLEX.location:"other", 
+            NOMLEX.material:"other", 
+            NOMLEX.property:"other", 
+            NOMLEX.result:"other", 
+            NOMLEX.state:"other", 
+            NOMLEX.undergoer:"other", 
+            NOMLEX.uses:"other", 
+            NOMLEX.vehicle:"other",
         }
         
         # synset
+        # agent|also|attribute|be_in_state|causes|classified_by|classifies|co_agent_instrument|co_agent_patient|co_agent_result|co_instrument_agent|co_instrument_patient|co_instrument_result|co_patient_agent|co_patient_instrument|co_result_agent|co_result_instrument|co_role|direction|domain_region|domain_topic|exemplifies|entails|eq_synonym|has_domain_region|has_domain_topic|is_exemplified_by|holo_location|holo_member|holo_part|holo_portion|holo_substance|holonym|hypernym|hyponym|in_manner|instance_hypernym|instance_hyponym|instrument|involved|involved_agent|involved_direction|involved_instrument|involved_location|involved_patient|involved_result|involved_source_direction|involved_target_direction|is_caused_by|is_entailed_by|location|manner_of|mero_location|mero_member|mero_part|mero_portion|mero_substance|meronym|similar|other|patient|restricted_by|restricts|result|role|source_direction|state_of|target_direction|subevent|is_subevent_of|antonym|feminine|has_feminine|masculine|has_masculine|young|has_young|diminutive|has_diminutive|augmentative|has_augmentative|anto_gradable|anto_simple|anto_converse|ir_synonym
         self.synset_pointers = {
             SCHEMA.hypernymOf:"hypernym",
             SCHEMA.hyponymOf:"hyponym",
@@ -73,9 +70,7 @@ class OWNPT_LMF(OWNPT):
             SCHEMA.entails:"entails",
             SCHEMA.causes:"causes",
             SCHEMA.similarTo:"similar",
-            SCHEMA.seeAlso:"also",
             SCHEMA.attribute:"attribute",
-
             SCHEMA.classifiesByRegion :"domain_region",
             SCHEMA.classifiedByRegion:"has_domain_region",
             SCHEMA.classifiedByTopic:"domain_topic",
@@ -83,22 +78,23 @@ class OWNPT_LMF(OWNPT):
             SCHEMA.classifiesByUsage:"exemplifies",
             SCHEMA.classifiedByUsage:"is_exemplified_by",
 
-            SCHEMA.partHolonymOf:"other", # "part_holonym",
-            SCHEMA.partMeronymOf:"other", # "part_meronym",
-            SCHEMA.memberHolonymOf:"other", # "member_holonym",
-            SCHEMA.memberMeronymOf:"other", # "member_meronym",
-            SCHEMA.substanceHolonymOf:"other", # "substance_holonym",
-            SCHEMA.substanceMeronymOf:"other", # "substance_meronym",
-            SCHEMA.sameVerbGroupAs:"other", # "verb_group",
+            SCHEMA.partHolonymOf:"other",
+            SCHEMA.partMeronymOf:"other",
+            SCHEMA.memberHolonymOf:"other",
+            SCHEMA.memberMeronymOf:"other",
+            SCHEMA.substanceHolonymOf:"other",
+            SCHEMA.substanceMeronymOf:"other",
+            SCHEMA.sameVerbGroupAs:"other",
         }
 
         
     def format(self):
         self.logger.info("start formating lexical resource")
-        self.namespace = {"dc":"https://globalwordnet.github.io/schemas/dc/"}
+
         lexical_resource = Element("LexicalResource", nsmap=self.namespace)
         lexical_resource.append(self.get_lexicon_lmf())
 
+        # prints statistics about formatting
         for statistics, value in self.statistics.items():
             self.logger.info(f"{statistics} formatted: {value}")
 
@@ -109,7 +105,6 @@ class OWNPT_LMF(OWNPT):
     def get_lexicon_lmf(self):
         """"""
 
-        self.logger.info(f"start formatting lexicon '{self.lexicon_id}'")
         lexicon = Element(
             "Lexicon",
             id=self.lexicon_id,
@@ -128,27 +123,29 @@ class OWNPT_LMF(OWNPT):
 
         # list of lexical entries (words) in your wordnet
         self.logger.info(f"formatting lexical entries (words)")
-        words = self.graph.query("SELECT ?w WHERE { ?w a wn30:Word }")
+
+        words = self._get_all_words()
         for word, in tqdm.tqdm(words):
             self.statistics["lexical entries"] += 1
             senses = self.graph.subjects(SCHEMA.word, word)
-            parts_of_speech = [self.get_pos(sense) for sense in senses]
-            parts_of_speech = set(parts_of_speech)
-            for pos in parts_of_speech:
+            word_pos = set([self._get_pos(sense) for sense in senses])
+
+            for pos in word_pos:
                 self.statistics["lexical entries pos"] += 1
-                self.logger.debug(f"formatting lexical entrie '{word.n3()}' with pos '{pos}'")
                 lexicon.append(self.get_lexical_entry_lmf(word, pos))
         
-
         # list of synsets in your wordnet
         self.logger.info(f"formatting synsets")
-        synsets = self.graph.query("SELECT ?s WHERE { VALUES ?t { wn30:Synset wn30:AdjectiveSatelliteSynset wn30:AdjectiveSynset wn30:AdverbSynset wn30:NounSynset wn30:VerbSynset } ?s a ?t . }")
+
+        synsets = self._get_all_synsets()
         for synset, in tqdm.tqdm(synsets):
-            self.logger.debug(f"formatting synset '{synset.n3()}'")
             synset_lmf = self.get_synset_lmf(synset)
-            if not synset_lmf.get("members") == "":
-                self.statistics["synsets"] += 1
-                lexicon.append(synset_lmf)
+
+            # adds only if synset has members
+            if synset_lmf.get("members") == "": continue
+            
+            self.statistics["synsets"] += 1
+            lexicon.append(synset_lmf)
 
         return lexicon
 
@@ -157,97 +154,73 @@ class OWNPT_LMF(OWNPT):
         """"""
 
         sid = self._get_synset_id(synset)
-        ili = self.get_ili(synset)
-        pos = self.get_pos(synset, "synset-")
+        ili = self._get_ili(synset)
+        pos = self._get_pos(synset, "synset-")
         members = self.get_synset_members(synset)
         synset_lmf = Element("Synset", id=sid, ili=ili, partOfSpeech=pos, members=members)
 
         # list of definitions for that synset
-        definitions = []
-        definitions += list(self.graph.objects(synset, SCHEMA.gloss))
-        definitions += list(self.graph.objects(synset, SCHEMA.example))
-        definitions = [definition.toPython() for definition in definitions]
-        
-        if len(definitions) > 0:
+        definitions = self.graph.objects(synset, SCHEMA.gloss)
+        for definition in definitions:
             self.statistics["synset definitions"] += 1
-            definition = Element("Definition")
-            definition.text = "; ".join(definitions)
-            synset_lmf.append(definition)
+            definition_lmf = Element("Definition")
+            definition_lmf.text = definition.toPython()
+            synset_lmf.append(definition_lmf)
 
         # list of relations for that synset
-        relations = self._get_synset_relations(synset)
-        for source, rel, target in relations:
+        relations = self.get_synset_relations(synset)
+        for _, rel, target in relations:
+            # adds only if relation only if target has members
+            if self.get_synset_members(target) == "": continue
+
             self.statistics["synset relations"] += 1
-            synset_lmf.append(self.get_synset_relation_lmf(source, rel, target))
+            synset_lmf.append(self.get_synset_relation_lmf(rel, target))
+
+        # list of examples for that synset
+        examples = self.graph.objects(synset, SCHEMA.example)
+        for example in examples:
+            self.statistics["synset examples"] += 1
+            example_lmf = Element("Example")
+            example_lmf.text = example.toPython()
+            synset_lmf.append(example_lmf)
 
         # return synset
         return synset_lmf
 
 
-    def _get_synset_relations(self, synset):
-        """"""
-
-        # list relations for that synset
+    def get_synset_relations(self, synset):
         relations = []
         for pointer in self.synset_pointers:
-            for _, _, target in self.graph.triples((synset, pointer, None)):
-                if not self.get_synset_members(target) == "":
-                    # accepts relatio only if target got members
-                    relations.append((synset, pointer, target))
-        
-        # indirect relation
-        en_synset = self.graph.value(predicate=OWL.sameAs, object=synset)
+            relations += list(self.graph.triples((synset, pointer, None)))
 
-        if en_synset is not None:
-            for pointer in self.synset_pointers:
-                # checks relation os PWN
-                en_relations = self.pwn.triples((en_synset, pointer, None))
-                for _, _, en_target in en_relations:
-                    pt_target = self.graph.value(en_target, OWL.sameAs)
-                    if pt_target is not None:
-                        if not self.get_synset_members(pt_target) == "":
-                            # accepts relatio only if target got members
-                            relations.append((synset, pointer, pt_target))
-                    else:
-                        self.logger.warning(f"synset {en_synset} from pwn not maped to ownpt")
-        else:
-            self.logger.warning(f"synset {synset} from ownpt not maped to pwn")
-
-        # returns relations
         return relations
-    
-
-    def get_synset_relation_lmf(self, source, relation, target):
-        target_id = self._get_synset_id(target)
-        rel_type = self.synset_pointers[relation]
-        relation_lmf = Element("SynsetRelation", target=target_id, relType=rel_type)
-        relation_lmf.attrib["{{{}}}type".format(self.namespace["dc"])] = str(relation)
-        return relation_lmf
 
 
     def get_synset_members(self, synset):
         members = self.graph.objects(synset, SCHEMA.containsWordSense)
-        members = [self._get_sense_id(member) for member in members]
-        return " ".join(sorted(members))
+        members_ids = [self._get_sense_id(member) for member in members]
+        return " ".join(sorted(members_ids))
 
 
     def get_lexical_entry_lmf(self, word, pos):
         """"""
 
-        # id and lemma
+        # lexical_entry and lemma
         word_id = f"word-{pos}-{str(uuid.uuid1())}"
-        lexical_form = self.graph.value(word, SCHEMA.lexicalForm)
         lexical_entry = Element("LexicalEntry", id=word_id)
-        lemma = Element("Lemma", writtenForm=lexical_form, partOfSpeech=pos)
+        
+        lexical_form = self.graph.value(word, SCHEMA.lexicalForm)
+        lemma = Element("Lemma", partOfSpeech=pos, writtenForm=lexical_form)
         
         lexical_entry.append(lemma)
 
         # list of senses for that lexical_entry (word)
         senses = self.graph.subjects(SCHEMA.word, word)
-        senses = [sense for sense in senses if self.get_pos(sense) == pos]
         for sense in senses:
-            self.statistics["senses"] += 1
-            lexical_entry.append(self.get_sense_lmf(sense))
+            # adds only if sense has the same POS
+            if self._get_pos(sense) == pos:
+                self.statistics["senses"] += 1
+                lexical_entry.append(self.get_sense_lmf(sense))
 
         # returs lexical_entry
         return lexical_entry
@@ -256,73 +229,75 @@ class OWNPT_LMF(OWNPT):
     def get_sense_lmf(self, sense):
         """"""
 
-        # id and synset 
+        # sense_lmf
         sense_id = self._get_sense_id(sense)
         synset = self.graph.value(predicate=SCHEMA.containsWordSense, object=sense)
         synset_id = self._get_synset_id(synset)
-         
         sense_lmf = Element("Sense", id=sense_id, synset=synset_id)
 
-        # list of examples for that sense
-        # examples = self.graph.objects(sense, SCHEMA.example)
-        # for example in examples:
-        #     self.statistics["sense relations"] += 1
-        #     sense_example_lmf = Element("Example")
-        #     sense_example_lmf.text = example.toPython()
-        #     sense_lmf.append(sense_example_lmf)
-
         # list of relations for that sense
-        relations = self._get_sense_relations(sense)
-        for source, rel, target in relations:
+        relations = self.get_sense_relations(sense)
+        for _, rel, target in relations:
             self.statistics["sense relations"] += 1
-            sense_lmf.append(self.get_sense_relation_lmf(source, rel, target))
+            sense_lmf.append(self.get_sense_relation_lmf(rel, target))
         
-        # return sense
         return sense_lmf
     
 
-    def _get_sense_relations(self, sense):
-        """"""
-
-        # list relations for that sense
+    def get_sense_relations(self, sense):
         relations = []
         for pointer in self.sense_pointers:
             relations += list(self.graph.triples((sense, pointer, None)))
-        
-        # returns relations
+
         return relations
+    
+
+    def get_synset_relation_lmf(self, relation, target):
+        rel_type = self.synset_pointers[relation]
+        return self._get_relation_lmf("SynsetRelation", target, rel_type, str(relation))
  
 
-    def get_sense_relation_lmf(self, source, relation, target):
-        target_id = self._get_sense_id(target)
+    def get_sense_relation_lmf(self, relation, target):
         rel_type = self.sense_pointers[relation]
-        relation_lmf = Element("SenseRelation", target=target_id, relType=rel_type)
-        relation_lmf.attrib["{{{}}}type".format(self.namespace["dc"])] = str(relation)
-        return relation_lmf
+        return self._get_relation_lmf("SenseRelation", target, rel_type, str(relation))
+ 
 
+    def _get_relation_lmf(self, item_name, target, rel_type, rel_name):
+        target_id = self._get_node_suffix(target)
+        return Element(item_name, target=target_id, relType=rel_type,
+            attrib={"{{{}}}type".format(self.namespace["dc"]):rel_name}) 
+        
 
-    def _get_sense_id(self, sense):
-        sense_id = sense.split("/")[-1]
-        sense_id = f"{self.lexicon_id}-{sense_id}"
-        return sense_id
-
-
-    def _get_synset_id(self, synset):
-        synset_id = synset.split("/")[-1]
-        synset_id = f"{self.lexicon_id}-{synset_id}"
-        return synset_id
-
-
-    def get_ili(self, synset):
+    def _get_ili(self, synset):
         synset_id = synset.split("synset-")[-1]
         ili = self.ili.value(predicate=OWL.sameAs, object=PWN30[synset_id])
         if ili is None:
+            # maybe historical parsing issues
             synset_id = synset_id.replace("a", "s")
             ili = self.ili.value(predicate=OWL.sameAs, object=PWN30[synset_id])
 
         return ili.split("/")[-1]
+        
+
+    def _get_sense_id(self, sense):
+        return self._get_node_suffix(sense)
+
+
+    def _get_synset_id(self, synset):
+        return self._get_node_suffix(synset)
+
+
+    def _get_node_suffix(self, node):
+        return f"{self.lexicon_id}-{node.split('instances/')[-1]}"
 
     
-    def get_pos(self, element, separator="wordsense-"):
+    def _get_pos(self, element, separator="wordsense-"):
         return element.split(separator)[-1].split("-")[1]
-        
+
+    
+    def _get_all_words(self):
+        return self.graph.query("SELECT ?w WHERE { ?w a wn30:Word }")
+    
+    
+    def _get_all_synsets(self):
+        return self.graph.query("SELECT ?s WHERE { VALUES ?t { wn30:Synset wn30:AdjectiveSatelliteSynset wn30:AdjectiveSynset wn30:AdverbSynset wn30:NounSynset wn30:VerbSynset } ?s a ?t . }")

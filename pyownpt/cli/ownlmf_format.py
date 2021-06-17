@@ -12,8 +12,7 @@ from rdflib.util import guess_format
 from pyownpt.ownlmf import OWNPT_LMF
 
 def _parse(args):
-    ownpt_filapath = args.owp
-    ownen_filapath = args.pwn
+    ownpt_filapaths = args.owp
     ili_map_filapath = args.ili
     lexicon_id = args.l
     output_filepath = args.o
@@ -27,26 +26,21 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    lmf_format(ownpt_filapath, ownen_filapath, ili_map_filapath, lexicon_id, output_filepath)
+    lmf_format(ownpt_filapaths, ili_map_filapath, lexicon_id, output_filepath)
 
 
 def lmf_format(
-    ownpt_filapath,
-    ownen_filapath,
+    ownpt_filapaths,
     ili_map_filapath,
     lexicon_id,
     output_filepath):
 
     # loading data
     ownpt = Graph()
-    logger.info(f"loading data from file '{ownpt_filapath}'")
-    ownpt_format = _get_format(ownpt_filapath)
-    ownpt.parse(ownpt_filapath, format=ownpt_format)
-    
-    ownen = Graph()
-    logger.info(f"loading data from file '{ownen_filapath}'")
-    ownen_format = _get_format(ownen_filapath)
-    ownen.parse(ownen_filapath, format=ownen_format)
+    for ownpt_filapath in ownpt_filapaths:
+        logger.info(f"loading data from file '{ownpt_filapath}'")
+        ownpt_format = _get_format(ownpt_filapath)
+        ownpt.parse(ownpt_filapath, format=ownpt_format)
 
     ili_map = Graph()
     logger.info(f"loading data from file '{ili_map_filapath}'")
@@ -55,7 +49,7 @@ def lmf_format(
 
     # formats into LMF format
     logger.info(f"formatting into LMF format")
-    ownpt_lmf = OWNPT_LMF(ownpt, ownen, ili_map, lexicon_id).format()
+    ownpt_lmf = OWNPT_LMF(ownpt, ili_map, lexicon_id).format()
 
     # serializes output
     logger.info(f"serialiing output to {output_filepath}")
@@ -73,8 +67,7 @@ def _get_format(filepath:str):
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="rdf file from own-pt-morpho")
-parser.add_argument("pwn", help="rdf file from own-en-morpho")
+parser.add_argument("owp", help="fileS from own-pt", nargs="+")
 parser.add_argument("ili", help="rdf file from ili-map")
 parser.add_argument("-l", help="lexicon id (default: own-pt)", default="own-pt")
 parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")

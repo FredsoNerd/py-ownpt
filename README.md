@@ -4,43 +4,41 @@ This package contains a set of usefull features for manipulation, representation
 
 ## Features
 
-Py-OWNPT contains features for `repair`, `compare` and `update` OWN-PT. The directoy `pwownpt/cli` contains the folowing commands: `repair_ownpt`, `compare_dump_ownpt` and `update_ownpt`.
+Py-OWNPT contains features for repairing, comparing and updating OWN-PT, besides convertion to [WN-LMF format](https://globalwordnet.github.io/schemas/#xml). The directoy `pwownpt/cli` contains the folowing commands: `repair_ownpt`, `compare_dump_ownpt`, `update_ownpt` and `ownlmf_format`.
 
 ## Updating OWN-PT
 
-For repairing and updating of OWN-PT, consider the following steps; if any doubts try the help flag `-h`:
+For repairing and updating of OWN-PT, consider the following steps; be sure you have the current version of the code installed:
 
- - Be sure you have the current version of the code installed;
-
- - Repair the current own-pt files. This attemps to grant a well formed wordnet:
+ - Repair the current own-pt files. This attemps to grant a well formed wordnet;
+ - Compare the result `own-pt-repaired.nt` and the current dump `wn.json`. This is going to generate an output `compare.json` containing the differences between documents, and actions for unification. If you need to compare includding morphosemantic-links, add a `-m` flag;
+ - Finally, update the wordnet considering votes and suggestions. Add a `-a` flag for parsing previous output `compare.json` containing actions for unification, wich are applied before suggestions. In the following example, *arademaker* and *vcvpaiva* are the senior users responsible for the project;
+ - After those steps, is advertisable to repair the updated file once more, adding types and removing desconex nodes:
 
 ```bash
 $ python path/to/repair_ownpt.py path/to/own-pt.nt -o own-pt-repaired.nt -v
-```
-
- - Compare the result `own-pt-repaired.nt` and the current dump `wn.json`. This is going to generate an output `compare.json` containing the differences between documents, and actions for unification. If you need to compare includding morphosemantic-links, add a `-m` flag:
-
-```bash
 $ python path/to/compare_dump_ownpt.py own-pt-repaired.nt path/to/wn.json -m -o compare.json -v
-```
-
- - Finally, update the wordnet considering votes and suggestions. Add a `-a` flag for parsing previous output `compare.json` containing actions for unification, wich are applied before suggestions. In the following example, *arademaker* and *vcvpaiva* are the senior users responsible for the project:
-
-```bash
 $ python path/to/update_ownpt.py own-pt-repaired.nt path/to/suggestions.json path/to/votes.json -u arademaker vcvpaiva -a compare.json -o own-pt-updated.nt -v
+$ python path/to/repair_ownpt.py own-pt-updated.nt -o own-pt-final.nt -v
 ```
 
-After those steps, is advertisable to repair the updated file once more, adding types and removing desconex nodes.
+After those steps, the resulting OWN-PT should `own-pt-final.nt`.
 
 ## Repair OWN-PT (english)
 
-For repairing OWN-PT (english), we use similar step as before:
+For repairing OWN-PT (english), we use similar step as before. The `-e` flag configures the environment to english specific resources:
 
 ```bash
 $ python path/to/repair_ownpt.py path/to/own-en-morpho.nt -e -o own-en-morpho-repaired.nt -v
 ```
 
-The `-e` flag configures the environment to english specific resources.
+## WN-LMF Format
+
+We follow the [WN-LMF-1.1.dtd](https://globalwordnet.github.io/schemas/WN-LMF-1.1.dtd). For formatting, just follow:
+
+```
+
+```
 
 ## Development
 
