@@ -34,11 +34,13 @@ $ python path/to/repair_ownpt.py path/to/own-en-morpho.nt -e -o own-en-morpho-re
 
 ## WN-LMF Format
 
-We follow the [WN-LMF-1.1.dtd](https://globalwordnet.github.io/schemas/WN-LMF-1.1.dtd). For formatting, just follow:
+We follow the [WN-LMF-1.1.dtd](https://globalwordnet.github.io/schemas/WN-LMF-1.1.dtd), considering the [ili-mapping](https://github.com/globalwordnet/cili/blob/master/ili-map.ttl). For formatting, just follow:
 
 ```
 $ python oath/to/ownlmf_format.py own-pt-files/own-pt-* ili-map.ttl -v
 ```
+
+Thanks to [Global WordNet Association](http://globalwordnet.org), John McCrae and Francis Bond for the data, under the [licence](https://github.com/globalwordnet/cili/blob/1276aadc073ca89910f0bd0e89a6a68d7afa3b4a/LICENSE). 
 
 ## Development
 
