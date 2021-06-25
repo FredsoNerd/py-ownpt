@@ -45,7 +45,7 @@ class OWNPT_LMF(OWNPT):
             SCHEMA.seeAlso:"also",
             SCHEMA.participleOf:"participle",
             SCHEMA.adjectivePertainsTo:"pertainym",
-            SCHEMA.adverbPertainsTo:"pertainym",
+            SCHEMA.adverbPertainsTo:"derivation",
             SCHEMA.derivationallyRelated:"derivation",
             SCHEMA.classifiesByRegion:"domain_region",
             SCHEMA.classifiedByRegion:"has_domain_region",
