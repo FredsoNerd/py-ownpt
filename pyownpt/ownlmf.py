@@ -71,16 +71,16 @@ class OWNPT_LMF(OWNPT):
             SCHEMA.substanceMeronymOf:"mero_substance",
             SCHEMA.sameVerbGroupAs:"similar", # verb_group
 
-            NOMLEX.agent:"other", 
+            NOMLEX.agent:"agent", # other
             NOMLEX.bodyPart:"other", 
             NOMLEX.byMeansOf:"other", 
             NOMLEX.destination:"other", 
             NOMLEX.event:"other", 
-            NOMLEX.instrument:"other", 
-            NOMLEX.location:"other", 
+            NOMLEX.instrument:"instrument", # other
+            NOMLEX.location:"location", # other
             NOMLEX.material:"other", 
             NOMLEX.property:"other", 
-            NOMLEX.result:"other", 
+            NOMLEX.result:"result", # other
             NOMLEX.state:"other", 
             NOMLEX.undergoer:"other", 
             NOMLEX.uses:"other", 
