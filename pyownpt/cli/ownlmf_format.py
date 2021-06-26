@@ -85,7 +85,7 @@ parser.add_argument("-o", help="output file (default: output.xml)", default="out
 
 parser.add_argument("-li", help="lexicon_id (default: 'own-pt')", default="own-pt")
 parser.add_argument("-lb", help="label (default: 'OpenWordnet-PT')", default="OpenWordnet-PT")
-parser.add_argument("-vr", help="version (default: '0.0.0')", default="0.0.0")
+parser.add_argument("-vr", help="version (default: '0.0')", default="0.0")
 parser.add_argument("-lg", help="language (default: 'en')", default="pt")
 parser.add_argument("-cs", help="confidenceScore (default: '0.0')", default='0.0')
 parser.add_argument("--url", help="url (default: 'http://openwordnet-pt.org/')", default="http://openwordnet-pt.org/")
