@@ -35,6 +35,7 @@ class OWNPT_LMF(OWNPT):
             "lexical entries": 0,
             "lexical entries pos": 0,
             "sense relations": 0,
+            "sense examples": 0,
             "synset relations": 0,
             "synset examples": 0,
             "synset definitions": 0,}
@@ -168,26 +169,10 @@ class OWNPT_LMF(OWNPT):
         examples = self.graph.objects(synset, SCHEMA.example)
         for example in examples:
             self.statistics["synset examples"] += 1
-            example_lmf = Element("Example")
-            example_lmf.text = example.toPython()
-            synset_lmf.append(example_lmf)
+            synset_lmf.append(self._get_example_lmf(example.toPython()))
 
         # return synset
         return synset_lmf
-
-
-    def get_node_relations(self, synset):
-        relations = []
-        for pointer in self.pointers:
-            relations += list(self.graph.triples((synset, pointer, None)))
-
-        return relations
-
-
-    def get_synset_members(self, synset):
-        members = self.graph.objects(synset, SCHEMA.containsWordSense)
-        members_ids = [self._get_node_id(member) for member in members]
-        return " ".join(sorted(members_ids))
 
 
     def get_lexical_entry_lmf(self, word, pos):
@@ -228,9 +213,30 @@ class OWNPT_LMF(OWNPT):
         for _, rel, target in relations:
             self.statistics["sense relations"] += 1
             sense_lmf.append(self.get_node_relation_lmf("SenseRelation", rel, target))
+
+        # list of examples for that sense
+        examples = self.graph.objects(sense, SCHEMA.example)
+        for example in examples:
+            self.statistics["sense examples"] += 1
+            sense_lmf.append(self._get_example_lmf(example.toPython()))
+            
         
         return sense_lmf
+
+
+    def get_synset_members(self, synset):
+        members = self.graph.objects(synset, SCHEMA.containsWordSense)
+        members_ids = [self._get_node_id(member) for member in members]
+        return " ".join(sorted(members_ids))
     
+
+    def get_node_relations(self, synset):
+        relations = []
+        for pointer in self.pointers:
+            relations += list(self.graph.triples((synset, pointer, None)))
+
+        return relations
+
 
     def get_node_relation_lmf(self, item_name, relation, target):
         rel_type = self.pointers[relation]
@@ -240,8 +246,14 @@ class OWNPT_LMF(OWNPT):
     def _get_relation_lmf(self, item_name, target, rel_type, rel_name):
         target_id = self._get_node_suffix(target)
         return Element(item_name, target=target_id, relType=rel_type,
-            attrib={"{{{}}}type".format(self.namespace["dc"]):rel_name}) 
+            attrib={"{{{}}}type".format(self.namespace["dc"]):rel_name})
         
+    
+    def _get_example_lmf(self, example):
+        example_lmf = Element("Example")
+        example_lmf.text = example
+        return example_lmf
+
 
     def _get_ili(self, synset):
         synset_id = synset.split("synset-")[-1]
