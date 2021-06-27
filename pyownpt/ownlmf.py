@@ -114,7 +114,6 @@ class OWNPT_LMF(OWNPT):
 
             # adds only if synset has members
             if synset_lmf.get("members") == "": continue
-            
             lexicon.append(synset_lmf)
 
         return lexicon
@@ -132,9 +131,7 @@ class OWNPT_LMF(OWNPT):
         # list of definitions for that synset
         definitions = self.graph.objects(synset, SCHEMA.gloss)
         for definition in definitions:
-            definition_lmf = Element("Definition")
-            definition_lmf.text = definition.toPython()
-            synset_lmf.append(definition_lmf)
+            synset_lmf.append(self._get_text_element_lmf("Definition", definition.toPython()))
 
         # list of relations for that synset
         relations = self.get_node_relations(synset)
@@ -146,7 +143,7 @@ class OWNPT_LMF(OWNPT):
         # list of examples for that synset
         examples = self.graph.objects(synset, SCHEMA.example)
         for example in examples:
-            synset_lmf.append(self._get_example_lmf(example.toPython()))
+            synset_lmf.append(self._get_text_element_lmf("Example", example.toPython()))
 
         # return synset
         return synset_lmf
@@ -192,7 +189,7 @@ class OWNPT_LMF(OWNPT):
         # list of examples for that sense
         examples = self.graph.objects(sense, SCHEMA.example)
         for example in examples:
-            sense_lmf.append(self._get_example_lmf(example.toPython()))
+            sense_lmf.append(self._get_text_element_lmf("Example", example.toPython()))
             
         
         return sense_lmf
@@ -223,10 +220,10 @@ class OWNPT_LMF(OWNPT):
             attrib={"{{{}}}type".format(self.namespace["dc"]):rel_name})
         
     
-    def _get_example_lmf(self, example):
-        example_lmf = Element("Example")
-        example_lmf.text = example
-        return example_lmf
+    def _get_text_element_lmf(self, element_name, text):
+        element_lmf = Element(element_name)
+        element_lmf.text = text
+        return element_lmf
 
 
     def _get_ili(self, synset):
