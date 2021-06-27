@@ -27,18 +27,6 @@ class OWNPT_LMF(OWNPT):
         self.email=email
         self.license=license
         self.citation=citation
-        
-        # statistics
-        self.statistics = {    
-            "senses": 0,
-            "synsets": 0,
-            "lexical entries": 0,
-            "lexical entries pos": 0,
-            "sense relations": 0,
-            "sense examples": 0,
-            "synset relations": 0,
-            "synset examples": 0,
-            "synset definitions": 0,}
 
         # pointers
         self.pointers = {
@@ -95,10 +83,6 @@ class OWNPT_LMF(OWNPT):
         lexical_resource = Element("LexicalResource", nsmap=self.namespace)
         lexical_resource.append(self.get_lexicon_lmf())
 
-        # prints statistics about formatting
-        for statistics, value in self.statistics.items():
-            self.logger.info(f"{statistics} formatted: {value}")
-
         return tostring(lexical_resource, encoding="UTF-8", pretty_print=True, xml_declaration=True,
             doctype="<!DOCTYPE LexicalResource SYSTEM 'http://globalwordnet.github.io/schemas/WN-LMF-1.0.dtd'>").decode()
 
@@ -115,12 +99,10 @@ class OWNPT_LMF(OWNPT):
 
         words = self._get_all_words()
         for word, in tqdm.tqdm(words):
-            self.statistics["lexical entries"] += 1
             senses = self.graph.subjects(SCHEMA.word, word)
             word_pos = set([self._get_pos(sense) for sense in senses])
 
             for pos in word_pos:
-                self.statistics["lexical entries pos"] += 1
                 lexicon.append(self.get_lexical_entry_lmf(word, pos))
         
         # list of synsets in your wordnet
@@ -133,7 +115,6 @@ class OWNPT_LMF(OWNPT):
             # adds only if synset has members
             if synset_lmf.get("members") == "": continue
             
-            self.statistics["synsets"] += 1
             lexicon.append(synset_lmf)
 
         return lexicon
@@ -151,7 +132,6 @@ class OWNPT_LMF(OWNPT):
         # list of definitions for that synset
         definitions = self.graph.objects(synset, SCHEMA.gloss)
         for definition in definitions:
-            self.statistics["synset definitions"] += 1
             definition_lmf = Element("Definition")
             definition_lmf.text = definition.toPython()
             synset_lmf.append(definition_lmf)
@@ -161,14 +141,11 @@ class OWNPT_LMF(OWNPT):
         for _, rel, target in relations:
             # adds only if relation only if target has members
             if self.get_synset_members(target) == "": continue
-
-            self.statistics["synset relations"] += 1
             synset_lmf.append(self.get_node_relation_lmf("SynsetRelation", rel, target))
 
         # list of examples for that synset
         examples = self.graph.objects(synset, SCHEMA.example)
         for example in examples:
-            self.statistics["synset examples"] += 1
             synset_lmf.append(self._get_example_lmf(example.toPython()))
 
         # return synset
@@ -192,7 +169,6 @@ class OWNPT_LMF(OWNPT):
         for sense in senses:
             # adds only if sense has the same POS
             if self._get_pos(sense) == pos:
-                self.statistics["senses"] += 1
                 lexical_entry.append(self.get_sense_lmf(sense))
 
         # returs lexical_entry
@@ -211,13 +187,11 @@ class OWNPT_LMF(OWNPT):
         # list of relations for that sense
         relations = self.get_node_relations(sense)
         for _, rel, target in relations:
-            self.statistics["sense relations"] += 1
             sense_lmf.append(self.get_node_relation_lmf("SenseRelation", rel, target))
 
         # list of examples for that sense
         examples = self.graph.objects(sense, SCHEMA.example)
         for example in examples:
-            self.statistics["sense examples"] += 1
             sense_lmf.append(self._get_example_lmf(example.toPython()))
             
         
