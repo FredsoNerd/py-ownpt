@@ -137,6 +137,7 @@ class OWNPT_LMF(OWNPT):
         relations = self.get_node_relations(synset)
         for _, rel, target in relations:
             # adds only if relation only if target has members
+            members = self.get_synset_members(target)
             if not members == "":
                 synset_lmf.append(self.get_node_relation_lmf("SynsetRelation", rel, target))
 
