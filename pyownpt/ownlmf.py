@@ -113,8 +113,8 @@ class OWNPT_LMF(OWNPT):
             synset_lmf = self.get_synset_lmf(synset)
 
             # adds only if synset has members
-            if synset_lmf.get("members") == "": continue
-            lexicon.append(synset_lmf)
+            if not synset_lmf.get("members") == "":
+                lexicon.append(synset_lmf)
 
         return lexicon
 
@@ -137,8 +137,8 @@ class OWNPT_LMF(OWNPT):
         relations = self.get_node_relations(synset)
         for _, rel, target in relations:
             # adds only if relation only if target has members
-            if self.get_synset_members(target) == "": continue
-            synset_lmf.append(self.get_node_relation_lmf("SynsetRelation", rel, target))
+            if not members == "":
+                synset_lmf.append(self.get_node_relation_lmf("SynsetRelation", rel, target))
 
         # list of examples for that synset
         examples = self.graph.objects(synset, SCHEMA.example)
@@ -163,10 +163,15 @@ class OWNPT_LMF(OWNPT):
 
         # list of senses for that lexical_entry (word)
         senses = self.graph.subjects(SCHEMA.word, word)
+        senses = [sense for sense in senses if self._get_pos(sense) == pos]
         for sense in senses:
-            # adds only if sense has the same POS
-            if self._get_pos(sense) == pos:
-                lexical_entry.append(self.get_sense_lmf(sense))
+            lexical_entry.append(self.get_sense_lmf(sense))
+        
+        # list of syntactic behaviours (frame) for that lexical_entry (word)
+        behaviours = self.get_syntactic_behaviours(senses)
+        for behaviour in behaviours:
+            behaviour_lmf = Element("SyntacticBehaviour", subcategorizationFrame=behaviour.toPython())
+            lexical_entry.append(behaviour_lmf)
 
         # returs lexical_entry
         return lexical_entry
@@ -193,6 +198,14 @@ class OWNPT_LMF(OWNPT):
             
         
         return sense_lmf
+
+
+    def get_syntactic_behaviours(self, senses):
+        behaviours = []
+        for sense in senses:
+            synset = self.graph.value(predicate=SCHEMA.containsWordSense, object=sense)
+            behaviours += list(self.graph.objects(synset, SCHEMA.frame))
+        return behaviours
 
 
     def get_synset_members(self, synset):
