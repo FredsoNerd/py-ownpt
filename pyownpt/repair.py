@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from rdflib.graph import Graph
 from pyownpt.ownpt import OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
 
 class Repair(OWNPT):
@@ -78,7 +79,47 @@ class Repair(OWNPT):
         # print statistics
         self.logger.info(f"after action, {self.added_triples} triples were added")
 
-    
+
+    def add_adjective_markers(self, senses:Graph, adjective_lines):
+        """"""
+        
+        self.logger.info(f"start processing {len(adjective_lines)} lines")
+
+        # format data
+        adjective_data = []
+        for line in adjective_lines:
+            synset_id, _, _, words_count, *tail = line.split()
+            for i in range(int(words_count, base=16)):
+                adjective_data.append((synset_id, tail[2*i]))
+        
+        # find and add adjective markers
+        count = 0
+        for synset_id, word in adjective_data:
+            marker = None
+            if word.endswith("(a)"): marker = "a" # predicate position
+            elif word.endswith("(p)"): marker = "p" # prenominal (attributive) position
+            elif word.endswith("(ip)"): marker = "ip" # immediately postnominal position
+            else:
+                continue
+            
+            # adds marker
+            valid = False
+            word = self._format_lexical(word[:word.find(f"({marker})")], True)
+            for synset in self.graph.subjects(SCHEMA.synsetId, Literal(synset_id)):
+                sense = self._get_sense(synset, word)
+                if sense is not None:
+                    valid = True
+                    count += 1
+                    self.logger.debug(f"adding marker '{marker}' from word '{word}' to sense '{sense.n3()}'")
+                    senses.add((sense, SCHEMA.adjPosition, Literal(marker)))
+            # validates the result
+            if not valid:    
+                self.logger.warning(f"could not add marker '{marker}' from word '{word}' to synset '{synset_id}'")
+
+        # print statistics
+        self.logger.info(f"after action {count} triples were added")
+
+
     def remove_lemma_property(self, name=""):
         """"""
         count = 0
