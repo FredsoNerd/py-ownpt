@@ -100,8 +100,8 @@ class OWNPT():
     def _get_word(self, lexical_form:str, create_new=False):
         """"""
 
-        lexical_form = Literal(lexical_form, lang="pt")
-        word =  self.graph.value(predicate=SCHEMA.lexicalForm, object=lexical_form)
+        lexical_form = Literal(lexical_form, lang=self.lang)
+        word = self.graph.value(predicate=SCHEMA.lexicalForm, object=lexical_form)
         if word is None and create_new:
             return self._new_word(lexical_form, True)
         else:
