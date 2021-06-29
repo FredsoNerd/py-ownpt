@@ -186,6 +186,11 @@ class OWNPT_LMF(OWNPT):
         synset = self.graph.value(predicate=SCHEMA.containsWordSense, object=sense)
         synset_id = self._get_synset_id(synset)
         sense_lmf = Element("Sense", id=sense_id, synset=synset_id)
+        
+        # if sense has adjective marker
+        marker = self.graph.value(sense, SCHEMA.adjPosition)
+        if marker is not None:
+            sense_lmf.attrib["adjposition"] = marker.toPython()
 
         # list of relations for that sense
         relations = self.get_node_relations(sense)
