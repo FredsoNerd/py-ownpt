@@ -72,7 +72,7 @@ class Repair(OWNPT):
                 word = self._get_word(lemma)
                 if word is not None:
                     form = self._new_lexical_literal(form)
-                    self._add_triple((word, SCHEMA.ExceptionLexicalForm, form), "add_exceptions")
+                    self._add_triple((word, SCHEMA.exceptionalForm, form), "add_exceptions")
                 else:
                     self.logger.warning(f"could not process exception: {form} {lemma}")
             
