@@ -58,6 +58,26 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.added_triples} triples added"
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
+
+    def add_morpho_exceptions(self, exceptions):
+        """"""
+
+        self.logger.info(f"start processing {len(exceptions)} exceptions")
+        # add exceptions
+        for form, *lemmas in exceptions:
+            for lemma in lemmas:
+                self.logger.debug(f"processing exception: {form} {lemma}")
+            
+                word = self._get_word(lemma)
+                if word is not None:
+                    form = self._new_lexical_literal(form)
+                    self._add_triple((word, SCHEMA.ExceptionLexicalForm, form), "add_exceptions")
+                else:
+                    self.logger.warning(f"could not process exception: {form} {lemma}")
+            
+        # print statistics
+        self.logger.info(f"after action, {self.added_triples} triples were added")
+
     
     def remove_lemma_property(self, name=""):
         """"""
