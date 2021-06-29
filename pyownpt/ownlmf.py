@@ -157,10 +157,16 @@ class OWNPT_LMF(OWNPT):
         word_id = f"word-{pos}-{str(uuid.uuid1())}"
         lexical_entry = Element("LexicalEntry", id=word_id)
         
+        # formatting lemma
         lexical_form = self.graph.value(word, SCHEMA.lexicalForm)
         lemma = Element("Lemma", partOfSpeech=pos, writtenForm=lexical_form)
-        
         lexical_entry.append(lemma)
+
+        # list of exceptional forms for that lexical_entry (word)
+        forms = self.graph.objects(word, SCHEMA.exceptionalForm)
+        for form in forms:
+            form_lmf = Element("Form", writtenForm=form.toPython()) 
+            lexical_entry.append(form_lmf)
 
         # list of senses for that lexical_entry (word)
         senses = self.graph.subjects(SCHEMA.word, word)
