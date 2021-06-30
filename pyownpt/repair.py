@@ -60,6 +60,31 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
 
+    def format_synset_id(self):
+        """"""
+
+        count = 0
+
+        self.logger.info(f"start formatting property synsetId")
+        synsets = self._get_all_synsets()
+        for synset, in synsets:
+            count += 1
+
+            synset_id = Literal(synset.split("/synset-")[-1])
+            synset_offset = Literal(synset_id.split("-")[0])
+
+            # replaces properties
+            self._drop_triple((synset, SCHEMA.synsetId, synset_offset))
+            self._add_triple((synset, SCHEMA.offset, synset_offset))
+            self._add_triple((synset, SCHEMA.synsetId, synset_id))
+
+        # resulting added and removed triples
+        self.logger.info(
+            f"action applied to {count} cases"
+                f"\n\ttotal: {self.added_triples} triples added"
+                f"\n\ttotal: {self.removed_triples} triples removed")
+
+
     def format_adjective_satelites(self):
         """"""
 
