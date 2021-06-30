@@ -25,10 +25,10 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_repair_ownpt(ownpt_filapath, exceptions_filepath, output_filepath)
+    morpho_exceptions(ownpt_filapath, exceptions_filepath, output_filepath)
     
 
-def cli_repair_ownpt(
+def morpho_exceptions(
     ownpt_filapath:str,
     exceptions_filepath:str,
     output_filepath:str="output.xml"):

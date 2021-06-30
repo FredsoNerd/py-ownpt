@@ -28,10 +28,10 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_repair_ownpt(sense_filapath, synset_filapath, adj_filepath, output_filepath)
+    adjective_markers(sense_filapath, synset_filapath, adj_filepath, output_filepath)
     
 
-def cli_repair_ownpt(
+def adjective_markers(
     sense_filapath:str,
     synset_filapath:str,
     adj_filepath:str,
