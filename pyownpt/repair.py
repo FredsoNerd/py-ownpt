@@ -59,6 +59,57 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.added_triples} triples added"
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
+    
+    def words_unique_pos(self):
+        """"""
+        
+        count = 0
+        nomlex_map = {"n":NOMLEX.noun, "v":NOMLEX.verb}
+
+        self.logger.info(f"start formatting Words to unique POS")
+        words = self._get_all_words()
+        for word, in words:
+            count += 1
+            # accesses word POS
+            senses = list(self.graph.subjects(SCHEMA.word, word))
+            word_pos = set([self._get_pos(sense) for sense in senses])
+
+            # adds pos n or v if nomlex
+            for nomlex_pos, nomlex_pred in nomlex_map.items():
+                if (None, nomlex_pred, word) in self.graph:
+                    word_pos.add(nomlex_pos)
+
+            # splits word given its POS
+            for pos in word_pos:
+                self.logger.debug(f"format word '{word.n3()}' with pos '{pos}'")
+                new_word = URIRef(f"{word.toPython()}-{pos}")
+
+                # copy predications
+                self._copy_subject(word, new_word, "copy_word")
+
+                # replace suitable senses
+                senses_pos = [s for s in senses if self._get_pos(s) == pos]
+                for sense in senses_pos:
+                    self._add_triple((sense, SCHEMA.word, new_word), "copy_senses")
+
+                # copies nomlex predications
+                for nomlex_pos, nomlex_pred in nomlex_map.items():
+                    if nomlex_pos == pos:
+                        for subject in self.graph.subjects(nomlex_pred, word):
+                            self._add_triple((subject, nomlex_pred, new_word))
+
+                # add property pos
+                self._add_triple((new_word, SCHEMA.pos, Literal(pos)), "property_pos")
+
+            # after splitting drops old word
+            self._drop_node(word, "drop_word")
+
+        # resulting added and removed triples
+        self.logger.info(
+            f"action applied to {count} words"
+                f"\n\ttotal: {self.added_triples} triples added"
+                f"\n\ttotal: {self.removed_triples} triples removed")
+
 
     def format_synset_id(self):
         """"""
