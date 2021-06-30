@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from rdflib.graph import Graph
+from rdflib.namespace import OWL
 from pyownpt.ownpt import NOMLEX, OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
 
 class Repair(OWNPT):
@@ -155,6 +156,30 @@ class Repair(OWNPT):
         # resulting added and removed triples
         self.logger.info(
             f"action applied to {count} valid synsets"
+                f"\n\ttotal: {self.added_triples} triples added"
+                f"\n\ttotal: {self.removed_triples} triples removed")
+
+
+    def format_adjective_satelites_sameas(self, ownen:Graph, sameas:Graph):
+        """"""
+
+        count = 0
+
+        self.logger.info(f"start formatting AdjectiveSatelliteSynset")
+        satellite_synsets = ownen.subjects(RDF.type, SCHEMA.AdjectiveSatelliteSynset)
+        for synset_en in satellite_synsets:
+            synset_pt = sameas.value(synset_en, OWL.sameAs) 
+            if synset_pt is not None:
+                count += 1
+                self.logger.debug(f"replacing '{synset_pt.n3()}' type by '{SCHEMA.AdjectiveSatelliteSynset.n3()}'")
+                self._drop_triple((synset_pt, RDF.type, SCHEMA.AdjectiveSynset), "adjective_satelites")
+                self._add_triple((synset_pt, RDF.type, SCHEMA.AdjectiveSatelliteSynset), "adjective_satelites")
+            else:
+                self.logger.warning(f"counln't find synset_pt sameAs '{synset_en.n3()}'")
+
+        # resulting added and removed triples
+        self.logger.info(
+            f"action applied to {count} synsets"
                 f"\n\ttotal: {self.added_triples} triples added"
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
