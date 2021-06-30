@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from rdflib.graph import Graph
-from pyownpt.ownpt import OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
+from pyownpt.ownpt import NOMLEX, OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
 
 class Repair(OWNPT):
 
@@ -56,6 +56,29 @@ class Repair(OWNPT):
         # resulting added and removed triples
         self.logger.info(
             f"all {len(repair_actions)} actions applied"
+                f"\n\ttotal: {self.added_triples} triples added"
+                f"\n\ttotal: {self.removed_triples} triples removed")
+
+
+    def format_adjective_satelites(self):
+        """"""
+
+        count = 0
+
+        self.logger.info(f"start formatting AdjectiveSatelliteSynset")
+        satellite_synsets = self.graph.subjects(RDF.type, SCHEMA.AdjectiveSatelliteSynset)
+        for synset in satellite_synsets:
+            if synset.endswith("-a"):
+                count += 1
+                new_synset = URIRef(synset.replace("-a", "-s"))
+                self.logger.debug(f"replacing '{synset.n3()}' by '{new_synset.n3()}'")
+                self._replace_node(synset, new_synset)
+            else:
+                self.logger.warning(f"ill formed AdjectiveSatelliteSynset '{synset.n3()}'")
+
+        # resulting added and removed triples
+        self.logger.info(
+            f"action applied to {count} valid synsets"
                 f"\n\ttotal: {self.added_triples} triples added"
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
