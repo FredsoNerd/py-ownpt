@@ -245,7 +245,8 @@ class OWNPT():
 
     
     def _get_pos(self, element, separator="wordsense-"):
-        return element.split(separator)[-1].split("-")[1]
+        ss_type = element.split(separator)[-1].split("-")[1]
+        return "a" if ss_type == "s" else ss_type
 
     
     def _get_all_words(self):
