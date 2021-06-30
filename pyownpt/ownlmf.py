@@ -261,27 +261,3 @@ class OWNPT_LMF(OWNPT):
 
         return ili.split("/")[-1]
         
-
-    def _get_node_id(self, sense):
-        return self._get_node_suffix(sense)
-
-
-    def _get_synset_id(self, synset):
-        return self._get_node_suffix(synset)
-
-
-    def _get_node_suffix(self, node):
-        return f"{self.lexicon_id}-{node.split('instances/')[-1]}"
-
-    
-    def _get_pos(self, element, separator="wordsense-"):
-        return element.split(separator)[-1].split("-")[1]
-
-    
-    def _get_all_words(self):
-        return self.graph.query("SELECT ?w WHERE { ?w a wn30:Word }")
-    
-    
-    def _get_all_synsets(self):
-        return self.graph.query("SELECT ?s WHERE { VALUES ?t { wn30:Synset wn30:AdjectiveSatelliteSynset wn30:AdjectiveSynset wn30:AdverbSynset wn30:NounSynset wn30:VerbSynset } ?s a ?t . }")
-        
