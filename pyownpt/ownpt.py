@@ -191,6 +191,11 @@ class OWNPT():
         return False
 
     
+    def _copy_subject(self, old_node, new_node, prefix="copy_subject"):
+        for predicate, object in self.graph.predicate_objects(old_node):
+            self._add_triple((new_node, predicate, object), prefix)
+
+    
     def _new_lexical_literal(self, lexical, format=False):
         if format:
             lexical = self._format_lexical(lexical)
