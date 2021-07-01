@@ -184,23 +184,36 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
 
-    def add_morpho_exceptions(self, exceptions):
+    def add_morpho_exceptions(self, exceptions_pos:dict):
         """"""
-
-        self.logger.info(f"start processing {len(exceptions)} exceptions")
-        # add exceptions
-        for form, *lemmas in exceptions:
-            for lemma in lemmas:
-                self.logger.debug(f"processing exception: {form} {lemma}")
-            
-                word = self._get_word(lemma)
-                if word is not None:
-                    form = self._new_lexical_literal(form)
-                    self._add_triple((word, SCHEMA.exceptionalForm, form), "add_exceptions")
-                else:
-                    self.logger.warning(f"could not process exception: {form} {lemma}")
+        
+        count = 0
+        processed = 0
+        not_processed = 0
+        for pos, exceptions in exceptions_pos.items():
+            self.logger.info(f"processing {len(exceptions)} exceptions with pos '{pos}'")
+            # add exceptions
+            for form, *lemmas in exceptions:
+                for lemma in lemmas:
+                    count += 1
+                    self.logger.debug(f"processing exception:{pos}: {form} {lemma} ")
+                    # attemps finding suitable word
+                    word = self._get_word(lemma, pos=pos)
+                    if word is not None:
+                        processed += 1
+                        form = self._new_lexical_literal(form)
+                        self._add_triple((word, SCHEMA.exceptionalForm, form), "add_exceptions")
+                    else:
+                        not_processed += 1
+                        self.logger.warning(f"could not process exception:{pos}: {form} {lemma}")
             
         # print statistics
+        # resulting added and removed triples
+        self.logger.info(
+            f"action applied to {count} cases"
+                f"\n\ttotal: {self.added_triples} triples added"
+                f"\n\ttotal: {processed} exceptions processed"
+                f"\n\ttotal: {not_processed} exceptions not processed")
         self.logger.info(f"after action, {self.added_triples} triples were added")
 
 

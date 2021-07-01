@@ -38,10 +38,11 @@ def morpho_exceptions(
     ownpt_format = _get_format(ownpt_filapath)
     ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
 
-    exceptions = []
-    for exception_filepath in exceptions_filepath:
+    exceptions = {"a":"adj.exc", "r":"adv.exc", "n":"noun.exc", "v":"verb.exc"}
+    for pos, filename in exceptions.items():
+        exception_filepath = os.path.join(exceptions_filepath, filename)
         logger.info(f"loading data from file '{exception_filepath}'")
-        exceptions += [w.split() for w in open(exception_filepath).readlines()]
+        exceptions[pos] = [w.split() for w in open(exception_filepath).readlines()]
 
     # repairs graph by rules
     Repair(ownpt, lang="en").add_morpho_exceptions(exceptions)
@@ -64,7 +65,7 @@ parser = argparse.ArgumentParser()
 
 # sets the user options
 parser.add_argument("owp", help="words file from own-en")
-parser.add_argument("exc", help="exc files from pwn", nargs="+")
+parser.add_argument("exc", help="exception files directory")
 parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
 
 parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)

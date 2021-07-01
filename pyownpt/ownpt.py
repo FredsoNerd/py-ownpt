@@ -97,18 +97,22 @@ class OWNPT():
         return self._get_word(lexical, True)
 
 
-    def _get_word(self, lexical_form:str, create_new=False):
+    def _get_word(self, lexical_form:str, create_new=False, pos=None):
         """"""
 
         lexical_form = Literal(lexical_form, lang=self.lang)
-        word = self.graph.value(predicate=SCHEMA.lexicalForm, object=lexical_form)
-        if word is None and create_new:
-            return self._new_word(lexical_form, True)
-        else:
-            return word
+        words = self.graph.subjects(SCHEMA.lexicalForm, lexical_form)
+        for word in words:
+            word_pos = self.graph.value(word, SCHEMA.pos)
+            if word_pos == Literal(pos): return word
+        
+        # if cant find word
+        if create_new:
+            return self._new_word(lexical_form, True, pos)
+        
+        return None
 
-
-    def _new_word(self, lexical:str, add_word=False):
+    def _new_word(self, lexical:str, add_word=False, pos=None):
         """"""
 
         word = re.sub(r" ", "+", lexical).strip()
