@@ -1,0 +1,34 @@
+## Base and Core
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l . { ?ss a wn30:CoreConcept . } UNION { ?x owl:sameAs ?ss . ?x rdf:type wn30:CoreConcept } FILTER(LANG(?l) = "en") }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l . { ?ss a wn30:BaseConcept . } UNION { ?x owl:sameAs ?ss . ?x rdf:type wn30:BaseConcept } FILTER(LANG(?l) = "en") }
+
+# non void senses
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:NounSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER(LANG(?l) = "en") }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:VerbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER(LANG(?l) = "en") }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdverbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER(LANG(?l) = "en") }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdjectiveSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER(LANG(?l) = "en") }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdjectiveSatelliteSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER(LANG(?l) = "en") }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER(LANG(?l) = "en") }
+
+# polysemy
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:NounSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 ; wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 ) FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:VerbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 ; wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 ) FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdverbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 ; wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 ) FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdjectiveSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 ; wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 ) FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdjectiveSatelliteSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 ; wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 ) FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l1 ; wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 ) FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:NounSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 )} FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:VerbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 )} FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdverbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 )} FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdjectiveSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 )} FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:AdjectiveSatelliteSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 )} FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l2 . FILTER( ?l1 != ?l2 )} FILTER( LANG(?l1) = "en" ) FILTER( LANG(?l2) = "en" ) }
+
+# multi word expressions
+SELECT (COUNT (DISTINCT ?l) as ?count) WHERE { ?ss a wn30:NounSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') FILTER( LANG(?l) = "en" ) }
+SELECT (COUNT (DISTINCT ?l) as ?count) WHERE { ?ss a wn30:VerbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') FILTER( LANG(?l) = "en" ) }
+SELECT (COUNT (DISTINCT ?l) as ?count) WHERE { ?ss a wn30:AdverbSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') FILTER( LANG(?l) = "en" ) }
+SELECT (COUNT (DISTINCT ?l) as ?count) WHERE { ?ss a wn30:AdjectiveSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') FILTER( LANG(?l) = "en" ) }
+SELECT (COUNT (DISTINCT ?l) as ?count) WHERE { ?ss a wn30:AdjectiveSatelliteSynset ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') FILTER( LANG(?l) = "en" ) }
+SELECT (COUNT (DISTINCT ?l) as ?count) WHERE { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') FILTER( LANG(?l) = "en" ) }
