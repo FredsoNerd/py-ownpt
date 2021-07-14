@@ -12,7 +12,6 @@ from pyownpt.repair import Repair
 
 def _parse(args):
     ownpt_filapaths = args.owp
-    lang = args.l
     output_filepath = args.o
 
     # configs logging
@@ -24,12 +23,11 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    property_synset_id(ownpt_filapaths, lang, output_filepath)
+    property_synset_id(ownpt_filapaths, output_filepath)
 
 
 def property_synset_id(
     ownpt_filapaths,
-    lang,
     output_filepath):
 
     # loading data
@@ -40,7 +38,7 @@ def property_synset_id(
         ownpt.parse(ownpt_filapath, format=ownpt_format)
 
     # formats into LMF format
-    Repair(ownpt, lang=lang).format_synset_id()
+    Repair(ownpt, lang=None).format_synset_id()
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
@@ -53,7 +51,6 @@ parser = argparse.ArgumentParser()
 
 # sets the user options
 parser.add_argument("owp", help="files from own-pt", nargs="+")
-parser.add_argument("-l", help="lang (default: 'en')", default="en")
 parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
 
 parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)

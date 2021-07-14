@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from re import T
 from typing import AbstractSet
+from urllib.parse import scheme_chars
 import tqdm
 
 from pyownpt.ownpt import OWNPT, RDFS, SYNSETPT, SCHEMA
@@ -71,7 +73,8 @@ class Update(OWNPT):
         action = suggestion["action"]
         params = suggestion["params"]
         doc_id = suggestion["doc_id"]
-        synset = SYNSETPT[doc_id]
+        synset = self._get_synset_by_id(doc_id)
+        pos = self._get_pos(synset, "synset-")
 
         result = True
 
@@ -81,7 +84,7 @@ class Update(OWNPT):
             if item is not None:
                 result = False
             else:
-                word = self._get_word(params, True)
+                word = self._get_word(params, True, pos)
                 sense = self._new_sense(synset, True)
                 label = self._new_lexical_literal(params)
                 self._add_triple((sense, RDFS.label, label), action)
@@ -112,6 +115,11 @@ class Update(OWNPT):
                 result = False
             else:
                 self._drop_node(item, action)
+                # removes word if it becomes orphan 
+                word = self.graph.value(item, SCHEMA.word)
+                sense = self.graph.value(predicate=SCHEMA.word, object=word)
+                if sense is not None:
+                    self._drop_node(word, action)
         
         elif action == "remove-gloss-pt":
             # finds and removes suitable

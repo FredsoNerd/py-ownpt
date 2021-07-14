@@ -12,7 +12,7 @@ from pyownpt.compare import Compare
 
 
 def _parse(args):
-    ownpt_filapath = args.owp
+    ownpt_filapaths = args.owp
     wn_filepath = args.wnd
     compare_morpho = args.m
     output_filepath = args.o
@@ -26,21 +26,21 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_compare_ownpt_dump(ownpt_filapath, wn_filepath, compare_morpho, output_filepath)
+    cli_compare_ownpt_dump(ownpt_filapaths, wn_filepath, compare_morpho, output_filepath)
     
 
 def cli_compare_ownpt_dump(
-    ownpt_filapath:str,
+    ownpt_filapaths:str,
     wn_filepath:str,
     compare_morpho:bool=False,
     output_filepath:str = "output.json"):
     """"""
 
     ownpt = Graph()
-
-    logger.info(f"loading data from file '{ownpt_filapath}'")
-    ownpt_format = _get_format(ownpt_filapath)
-    ownpt.parse(ownpt_filapath, format=ownpt_format)
+    for ownpt_filapath in ownpt_filapaths:
+        logger.info(f"loading data from file '{ownpt_filapath}'")
+        ownpt_format = guess_format(ownpt_filapath)
+        ownpt.parse(ownpt_filapath, format=ownpt_format)
 
     logger.info(f"loading data from file '{wn_filepath}'")
     wn = [loads(line)["_source"] for line in open(wn_filepath).readlines()]
@@ -72,18 +72,11 @@ def cli_compare_ownpt_dump(
     dump(report, open(output_filepath, mode="w"), ensure_ascii=False)
 
 
-def _get_format(filepath:str):
-    """"""
-
-    filepath_format = guess_format(filepath, {"jsonld":"json-ld"})
-    return filepath_format if filepath_format else filepath.split(".")[-1]
-
-
 # sets parser and interface function
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="rdf file from own-pt")
+parser.add_argument("owp", help="rdf files from own-pt", nargs="+")
 parser.add_argument("wnd", help="jsonl dump file wn.json")
 parser.add_argument("-m", help="compare including morphosemantic", action="store_true")
 parser.add_argument("-o", help="output file (default: output.json)", default="output.json")

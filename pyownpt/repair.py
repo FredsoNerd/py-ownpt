@@ -31,9 +31,10 @@ class Repair(OWNPT):
             self.remove_desconex_sense_nodes, # without a synset
             self.remove_desconex_word_nodes, # without a sense
             
-            self.fix_links_to_satelites,
-            self.fix_synset_id_types,
-            self.remove_lemma_property]
+            # self.fix_links_to_satelites,
+            # self.fix_synset_id_types,
+            # self.remove_lemma_property
+            ]
 
         # apply actions 
         for action in repair_actions:
@@ -121,12 +122,15 @@ class Repair(OWNPT):
         synsets = self._get_all_synsets()
         for synset, in synsets:
             count += 1
+            
+            # removes old property
+            synset_id = self.graph.value(synset, SCHEMA.synsetId)
+            if synset_id: 
+                self._drop_triple((synset, SCHEMA.synsetId, synset_id))
 
+            # replaces property
             synset_id = Literal(synset.split("/synset-")[-1])
             synset_offset = Literal(synset_id.split("-")[0])
-
-            # replaces properties
-            self._drop_triple((synset, SCHEMA.synsetId, synset_offset))
             self._add_triple((synset, SCHEMA.offset, synset_offset))
             self._add_triple((synset, SCHEMA.synsetId, synset_id))
 
@@ -149,7 +153,12 @@ class Repair(OWNPT):
                 count += 1
                 new_synset = URIRef(synset.replace("-a", "-s"))
                 self.logger.debug(f"replacing '{synset.n3()}' by '{new_synset.n3()}'")
-                self._replace_node(synset, new_synset)
+                self._replace_node(synset, new_synset, "format_adjective_satelites")
+                # replace synset id
+                synset_id = synset.split("synset-")[-1]
+                new_synset_id = new_synset.split("synset-")[-1]
+                self._drop_triple((new_synset, SCHEMA.synsetId, Literal(synset_id)), "format_adjective_satelites")
+                self._add_triple((new_synset, SCHEMA.synsetId, Literal(new_synset_id)), "format_adjective_satelites")
             else:
                 self.logger.warning(f"ill formed AdjectiveSatelliteSynset '{synset.n3()}'")
 
@@ -318,11 +327,11 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?w ?l WHERE { ?w rdf:type wn30:Word . ?w wn30:lexicalForm ?l }"
+        query = "SELECT ?w ?l ?p WHERE { ?w rdf:type wn30:Word . ?w wn30:lemma ?l . ?w wn30:pos ?p }"
         result = self.graph.query(query)
         
-        for word, lexical in result:
-            new_word = self._new_word(lexical, True)
+        for word, lexical, pos in result:
+            new_word = self._new_word(lexical, True, pos)
             if not new_word == word:
                 count += 1
                 self._replace_node(word, new_word, name)
@@ -380,7 +389,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?w1 ?w2 WHERE{ ?w1 wn30:lexicalForm ?l . ?w2 wn30:lexicalForm ?l . FILTER ( STR(?w1) < STR(?w2) ) }"
+        query = "SELECT ?w1 ?w2 WHERE{ ?w1 wn30:lemma ?l . ?w2 wn30:lemma ?l . ?w1 wn30:pos ?p . ?w2 wn30:pos ?p . FILTER ( STR(?w1) < STR(?w2) )}"
         result = self.graph.query(query)
         for word1, word2 in result:
             count += 1
@@ -394,7 +403,7 @@ class Repair(OWNPT):
         """"""
         count = 0
         
-        query = "SELECT ?w WHERE{ ?w wn30:lexicalForm ?l1 . ?w wn30:lexicalForm ?l2 . FILTER ( ?l1 != ?l2 ) }"
+        query = "SELECT ?w WHERE{ ?w wn30:lemma ?l1 . ?w wn30:lemma ?l2 . FILTER ( ?l1 != ?l2 ) }"
         result = self.graph.query(query)
 
         for word, in result:
@@ -409,7 +418,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lexicalForm wn30:gloss wn30:example wn30:lemma } ?s ?p ?o . }"
+        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lemma wn30:gloss wn30:example wn30:lemma } ?s ?p ?o . }"
         result = self.graph.query(query)
         
         for s, p, lexical in result:
@@ -428,7 +437,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?w WHERE{ { ?s wn30:word ?w } UNION { ?w wn30:lexicalForm ?l } . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
+        query = "SELECT ?w WHERE{ { ?s wn30:word ?w } UNION { ?w wn30:lemma ?l } . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
         result = self.graph.query(query)
         
         for word, in result:
@@ -458,7 +467,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?sl ?wl WHERE{ ?s rdfs:label ?sl . ?s wn30:word ?w . ?w wn30:lexicalForm ?wl . FILTER ( ?sl != ?wl )}"
+        query = "SELECT ?s ?sl ?wl WHERE{ ?s rdfs:label ?sl . ?s wn30:word ?w . ?w wn30:lemma ?wl . FILTER ( ?sl != ?wl )}"
         result = self.graph.query(query)
         
         for sense, label, lexical in result:
@@ -491,7 +500,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?l WHERE{ ?s rdf:type wn30:WordSense . ?s wn30:word ?w . ?w wn30:lexicalForm ?l . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
+        query = "SELECT ?s ?l WHERE{ ?s rdf:type wn30:WordSense . ?s wn30:word ?w . ?w wn30:lemma ?l . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
         result = self.graph.query(query)
         
         for sense, label in result:
@@ -524,7 +533,7 @@ class Repair(OWNPT):
         """"""
         count = 0
         
-        query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . FILTER NOT EXISTS { ?w wn30:lexicalForm ?l .} }"
+        query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . FILTER NOT EXISTS { ?w wn30:lemma ?l .} }"
         result = self.graph.query(query)
         
         for word in result:

@@ -13,7 +13,7 @@ from pyownpt.update import Update
 
 
 def _parse(args):
-    ownpt_filapath = args.owp
+    ownpt_filapaths = args.owp
     suggestions_filepath = args.sgs
     votes_filepath = args.vts
     output_filepath = args.o
@@ -31,12 +31,12 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # cals main function
-    cli_update_ownpt_from_dump(ownpt_filapath, suggestions_filepath, votes_filepath,
+    cli_update_ownpt_from_dump(ownpt_filapaths, suggestions_filepath, votes_filepath,
         output_filepath, users_senior, trashold_senior, trashold_junior, actions_filepath)
 
 
 def cli_update_ownpt_from_dump(
-    ownpt_filapath:str,
+    ownpt_filapaths:str,
     suggestions_filepath:str,
     votes_filepath:str, 
     output_filepath:str="output.xml",
@@ -59,9 +59,11 @@ def cli_update_ownpt_from_dump(
         actions = loads(open(actions_filepath).read())
 
     # loading graph
-    logger.info(f"loading data from '{ownpt_filapath}'")
-    ownpt_format = _get_format(ownpt_filapath)
-    ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
+    ownpt = Graph()
+    for ownpt_filapath in ownpt_filapaths:
+        logger.info(f"loading data from '{ownpt_filapath}'")
+        format = guess_format(ownpt_filapath)
+        ownpt.parse(ownpt_filapath, format=format)
     
     # updates graph
     update = Update(ownpt)
@@ -76,29 +78,23 @@ def cli_update_ownpt_from_dump(
 
     # saves results
     logger.info(f"serializing results to '{output_filepath}'")
-    output_format = _get_format(output_filepath)
-    ownpt.serialize(output_filepath, format=output_format)
-
-
-def _get_format(filepath:str):
-    """"""
-
-    filepath_format = guess_format(filepath, {"jsonld":"json-ld"})    
-    return filepath_format if filepath_format else filepath.split(".")[-1]
+    format = guess_format(output_filepath)
+    ownpt.serialize(output_filepath, format=format)
 
 
 # sets parser and interface function
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="rdf file from own-pt")
+parser.add_argument("owp", help="rdf files from own-pt", nargs="+")
 parser.add_argument("sgs", help="file suggestions.json")
 parser.add_argument("vts", help="file votes.json")
-parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
+
 parser.add_argument("-u", help="list of senior/proficient users", nargs="*", default=[])
 parser.add_argument("-ts", help="senior suggestion score trashold (default: 1)", default=1)
 parser.add_argument("-tj", help="junior suggestion score trashold (default: 2)", default=2)
 parser.add_argument("-a", help="annotated file with actions to be applied", default=None)
+parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
 
 parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)
 

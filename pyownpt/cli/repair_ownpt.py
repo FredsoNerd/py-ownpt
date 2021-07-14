@@ -13,7 +13,7 @@ from pyownpt.repair import Repair
 
 
 def _parse(args):
-    ownpt_filapath = args.owp
+    ownpt_filapaths = args.owp
     output_filepath = args.o
     english_wordnet = args.e
 
@@ -26,18 +26,19 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    cli_repair_ownpt(ownpt_filapath, output_filepath, english_wordnet)
+    cli_repair_ownpt(ownpt_filapaths, output_filepath, english_wordnet)
     
 
 def cli_repair_ownpt(
-    ownpt_filapath:str,
+    ownpt_filapaths:str,
     output_filepath:str="output.xml",
     english_wordnet:bool=False):
     """"""
 
-    logger.info(f"loading data from file '{ownpt_filapath}'")
-    ownpt_format = _get_format(ownpt_filapath)
-    ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
+    for ownpt_filapath in ownpt_filapaths:
+        logger.info(f"loading data from file '{ownpt_filapath}'")
+        format = _get_format(ownpt_filapath)
+        ownpt = Graph().parse(ownpt_filapath, format=format)
 
     # repairs graph by rules
     Repair(ownpt, "en" if english_wordnet else "pt").repair()
@@ -60,7 +61,7 @@ def _get_format(filepath:str):
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="rdf file from wordnet")
+parser.add_argument("owp", help="rdf files from wordnet", nargs="+")
 parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
 parser.add_argument("-e", help="repairing english wordnet", action="store_true")
 

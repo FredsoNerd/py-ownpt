@@ -4,18 +4,15 @@ import tqdm
 import logging
 
 from rdflib import Graph, URIRef
-from pyownpt.ownpt import SCHEMA, NOMLEX, SYNSETPT
+from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX, SYNSETPT
 
 
-class Compare():
+class Compare(OWNPT):
     
     def __init__(self, graph:Graph, dump:dict):
-        self.graph = graph
+        super().__init__(graph)
         self.dump = dump
         self.docs = {synset["doc_id"]:synset for synset in self.dump}
-
-        # logging
-        self.logger = logging.getLogger("compare")
 
 
     def compare_items(self):
@@ -185,18 +182,12 @@ class Compare():
         itemso = []
         itemsd = synset[item_name].copy() if item_name in synset else []
         itemsd = [item.strip() for item in itemsd]
+        itemsd = list(set(itemsd))  # unique occurrences
 
         # finds all wordsenses, and its words
         doc_id = synset["doc_id"]
-        synset_uri = SYNSETPT[doc_id]
-        
-        result = self.graph.query(query.format(
-                    synset = synset_uri.n3(),
-                    hassens = SCHEMA.containsWordSense.n3(),
-                    hasword = SCHEMA.word.n3(),
-                    lexical = SCHEMA.lexicalForm.n3(),
-                    hasgloss = SCHEMA.gloss.n3(),
-                    hasexample = SCHEMA.example.n3()))
+        synset = self._get_synset_by_id(doc_id)
+        result = self.graph.query(query.format(synset = synset.n3()))
         
         # compares words in synset with dump
         for item, in result:
@@ -241,19 +232,15 @@ class Compare():
 
         # finds pointers
         doc_id = synset["doc_id"]
-        synset_uri = SYNSETPT[doc_id]
-        
         query = ("SELECT ?ss ?sw ?swl ?ts ?tw ?twl WHERE{{"
+                    "?s wn30:synsetId \"{synset}\" ."
+                    "?s wn30:containsWordSense ?ss ."
                     "?ss {pointer} ?ts ."
-                    "{synset} {hassens} ?ss ."
-                    "?ss {hasword} ?sw . ?sw {lexical} ?swl ."
-                    "?ts {hasword} ?tw . ?tw {lexical} ?twl . }}")
+                    "?ss wn30:word ?sw . ?sw wn30:lemma ?swl ."
+                    "?ts wn30:word ?tw . ?tw wn30:lemma ?twl . }}")
         result = self.graph.query(query.format(
-                    synset = synset_uri.n3(),
-                    hassens = SCHEMA.containsWordSense.n3(),
-                    pointer = pointer_uri.n3(),
-                    hasword = SCHEMA.word.n3(),
-                    lexical = SCHEMA.lexicalForm.n3()))
+                    synset = doc_id,
+                    pointer = pointer_uri.n3()))
         
 
         # compares words in synset with dump
@@ -294,11 +281,11 @@ class Compare():
         """"""
 
         if item_name == "word_pt":
-            return "SELECT ?wl WHERE {{ {synset} {hassens} ?s . ?s {hasword} ?w . ?w {lexical} ?wl . }}"
+            return "SELECT ?wl WHERE {{ {synset} wn30:containsWordSense/wn30:word/wn30:lemma ?wl . }}"
         if item_name == "gloss_pt":
-            return "SELECT ?gl WHERE {{ {synset} {hasgloss} ?gl . }}"
+            return "SELECT ?gl WHERE {{ {synset} wn30:gloss ?gl . }}"
         if item_name == "example_pt":
-            return "SELECT ?ex WHERE {{ {synset} {hasexample} ?ex . }}"
+            return "SELECT ?ex WHERE {{ {synset} wn30:example ?ex . }}"
         
         raise Exception(f"not a valid option for comparing: {item_name}")
 

@@ -100,16 +100,17 @@ class OWNPT():
     def _get_word(self, lexical_form:str, create_new=False, pos=None):
         """"""
 
+        # formats lexical
         lexical_form = Literal(lexical_form, lang=self.lang)
-        words = self.graph.subjects(SCHEMA.lexicalForm, lexical_form)
+        # checks each word
+        words = self.graph.subjects(SCHEMA.lemma, lexical_form)
         for word in words:
             word_pos = self.graph.value(word, SCHEMA.pos)
-            if word_pos == Literal(pos): return word
-        
+            if word_pos and word_pos.toPython() == pos: return word
         # if cant find word
         if create_new:
             return self._new_word(lexical_form, True, pos)
-        
+        # if resulting words
         return None
 
     def _new_word(self, lexical:str, add_word=False, pos=None):
@@ -124,12 +125,17 @@ class OWNPT():
         # word = re.sub(r"\(", "_", word).strip()
         # word = re.sub(r"\)", "_", word).strip()
         # word = re.sub(r"(\<|\>|\?|\!|\(|\))", "_", word).strip()
+        
+        # gets suitable preffix
+        word = f"{word}-{pos}"
         if self.lang == "pt": word = WORD[word]
-        if self.lang == "en": word = WORD_EN[word]
+        elif self.lang == "en": word = WORD_EN[word]
+
+        # defines new word
         if add_word:
-            self._add_triple((word, RDF.type, SCHEMA.Word))
-            lexical_form = Literal(lexical, lang=self.lang)
-            self._add_triple((word, SCHEMA.lexicalForm, lexical_form), "new_word")
+            self._add_triple((word, RDF.type, SCHEMA.Word), "new_word")
+            self._add_triple((word, SCHEMA.pos, Literal(pos)), "new_word")
+            self._add_triple((word, SCHEMA.lemma, Literal(lexical, lang=self.lang)), "new_word")
 
         return word
 
@@ -260,3 +266,9 @@ class OWNPT():
     def _get_all_synsets(self):
         return self.graph.query("SELECT ?s WHERE { VALUES ?t { wn30:Synset wn30:AdjectiveSatelliteSynset wn30:AdjectiveSynset wn30:AdverbSynset wn30:NounSynset wn30:VerbSynset } ?s a ?t . }")
         
+    
+    def _get_synset_by_id(self, synset_id):
+        synset = self.graph.value(predicate=SCHEMA.synsetId, object=Literal(synset_id))
+        if synset is None and synset_id.endswith("-a"):
+            synset_id = synset_id.replace("-a", "-s") # from satellites
+        return self.graph.value(predicate=SCHEMA.synsetId, object=Literal(synset_id))
