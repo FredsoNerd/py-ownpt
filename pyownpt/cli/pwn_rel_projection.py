@@ -11,8 +11,8 @@ from pyownpt.project import ProjectRelations
 
 
 def _parse(args):
-    ownpt_filapath = args.owp
-    ownen_filapath = args.pwn
+    ownpt_filapaths = args.owp
+    ownen_filapaths = args.pwn
     output_filepath = args.o
 
     # configs logging
@@ -24,45 +24,42 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    project_relations(ownpt_filapath, ownen_filapath, output_filepath)
+    project_relations(ownpt_filapaths, ownen_filapaths, output_filepath)
     
 
 def project_relations(
-    ownpt_filapath:str,
-    ownen_filapath:str,
+    ownpt_filapaths:str,
+    ownen_filapaths:str,
     output_filepath:str="output.xml"):
     """"""
+    
+    ownpt = Graph()
+    for ownpt_filapath in ownpt_filapaths:
+        logger.info(f"loading data from file '{ownpt_filapath}'")
+        format = guess_format(ownpt_filapath)
+        ownpt.parse(ownpt_filapath, format=format)
 
-    logger.info(f"loading data from file '{ownpt_filapath}'")
-    ownpt_format = _get_format(ownpt_filapath)
-    ownpt = Graph().parse(ownpt_filapath, format=ownpt_format)
-
-    logger.info(f"loading data from file '{ownen_filapath}'")
-    ownen_format = _get_format(ownen_filapath)
-    ownen = Graph().parse(ownen_filapath, format=ownen_format)
+    ownen = Graph()
+    for ownen_filapath in ownen_filapaths:
+        logger.info(f"loading data from file '{ownen_filapath}'")
+        format = guess_format(ownen_filapath)
+        ownen.parse(ownen_filapath, format=format)
 
     # project relations
     ProjectRelations(ownpt, ownen).project()
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
-    output_format = _get_format(output_filepath)
+    output_format = guess_format(output_filepath)
     ownpt.serialize(output_filepath, format=output_format)
-
-
-def _get_format(filepath:str):
-    """"""
-
-    filepath_format = guess_format(filepath, {"jsonld":"json-ld"})    
-    return filepath_format if filepath_format else filepath.split(".")[-1]
 
 
 # sets parser and interface function
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="rdf file from wordnet")
-parser.add_argument("pwn", help="rdf file from wordnet")
+parser.add_argument("owp", help="rdf files from wordnet", nargs="+")
+parser.add_argument("--pwn", help="rdf files from wordnet", nargs="+")
 parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
 
 parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)

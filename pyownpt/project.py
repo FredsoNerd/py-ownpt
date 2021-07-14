@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX, OWL, Graph
+from rdflib import graph
+from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX, OWL, RDF, Graph
 
 class ProjectRelations(OWNPT):
 
@@ -59,7 +60,7 @@ class ProjectRelations(OWNPT):
     def project(self):
         """"""
 
-        # apply actions 
+        # project relations
         for pointer in self.pwn_pointers:
             name = pointer.n3()
             
@@ -70,10 +71,15 @@ class ProjectRelations(OWNPT):
             # plots info
             self.logger.info(f"pointer '{name} : {after_added_triples - before_added_triples} triples added")
 
+        # project CoreConcept
+        self.project_property(RDF.type, SCHEMA.CoreConcept)
+        # project BaseConcept
+        self.project_property(RDF.type, SCHEMA.BaseConcept)
+
         # resulting added and removed triples
-        self.logger.info(f"all {len(self.pwn_pointers)} pointers projected")
-        self.logger.info(f"Total: {self.added_triples} triples added")
-        self.logger.info(f"Total: {self.counter} triples checked")
+        self.logger.info(f"all {len(self.pwn_pointers)} pointers projected"
+            f"\n\ttotal: {self.added_triples} triples added"
+            f"\n\ttotal: {self.counter} triples checked")
 
     
     def project_relation(self, pointer, name=""):
@@ -90,3 +96,17 @@ class ProjectRelations(OWNPT):
                 self._add_triple((source_pt, pointer, target_pt), name)
             else:
                 self.logger.debug(f"relation '{pointer}' not maped : source '{source_en}':'{source_pt}' and target '{target_en}':'{target_pt}'")
+
+
+    def project_property(self, predicate, property):
+        """"""
+        
+        self.logger.info(f"start projecting property '{predicate.n3()}' '{property.n3()}'")
+        for synset_en in self.pwn.subjects(predicate, property):
+            synset_pt = self.graph.value(synset_en, OWL.sameAs)
+            
+            if synset_pt is not None:
+                self._add_triple((synset_pt, predicate, property), "project_property")
+                self.logger.debug(f"adding property '{property.n3()}' to '{synset_pt.n3()}'")
+            else:
+                self.logger.warning(f"could not find synset sameAs '{synset_en.n3()}'")
