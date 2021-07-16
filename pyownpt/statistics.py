@@ -32,7 +32,7 @@ class Statistics(OWNPT):
             statistics[ss_type] = self.graph.query(query).bindings[0]["count"].toPython()
 
         # global
-        ss_type = "Synset"
+        ss_type = "Synset (total)"
         query = "SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense ?s . }"
         statistics[ss_type] = self.graph.query(query).bindings[0]["count"].toPython()
 
@@ -55,7 +55,7 @@ class Statistics(OWNPT):
             statistics[ss_type] = count_eq_1, count_gt_1            
 
         # global
-        ss_type = "Synset"
+        ss_type = "Synset (total)"
         query = "SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense ?s1 ; wn30:containsWordSense ?s2 . FILTER( ?s1 != ?s2 ) }"
         count_gt_1 = self.graph.query(query).bindings[0]["count"].toPython()
         query = "SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense ?s1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense ?s2 . FILTER( ?s1 != ?s2 )}}"
@@ -73,33 +73,29 @@ class Statistics(OWNPT):
 
         # non void senses
         statistics = dict()
-        for ss_type in ["NounSynset", "VerbSynset", "AdverbSynset", "AdjectiveSynset", "AdjectiveSatelliteSynset"]:
+        for pos in {"Noun":"n", "Verb":"v", "Adverb":"r", "Adjective":"a"}:
             # multi word expressions
-            query = "SELECT (COUNT (DISTINCT ?l) as ?count) WHERE { ?ss a wn30:"+ss_type+" ; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
-            statistics[ss_type] = self.graph.query(query).bindings[0]["count"].toPython()
+            query = "SELECT (COUNT (DISTINCT ?w) as ?count) WHERE { ?w wn30:pos \""+pos+"\"; wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
+            statistics[pos] = self.graph.query(query).bindings[0]["count"].toPython()
 
         # global
-        ss_type = "Synset"
-        query = "SELECT (COUNT ( DISTINCT ?l ) as ?count) WHERE { ?ss wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
-        statistics[ss_type+" (distinct lemmas)"] = self.graph.query(query).bindings[0]["count"].toPython()
-        query = "SELECT (COUNT ( DISTINCT ?w ) as ?count) WHERE { ?ss wn30:containsWordSense/wn30:word ?w . ?w wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
-        statistics[ss_type+" (distinct words)"] = self.graph.query(query).bindings[0]["count"].toPython()
-        # query = "SELECT (COUNT ( DISTINCT CONCAT(STR(?l), STR(?t)) ) as ?count) WHERE { ?ss a ?t; wn30:containsWordSense/wn30:word/wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
-        # statistics[ss_type+" (distinct lemma+ss_type)"] = self.graph.query(query).bindings[0]["count"].toPython()
-
+        pos = "Words (total)"
+        query = "SELECT (COUNT ( DISTINCT ?w ) as ?count) WHERE { ?w wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
+        statistics[pos] = self.graph.query(query).bindings[0]["count"].toPython()
+        
         return statistics
     
 
-    def get_synsets_senses_words(self, prefix="statistics"):
+    def get_summary(self, prefix="statistics"):
         """"""
-        self.logger.debug(f"{prefix}:getting statistics for Open Multilingual Wordnets")
+        self.logger.debug(f"{prefix}:getting statistics for Summary")
 
         # synsets words and senses
-        query = "SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense ?s . }"
-        synsets = self.graph.query(query).bindings[0]["count"]
+        #query = "SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss wn30:containsWordSense ?s . }"
+        #synsets = self.graph.query(query).bindings[0]["count"]
         query = "SELECT (COUNT( DISTINCT ?s ) AS ?count) WHERE { ?s a wn30:WordSense . }"
         senses = self.graph.query(query).bindings[0]["count"]
         query = "SELECT (COUNT( DISTINCT ?w ) AS ?count) WHERE { ?w a wn30:Word . }"
         words = self.graph.query(query).bindings[0]["count"]
         
-        return synsets, senses, words
+        return senses, words

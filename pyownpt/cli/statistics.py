@@ -71,6 +71,15 @@ def statistics(
 
     with open(output_filepath, "w") as outfile:
         outfile.write("#+title: Statistics")
+
+        # Summary
+        outfile.write("\n\n* Summary\n")
+        outfile.write(tabulate.tabulate(
+            tablefmt="orgtbl",
+            headers=["Wordnet","Lang","Words","Senses"],
+            tabular_data=[
+                ["OWN-PT", "pt", words_pt, senses_pt],
+                ["OWN-EN", "en", words_en, senses_en]]))
         
         # BaseConcept and CoreConcept
         outfile.write("\n\n* Base and Core Concepts\n")
@@ -78,8 +87,8 @@ def statistics(
             tablefmt="orgtbl",
             headers=["Synset Type","OWN-PT","OWN-EN"],
             tabular_data=[
-                ["CoreConcept", core_pt, core_en],
-                ["BaseComcept", base_pt, base_en]]))
+                ["CoreConcept", f"{core_pt} ({round(100*core_pt/core_en, 2)}%)", f"{core_en} ({round(100*core_en/core_en, 2)}%)"],
+                ["BaseComcept", f"{base_pt} ({round(100*base_pt/base_en, 2)}%)", f"{base_en} ({round(100*base_en/base_en, 2)}%)"]]))
 
         # Instantiated Synsets
         outfile.write("\n\n* Instantiated Synsets\n")
@@ -110,15 +119,6 @@ def statistics(
                 key, 
                 f"{table_pt[key][0]} / {table_pt[key][1]}",
                 f"{table_en[key][0]} / {table_en[key][1]}"]for key in table_pt]))
-
-        # Open Multilingual Wordnet
-        outfile.write("\n\n* Open Multilingual Wordnet\n")
-        outfile.write(tabulate.tabulate(
-            tablefmt="orgtbl",
-            headers=["Wordnet","Lang","Synsets","Words","Senses","Core"],
-            tabular_data=[
-                ["OWN-PT", "pt", synsets_pt, words_pt, senses_pt, f"{core_pt} ({round(100*core_pt/core_en, 2)}%)"],
-                ["OWN-EN", "en", synsets_en, words_en, senses_en, f"{core_en} ({round(100*core_en/core_en, 2)}%)"]]))
 
         outfile.write("\n")
 

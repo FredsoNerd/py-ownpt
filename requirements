@@ -1,4 +1,5 @@
 wn
 tqdm
 rdflib
+tabulate
 rdflib-jsonld
