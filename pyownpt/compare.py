@@ -11,7 +11,7 @@ class Compare(OWNPT):
     
     def __init__(self, graph:Graph, dump:dict):
         super().__init__(graph)
-        self.dump = dump
+        self.dump = [doc["_source"] for doc in dump]
         self.docs = {synset["doc_id"]:synset for synset in self.dump}
 
 
@@ -57,7 +57,7 @@ class Compare(OWNPT):
         query = self._get_query(item_name)
 
         # start comparing
-        self.logger.warning(f"start comparing item {item_name}:")
+        self.logger.info(f"start comparing item {item_name}:")
         for synset in tqdm.tqdm(self.dump):
             doc_id = synset['doc_id']
 
@@ -142,7 +142,7 @@ class Compare(OWNPT):
             "count":{"dump":0, "ownpt":0, "both":0},
             "pairs":{"dump":[], "ownpt":[], "both":[]}}
 
-        self.logger.warning(f"start comparing pointer '{pointer_name}':")
+        self.logger.info(f"start comparing pointer '{pointer_name}':")
         for synset in tqdm.tqdm(self.dump):
             doc_id = synset['doc_id']
 

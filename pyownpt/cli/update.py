@@ -1,0 +1,117 @@
+# -*- coding: utf-8 -*-
+
+from re import U
+import sys
+import argparse
+import logging
+logger = logging.getLogger()
+
+from json import loads
+from rdflib import Graph
+from pyownpt.repair import Repair
+from pyownpt.update import Update
+from pyownpt.compare import Compare
+from pyownpt.util import get_format, get_unify_actions
+
+
+def _parse(args):
+    ownpt_filapaths = args.rdf
+    wn_filepath = args.wns
+    votes_filepath = args.vts
+    suggestions_filepaths = args.sgs
+
+    # config
+    ownpt_lang = args.l
+    users_senior = args.u
+    output_filepath = args.o
+    trashold_senior = args.ts
+    trashold_junior = args.tj
+
+    # sets logging
+    fileHandler = logging.FileHandler(filename="log-update", mode="w")
+    fileHandler.setLevel(logging.DEBUG)
+    streamHandler = logging.StreamHandler(stream=sys.stdout)
+    streamHandler.setLevel(level=30-10*args.v)
+
+    logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
+
+    # cals main function
+    cli_update_ownpt_from_dump(ownpt_filapaths, wn_filepath,
+        suggestions_filepaths, votes_filepath, output_filepath,
+        ownpt_lang, users_senior, trashold_senior, trashold_junior)
+
+
+def cli_update_ownpt_from_dump(
+    ownpt_filapaths:str,
+    wn_filepath:str,
+    suggestions_filepaths:str,
+    votes_filepath:str, 
+    output_filepath:str,
+    ownpt_lang:str,
+    users_senior=[],
+    trashold_senior=1,
+    trashold_junior=2):
+    """"""
+
+    # loading graph
+    ownpt = Graph()
+    for ownpt_filapath in ownpt_filapaths:
+        logger.info(f"loading data from '{ownpt_filapath}'")
+        format = get_format(ownpt_filapath)
+        ownpt.parse(ownpt_filapath, format=format)
+
+    # loads the data
+    logger.info(f"loading data from '{wn_filepath}'")
+    doc_wn = [loads(line) for line in open(wn_filepath).readlines()]
+    
+    logger.info(f"loading data from '{votes_filepath}'")
+    doc_votes = [loads(line) for line in open(votes_filepath).readlines()]
+
+    doc_suggestions = []
+    for suggestions_filepath in suggestions_filepaths:
+        logger.info(f"loading data from '{suggestions_filepath}'")
+        doc_suggestions += [loads(line) for line in open(suggestions_filepath).readlines()]
+
+    # downgrades match given dump Wn
+    logger.info(f"comparing wordnet to dump Wn")
+    report = Compare(ownpt, doc_wn).compare_items()
+    actions = get_unify_actions(report)
+    
+    logger.info(f"applying actions from Comparing")
+    Update(ownpt, ownpt_lang).update_from_compare(actions)
+
+    # updates given Suggesstions and Votes
+    logger.info(f"applying actions from Suggestions")
+    Update(ownpt, ownpt_lang).update(doc_suggestions,
+        doc_votes, users_senior, trashold_senior, trashold_junior)
+    
+    # validates and repaires resulting
+    logger.info(f"applying repairing actions to Wordnet")
+    # Repair(ownpt, ownpt_lang).repair()
+    Repair(ownpt, ownpt_lang).repair_words()    
+
+    # saves results
+    logger.info(f"serializing results to '{output_filepath}'")
+    format = get_format(output_filepath)
+    ownpt.serialize(output_filepath, format=format)
+
+
+# sets parser and interface function
+parser = argparse.ArgumentParser()
+
+# sets the user options
+parser.add_argument("rdf", help="rdf files from own", nargs="+")
+parser.add_argument("--wns", help="file wn.jsonl")
+parser.add_argument("--vts", help="file votes.jsonl")
+parser.add_argument("--sgs", help="file suggestions.jsonl", nargs="+")
+
+parser.add_argument("-l", help="wordnet lang (default: 'en')", default="en")
+parser.add_argument("-u", help="list of senior/proficient users", nargs="*", default=[])
+parser.add_argument("-ts", help="senior suggestion score trashold (default: 1)", default=1)
+parser.add_argument("-tj", help="junior suggestion score trashold (default: 2)", default=2)
+parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")
+
+parser.add_argument("-v", help="increase verbosity (example: -vv for debugging)", action="count", default=0)
+
+# cals the parser
+_parse(parser.parse_args())

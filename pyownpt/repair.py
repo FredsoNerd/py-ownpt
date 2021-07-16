@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from tqdm import tqdm
+
 from rdflib.graph import Graph
 from rdflib.namespace import OWL
 from pyownpt.ownpt import NOMLEX, OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
@@ -61,7 +63,34 @@ class Repair(OWNPT):
                 f"\n\ttotal: {self.added_triples} triples added"
                 f"\n\ttotal: {self.removed_triples} triples removed")
 
-    
+
+    def repair_words(self):
+        """"""
+        
+        # words repairing actions
+        actions = [
+            self.format_lexicals, # well defined lexical form
+            self.replace_word_uris, # grant unique words uri
+            self.replace_sense_labels, # match labels to words
+            self.remove_word_duplicates, # with same lexical form
+            self.remove_sense_duplicates, # same label in a synset
+            self.remove_desconex_sense_nodes, # without a synset
+            self.remove_desconex_word_nodes, # without a sense
+        ]
+
+        # apply repairing actions
+        for action in tqdm(actions):
+            name = action.__name__
+            results = action(name)
+            self.logger.debug(f"action '{name}' applied to {results} cases")
+
+        # added and removed triples
+        self.logger.info(
+            f"all {len(actions)} actions applied"
+                f"\n\ttotal: {self.added_triples} triples added"
+                f"\n\ttotal: {self.removed_triples} triples removed")
+
+
     def words_unique_pos(self):
         """"""
         

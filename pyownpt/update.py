@@ -115,11 +115,6 @@ class Update(OWNPT):
                 result = False
             else:
                 self._drop_node(item, action)
-                # removes word if it becomes orphan 
-                word = self.graph.value(item, SCHEMA.word)
-                sense = self.graph.value(predicate=SCHEMA.word, object=word)
-                if sense is not None:
-                    self._drop_node(word, action)
         
         elif action == "remove-gloss-pt":
             # finds and removes suitable
