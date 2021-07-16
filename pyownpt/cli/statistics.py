@@ -55,7 +55,7 @@ def statistics(
     base_pt, core_pt = statistics.get_base_core("OWN-PT")
     instantiated_synsets_pt = statistics.get_defined("OWN-PT")
     multi_word_expressions_pt = statistics.get_multi_word_expressions("OWN-PT")
-    synsets_pt, senses_pt, words_pt = statistics.get_synsets_senses_words("OWN-PT")
+    senses_pt, words_pt = statistics.get_summary("OWN-PT")
     ## en
     logger.info("generating statistics for OWN-EN")
     statistics = Statistics(ownen)
@@ -64,7 +64,7 @@ def statistics(
     base_en, core_en = statistics.get_base_core("OWN-EN")
     instantiated_synsets_en = statistics.get_defined("OWN-EN")
     multi_word_expressions_en = statistics.get_multi_word_expressions("OWN-EN")
-    synsets_en, senses_en, words_en = statistics.get_synsets_senses_words("OWN-EN")
+    senses_en, words_en = statistics.get_summary("OWN-EN")
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")

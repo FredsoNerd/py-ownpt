@@ -73,15 +73,16 @@ class Statistics(OWNPT):
 
         # non void senses
         statistics = dict()
-        for pos in {"Noun":"n", "Verb":"v", "Adverb":"r", "Adjective":"a"}:
+        name_pos_map = {"Noun":"n", "Verb":"v", "Adverb":"r", "Adjective":"a"}
+        for name, pos in name_pos_map.items():
             # multi word expressions
             query = "SELECT (COUNT (DISTINCT ?w) as ?count) WHERE { ?w wn30:pos \""+pos+"\"; wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
-            statistics[pos] = self.graph.query(query).bindings[0]["count"].toPython()
+            statistics[name] = self.graph.query(query).bindings[0]["count"].toPython()
 
         # global
-        pos = "Words (total)"
+        name = "Words (total)"
         query = "SELECT (COUNT ( DISTINCT ?w ) as ?count) WHERE { ?w wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
-        statistics[pos] = self.graph.query(query).bindings[0]["count"].toPython()
+        statistics[name] = self.graph.query(query).bindings[0]["count"].toPython()
         
         return statistics
     
