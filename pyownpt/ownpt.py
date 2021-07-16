@@ -3,8 +3,7 @@
 import re
 import logging
 
-from rdflib import Graph, URIRef, Namespace, Literal, RDF, RDFS, OWL
-from rdflib.plugins.sparql import prepareQuery
+from rdflib import Graph, URIRef, Namespace, SKOS, DC, Literal, RDF, RDFS, OWL
 
 # global
 PWN30 = Namespace("http://wordnet-rdf.princeton.edu/wn30/")
@@ -25,9 +24,11 @@ class OWNPT():
     def __init__(self, graph:Graph, lang="pt"):
         self.lang = lang
         self.graph = graph
+        self.graph.bind("dc", DC)
         self.graph.bind("owl", OWL)
         self.graph.bind("rdf", RDF)
         self.graph.bind("rdfs", RDFS)
+        self.graph.bind("skos", SKOS)
         self.graph.bind("wn30", SCHEMA)
         self.graph.bind("pwn30", PWN30)
         self.graph.bind("nomlex", NOMLEX)
