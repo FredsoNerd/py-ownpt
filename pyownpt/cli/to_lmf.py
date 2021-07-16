@@ -8,7 +8,7 @@ from six import with_metaclass
 logger = logging.getLogger()
 
 from rdflib import Graph
-from rdflib.util import guess_format
+from pyownpt.util import get_format
 from pyownpt.ownlmf import OWNPT_LMF
 
 def _parse(args):
@@ -49,12 +49,12 @@ def lmf_format(ownpt_filapaths, ili_map_filapath, output_filepath, lexicon_id,
     ownpt = Graph()
     for ownpt_filapath in ownpt_filapaths:
         logger.info(f"loading data from file '{ownpt_filapath}'")
-        ownpt_format = _get_format(ownpt_filapath)
+        ownpt_format = get_format(ownpt_filapath)
         ownpt.parse(ownpt_filapath, format=ownpt_format)
 
     ili_map = Graph()
     logger.info(f"loading data from file '{ili_map_filapath}'")
-    ili_map_format = _get_format(ili_map_filapath)
+    ili_map_format = get_format(ili_map_filapath)
     ili_map.parse(ili_map_filapath, format=ili_map_format)
 
     # formats into LMF format
@@ -65,13 +65,6 @@ def lmf_format(ownpt_filapaths, ili_map_filapath, output_filepath, lexicon_id,
     # serializes output
     logger.info(f"serialiing output to {output_filepath}")
     open(output_filepath, "w", encoding="utf8").write(ownpt_lmf)
-
-
-def _get_format(filepath:str):
-    """"""
-
-    filepath_format = guess_format(filepath, {"jsonld":"json-ld"})    
-    return filepath_format if filepath_format else filepath.split(".")[-1]
 
 
 # sets parser and interface function
