@@ -1,0 +1,56 @@
+#+title: Mapping Relations
+
+Consider the prefixes:
+ - wn30: <https://w3id.org/own-pt/wn30/schema/>
+ - nomlex: <https://w3id.org/own-pt/nomlex/schema/>
+
+* WN30 Relations
+
+| WN30 Relation              | WN-LMF Relation   | Alternative |
+|----------------------------+-------------------+-------------|
+| wn30:seeAlso               | also              |             |
+| wn30:participleOf          | participle        |             |
+| wn30:adjectivePertainsTo   | pertainym         |             |
+| wn30:adverbPertainsTo      | derivation        |             |
+| wn30:derivationallyRelated | derivation        |             |
+| wn30:classifiesByRegion    | domain_region     |             |
+| wn30:classifiedByRegion    | has_domain_region |             |
+| wn30:classifiesByTopic     | domain_topic      |             |
+| wn30:classifiedByTopic     | has_domain_topic  |             |
+| wn30:classifiesByUsage     | exemplifies       |             |
+| wn30:classifiedByUsage     | is_exemplified_by |             |
+| wn30:hypernymOf            | hypernym          |             |
+| wn30:hyponymOf             | hyponym           |             |
+| wn30:hasInstance           | instance_hypernym |             |
+| wn30:instanceOf            | instance_hyponym  |             |
+| wn30:entails               | entails           |             |
+| wn30:causes                | causes            |             |
+| wn30:similarTo             | similar           |             |
+| wn30:attribute             | attribute         |             |
+| wn30:partHolonymOf         | holo_part         |             |
+| wn30:partMeronymOf         | mero_part         |             |
+| wn30:memberHolonymOf       | holo_member       |             |
+| wn30:memberMeronymOf       | mero_member       |             |
+| wn30:substanceHolonymOf    | holo_substance    |             |
+| wn30:substanceMeronymOf    | mero_substance    |             |
+| wn30:sameVerbGroupAs       | similar           | verb_group  |
+
+
+* Nomlex Relations
+
+| Nonlex Relation    | WN-LMF Relation | Alternative |
+|--------------------+-----------------+-------------|
+| nomlex:agent       | other           | agent       |
+| nomlex:bodyPart    | other           |             |
+| nomlex:byMeansOf   | other           |             |
+| nomlex:destination | other           |             |
+| nomlex:event       | other           |             |
+| nomlex:instrument  | other           | instrument  |
+| nomlex:location    | other           | location    |
+| nomlex:material    | other           |             |
+| nomlex:property    | other           |             |
+| nomlex:result      | other           | result      |
+| nomlex:state       | other           |             |
+| nomlex:undergoer   | other           |             |
+| nomlex:uses        | other           |             |
+| nomlex:vehicle     | other           |             |
