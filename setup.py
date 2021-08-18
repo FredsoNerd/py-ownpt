@@ -11,7 +11,9 @@ setup(
     # author_email="",
     # url="",
     license=open('LICENSE').read(),
-    packages=["pyownpt"],
+    packages=[
+        "pyownpt",
+        "pyownpt.cli"],
     install_requires=open("requirements").readlines()
 )
 
