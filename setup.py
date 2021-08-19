@@ -4,7 +4,7 @@ from setuptools import setup
 
 setup(
     name="Py-OWNPT",
-    version="0.0.0",
+    version="1.0.0",
     description="Python utilities for OpenWordnet-PT (OWN-PT)",
     long_description=open('README.md').read(),
     # author="",
