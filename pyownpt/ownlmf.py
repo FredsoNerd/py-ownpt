@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from posixpath import commonpath
 import tqdm
-import uuid
 
+from urllib.parse import quote
 from lxml.etree import Element, tostring
-from pyownpt.ownpt import Graph, NOMLEX, OWNPT, OWL, SCHEMA, PWN30
+from pyownpt.ownpt import WORD_EN, Graph, OWNPT, OWL, SCHEMA, PWN30, WORD
 
 class OWNPT_LMF(OWNPT):
     def __init__(self, own_pt:Graph, ili_map:Graph, lexicon_id, label, version,
@@ -28,54 +27,6 @@ class OWNPT_LMF(OWNPT):
         self.license=license
         self.citation=citation
 
-        # pointers
-        self.pointers = {
-            SCHEMA.antonymOf:"antonym",
-            SCHEMA.seeAlso:"also",
-            SCHEMA.participleOf:"participle",
-            SCHEMA.adjectivePertainsTo:"pertainym",
-            SCHEMA.adverbPertainsTo:"derivation",
-            SCHEMA.derivationallyRelated:"derivation",
-            SCHEMA.classifiesByRegion:"has_domain_region",
-            SCHEMA.classifiedByRegion:"domain_region",
-            SCHEMA.classifiesByTopic:"has_domain_topic",
-            SCHEMA.classifiedByTopic:"domain_topic",
-            SCHEMA.classifiesByUsage:"is_exemplified_by",
-            SCHEMA.classifiedByUsage:"exemplifies",
-
-            SCHEMA.hypernymOf:"hypernym",
-            SCHEMA.hyponymOf:"hyponym",
-            SCHEMA.hasInstance:"instance_hypernym",
-            SCHEMA.instanceOf:"instance_hyponym",
-            SCHEMA.entails:"entails",
-            SCHEMA.causes:"causes",
-            SCHEMA.similarTo:"similar",
-            SCHEMA.attribute:"attribute",
-
-            SCHEMA.partHolonymOf:"holo_part",
-            SCHEMA.partMeronymOf:"mero_part",
-            SCHEMA.memberHolonymOf:"holo_member",
-            SCHEMA.memberMeronymOf:"mero_member",
-            SCHEMA.substanceHolonymOf:"holo_substance",
-            SCHEMA.substanceMeronymOf:"mero_substance",
-            SCHEMA.sameVerbGroupAs:"similar", # verb_group
-
-            NOMLEX.agent: "other", # "agent"
-            NOMLEX.bodyPart:"other", 
-            NOMLEX.byMeansOf:"other", 
-            NOMLEX.destination:"other", 
-            NOMLEX.event:"other", 
-            NOMLEX.instrument: "other", # "instrument"
-            NOMLEX.location: "other", # "location"
-            NOMLEX.material:"other", 
-            NOMLEX.property:"other", 
-            NOMLEX.result: "other", # "result"
-            NOMLEX.state:"other", 
-            NOMLEX.undergoer:"other", 
-            NOMLEX.uses:"other", 
-            NOMLEX.vehicle:"other",
-        }
-
         
     def format(self,):
         self.logger.info("start formating lexical resource")
@@ -96,25 +47,24 @@ class OWNPT_LMF(OWNPT):
 
         # list of lexical entries (words) in your wordnet
         self.logger.info(f"formatting lexical entries (words)")
-
+        
         words = self._get_all_words()
+        words_lmf = []
         for word, in tqdm.tqdm(words):
-            senses = self.graph.subjects(SCHEMA.word, word)
-            word_pos = set([self._get_pos(sense) for sense in senses])
-
-            for pos in word_pos:
-                lexicon.append(self.get_lexical_entry_lmf(word, pos))
+            words_lmf.append(self.get_lexical_entry_lmf(word))
+        lexicon.extend(sorted(words_lmf, key = lambda x: x.attrib.items()))
         
         # list of synsets in your wordnet
         self.logger.info(f"formatting synsets")
 
         synsets = self._get_all_synsets()
+        synsets_lmf = []
         for synset, in tqdm.tqdm(synsets):
             synset_lmf = self.get_synset_lmf(synset)
-
             # adds only if synset has members
             if not synset_lmf.get("members") == "":
-                lexicon.append(synset_lmf)
+                synsets_lmf.append(synset_lmf)
+        lexicon.extend(sorted(synsets_lmf, key = lambda x: x.attrib.items()))
 
         return lexicon
 
@@ -130,55 +80,70 @@ class OWNPT_LMF(OWNPT):
 
         # list of definitions for that synset
         definitions = self.graph.objects(synset, SCHEMA.gloss)
+        definitions_lmf = []
         for definition in definitions:
-            synset_lmf.append(self._get_text_element_lmf("Definition", definition.toPython()))
+            definitions_lmf.append(self._get_text_element_lmf("Definition", definition.toPython()))
+        synset_lmf.extend(sorted(definitions_lmf, key = lambda x:x.text))
 
         # list of relations for that synset
         relations = self.get_node_relations(synset)
+        relations_lmf = []
         for _, rel, target in relations:
             # adds only if relation only if target has members
             members = self.get_synset_members(target)
             if not members == "":
-                synset_lmf.append(self.get_node_relation_lmf("SynsetRelation", rel, target))
+                relations_lmf.append(self.get_node_relation_lmf("SynsetRelation", rel, target))
+        synset_lmf.extend(sorted(relations_lmf, key = lambda x:x.attrib.items()))
 
         # list of examples for that synset
         examples = self.graph.objects(synset, SCHEMA.example)
+        examples_lmf = []
         for example in examples:
-            synset_lmf.append(self._get_text_element_lmf("Example", example.toPython()))
+            examples_lmf.append(self._get_text_element_lmf("Example", example.toPython()))
+        synset_lmf.extend(sorted(examples_lmf, key = lambda x:x.text))
 
         # return synset
         return synset_lmf
 
 
-    def get_lexical_entry_lmf(self, word, pos):
+    def get_lexical_entry_lmf(self, word):
         """"""
 
         # lexical_entry and lemma
-        word_id = f"word-{pos}-{str(uuid.uuid1())}"
-        lexical_entry = Element("LexicalEntry", id=word_id)
+        word_id = str(word)
+        word_id = word_id.replace(WORD,'word-')
+        word_id = word_id.replace(WORD_EN,'word-')
+        word_id = quote(word_id, safe='').replace('%', '::')
+        lexical_entry = Element("LexicalEntry", id = word_id)
         
         # formatting lemma
+        part_of_speech = self.graph.value(word, SCHEMA.pos)
         lexical_form = self.graph.value(word, SCHEMA.lemma)
-        lemma = Element("Lemma", partOfSpeech=pos, writtenForm=lexical_form)
+        lemma = Element("Lemma", partOfSpeech=part_of_speech, writtenForm=lexical_form)
         lexical_entry.append(lemma)
 
         # list of other forms for that lexical_entry (word)
         forms = self.graph.objects(word, SCHEMA.otherForm)
+        forms_lmf = []
         for form in forms:
             form_lmf = Element("Form", writtenForm=form.toPython()) 
-            lexical_entry.append(form_lmf)
+            forms_lmf.append(form_lmf)
+        lexical_entry.extend(sorted(forms_lmf, key = lambda x:x.get('writtenForm')))
 
         # list of senses for that lexical_entry (word)
         senses = self.graph.subjects(SCHEMA.word, word)
-        senses = [sense for sense in senses if self._get_pos(sense) == pos]
+        senses_lmf = []
         for sense in senses:
-            lexical_entry.append(self.get_sense_lmf(sense))
+            senses_lmf.append(self.get_sense_lmf(sense))
+        lexical_entry.extend(sorted(senses_lmf, key = lambda x:x.attrib.items()))
         
         # list of syntactic behaviours (frame) for that lexical_entry (word)
         behaviours = self.get_syntactic_behaviours(senses)
+        behaviours_lmf = []
         for behaviour in behaviours:
             behaviour_lmf = Element("SyntacticBehaviour", subcategorizationFrame=behaviour.toPython())
-            lexical_entry.append(behaviour_lmf)
+            behaviours_lmf.append(behaviour_lmf)
+        lexical_entry.extend(sorted(behaviours_lmf, key = lambda x:x.get('subcategorizationFrame')))
 
         # returs lexical_entry
         return lexical_entry
@@ -200,14 +165,17 @@ class OWNPT_LMF(OWNPT):
 
         # list of relations for that sense
         relations = self.get_node_relations(sense)
+        relations_lmf = []
         for _, rel, target in relations:
-            sense_lmf.append(self.get_node_relation_lmf("SenseRelation", rel, target))
+            relations_lmf.append(self.get_node_relation_lmf("SenseRelation", rel, target))
+        sense_lmf.extend(sorted(relations_lmf, key = lambda x:x.attrib.items()))
 
         # list of examples for that sense
         examples = self.graph.objects(sense, SCHEMA.example)
+        examples_lmf = []
         for example in examples:
-            sense_lmf.append(self._get_text_element_lmf("Example", example.toPython()))
-            
+            examples_lmf.append(self._get_text_element_lmf("Example", example.toPython()))
+        sense_lmf.extend(sorted(examples_lmf, key = lambda x:x.text))
         
         return sense_lmf
 
@@ -216,7 +184,7 @@ class OWNPT_LMF(OWNPT):
         behaviours = []
         for sense in senses:
             synset = self.graph.value(predicate=SCHEMA.containsWordSense, object=sense)
-            behaviours += list(self.graph.objects(synset, SCHEMA.frame))
+            behaviours.extend(list(self.graph.objects(synset, SCHEMA.frame)))
         return behaviours
 
 
@@ -229,7 +197,7 @@ class OWNPT_LMF(OWNPT):
     def get_node_relations(self, synset):
         relations = []
         for pointer in self.pointers:
-            relations += list(self.graph.triples((synset, pointer, None)))
+            relations.extend(list(self.graph.triples((synset, pointer, None))))
 
         return relations
 
@@ -260,4 +228,18 @@ class OWNPT_LMF(OWNPT):
             ili = self.ili.value(predicate=OWL.sameAs, object=PWN30[synset_id])
 
         return ili.split("/")[-1]
-        
+
+
+    def sort_element(self, root):
+        return self._sort_children(root)
+
+
+    def _sort_children(self, node):
+        if isinstance(node.tag, str):
+            node[:] = sorted(node, key = self._get_node_key)
+            for child in node:
+                self._sort_children(child)
+
+
+    def _get_node_key(self, node):
+        return "{}-{}".format(node.tag, node.attrib)
