@@ -3,7 +3,8 @@
 import re
 import logging
 
-from rdflib import Graph, URIRef, Namespace, SKOS, DC, Literal, RDF, RDFS, OWL
+from urllib.parse import quote
+from rdflib import Graph, Namespace, Literal, SKOS, DC, RDF, RDFS, OWL
 
 # global
 PWN30 = Namespace("http://wordnet-rdf.princeton.edu/wn30/")
@@ -46,12 +47,15 @@ class OWNPT():
         # synset_id from uri
         synset_id = synset.split("/")[-1]
         synset_id = synset_id[synset_id.find("-")+1:]
-            
+
+        _WORDSENSE = None
+        if self.lang == "pt": _WORDSENSE = WORDSENSE
+        if self.lang == "en": _WORDSENSE = WORDSENSE_EN 
         # finds new sense_id 
         sense_id = 1
         while True:
             # new sense to add
-            new_sense = WORDSENSE[f"{synset_id}-{sense_id}"]
+            new_sense = _WORDSENSE[f"{synset_id}-{sense_id}"]
             new_triple = (synset, SCHEMA.containsWordSense, new_sense)
 
             # validate new sense
@@ -76,9 +80,10 @@ class OWNPT():
         lexical = self._format_lexical(lexical)
         for sense in self.graph.objects(synset, SCHEMA.containsWordSense):
             label = self.graph.value(sense, RDFS.label)
-            label = self._format_lexical(label)
-            if label == lexical:
-                return sense
+            if label is not None:
+                label = self._format_lexical(label)
+                if label == lexical:
+                    return sense
         
         return None
 
@@ -117,20 +122,10 @@ class OWNPT():
     def _new_word(self, lexical:str, add_word=False, pos=None):
         """"""
 
-        word = re.sub(r" ", "+", lexical).strip()
-        word = re.sub(r"\<", "_", word).strip()
-        word = re.sub(r"\>", "_", word).strip()
-        # word = re.sub(r"\-", "_", word).strip()
-        # word = re.sub(r"\?", "_", word).strip()
-        # word = re.sub(r"\!", "_", word).strip()
-        # word = re.sub(r"\(", "_", word).strip()
-        # word = re.sub(r"\)", "_", word).strip()
-        # word = re.sub(r"(\<|\>|\?|\!|\(|\))", "_", word).strip()
-        
         # gets suitable preffix
-        word = f"{word}-{pos}"
+        word = f"{quote(lexical, safe='')}-{pos}"
         if self.lang == "pt": word = WORD[word]
-        elif self.lang == "en": word = WORD_EN[word]
+        if self.lang == "en": word = WORD_EN[word]
 
         # defines new word
         if add_word:

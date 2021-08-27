@@ -1,6 +1,7 @@
 wn
 tqdm
 lxml
+urllib
 rdflib
 tabulate
 rdflib-jsonld

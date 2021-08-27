@@ -16,8 +16,8 @@ from pyownpt.util import get_format, get_unify_actions
 
 def _parse(args):
     ownpt_filapaths = args.rdf
-    wn_filepath = args.wns
-    votes_filepath = args.vts
+    wn_filepaths = args.wns
+    votes_filepaths = args.vts
     suggestions_filepaths = args.sgs
 
     # config
@@ -36,16 +36,16 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # cals main function
-    cli_update_ownpt_from_dump(ownpt_filapaths, wn_filepath,
-        suggestions_filepaths, votes_filepath, output_filepath,
+    cli_update_ownpt_from_dump(ownpt_filapaths, wn_filepaths,
+        suggestions_filepaths, votes_filepaths, output_filepath,
         ownpt_lang, users_senior, trashold_senior, trashold_junior)
 
 
 def cli_update_ownpt_from_dump(
     ownpt_filapaths:str,
-    wn_filepath:str,
+    wn_filepaths:str,
     suggestions_filepaths:str,
-    votes_filepath:str, 
+    votes_filepaths:str, 
     output_filepath:str,
     ownpt_lang:str,
     users_senior=[],
@@ -61,11 +61,15 @@ def cli_update_ownpt_from_dump(
         ownpt.parse(ownpt_filapath, format=format)
 
     # loads the data
-    logger.info(f"loading data from '{wn_filepath}'")
-    doc_wn = [loads(line) for line in open(wn_filepath).readlines()]
+    doc_wn = []
+    for wn_filepath in wn_filepaths:
+        logger.info(f"loading data from '{wn_filepath}'")
+        doc_wn += [loads(line) for line in open(wn_filepath).readlines()]
     
-    logger.info(f"loading data from '{votes_filepath}'")
-    doc_votes = [loads(line) for line in open(votes_filepath).readlines()]
+    doc_votes = []
+    for votes_filepath in votes_filepaths:
+        logger.info(f"loading data from '{votes_filepath}'")
+        doc_votes += [loads(line) for line in open(votes_filepath).readlines()]
 
     doc_suggestions = []
     for suggestions_filepath in suggestions_filepaths:
@@ -73,22 +77,24 @@ def cli_update_ownpt_from_dump(
         doc_suggestions += [loads(line) for line in open(suggestions_filepath).readlines()]
 
     # downgrades match given dump Wn
-    logger.info(f"comparing wordnet to dump Wn")
-    report = Compare(ownpt, doc_wn).compare_items()
-    actions = get_unify_actions(report)
+    if doc_wn:
+        logger.info(f"comparing wordnet to dump Wn")
+        report = Compare(ownpt, doc_wn).compare_items()
+        actions = get_unify_actions(report)
     
-    logger.info(f"applying actions from Comparing")
-    Update(ownpt, ownpt_lang).update_from_compare(actions)
+        logger.info(f"applying actions from Comparing")
+        Update(ownpt, ownpt_lang).update_from_compare(actions)
 
     # updates given Suggesstions and Votes
-    logger.info(f"applying actions from Suggestions")
-    Update(ownpt, ownpt_lang).update(doc_suggestions,
-        doc_votes, users_senior, trashold_senior, trashold_junior)
+    if doc_votes and doc_suggestions:
+        logger.info(f"applying actions from Suggestions")
+        Update(ownpt, ownpt_lang).update(doc_suggestions,
+            doc_votes, users_senior, trashold_senior, trashold_junior)
     
     # validates and repaires resulting
+    repair = Repair(ownpt, ownpt_lang)
     logger.info(f"applying repairing actions to Wordnet")
-    # Repair(ownpt, ownpt_lang).repair()
-    Repair(ownpt, ownpt_lang).repair_words()    
+    repair.repair_words()
 
     # saves results
     logger.info(f"serializing results to '{output_filepath}'")
@@ -101,9 +107,9 @@ parser = argparse.ArgumentParser()
 
 # sets the user options
 parser.add_argument("rdf", help="rdf files from own", nargs="+")
-parser.add_argument("--wns", help="file wn.jsonl")
-parser.add_argument("--vts", help="file votes.jsonl")
-parser.add_argument("--sgs", help="file suggestions.jsonl", nargs="+")
+parser.add_argument("--wns", help="file wn.jsonl", nargs="+", default=[])
+parser.add_argument("--vts", help="file votes.jsonl", nargs="+", default=[])
+parser.add_argument("--sgs", help="file suggestions.jsonl", nargs="+", default=[])
 
 parser.add_argument("-l", help="wordnet lang (default: 'en')", default="en")
 parser.add_argument("-u", help="list of senior/proficient users", nargs="*", default=[])
