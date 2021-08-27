@@ -38,6 +38,69 @@ class OWNPT():
         self.added_triples = 0
         self.removed_triples = 0
 
+        # pointers
+        self.pointers = {
+            SCHEMA.antonymOf:"antonym",
+            SCHEMA.seeAlso:"also",
+            SCHEMA.participleOf:"participle",
+            SCHEMA.adjectivePertainsTo:"pertainym",
+            SCHEMA.adverbPertainsTo:"derivation",
+            SCHEMA.derivationallyRelated:"derivation",
+            SCHEMA.classifiesByRegion:"has_domain_region",
+            SCHEMA.classifiedByRegion:"domain_region",
+            SCHEMA.classifiesByTopic:"has_domain_topic",
+            SCHEMA.classifiedByTopic:"domain_topic",
+            SCHEMA.classifiesByUsage:"is_exemplified_by",
+            SCHEMA.classifiedByUsage:"exemplifies",
+            SCHEMA.hypernymOf:"hypernym",
+            SCHEMA.hyponymOf:"hyponym",
+            SCHEMA.hasInstance:"instance_hypernym",
+            SCHEMA.instanceOf:"instance_hyponym",
+            SCHEMA.entails:"entails",
+            SCHEMA.causes:"causes",
+            SCHEMA.similarTo:"similar",
+            SCHEMA.attribute:"attribute",
+            SCHEMA.partHolonymOf:"holo_part",
+            SCHEMA.partMeronymOf:"mero_part",
+            SCHEMA.memberHolonymOf:"holo_member",
+            SCHEMA.memberMeronymOf:"mero_member",
+            SCHEMA.substanceHolonymOf:"holo_substance",
+            SCHEMA.substanceMeronymOf:"mero_substance",
+            SCHEMA.sameVerbGroupAs:"similar", # verb_group
+
+            NOMLEX.agent: "other", # "agent"
+            NOMLEX.bodyPart:"other", 
+            NOMLEX.byMeansOf:"other", 
+            NOMLEX.destination:"other", 
+            NOMLEX.event:"other", 
+            NOMLEX.instrument: "other", # "instrument"
+            NOMLEX.location: "other", # "location"
+            NOMLEX.material:"other", 
+            NOMLEX.property:"other", 
+            NOMLEX.result: "other", # "result"
+            NOMLEX.state:"other", 
+            NOMLEX.undergoer:"other", 
+            NOMLEX.uses:"other", 
+            NOMLEX.vehicle:"other",
+        }
+
+        # synset types
+        self.synset_types = [
+            SCHEMA.Synset, 
+            SCHEMA.VerbSynset, 
+            SCHEMA.NounSynset,
+            SCHEMA.AdverbSynset, 
+            SCHEMA.AdjectiveSynset,
+            SCHEMA.AdjectiveSatelliteSynset]
+        # sense types
+        self.sense_types = [
+            SCHEMA.WordSense, 
+            SCHEMA.NounWordSense, 
+            SCHEMA.VerbWordSense,
+            SCHEMA.AdverbWordSense,
+            SCHEMA.AdjectiveWordSense, 
+            SCHEMA.AdjectiveSatelliteWordSense]
+
         # logging
         self.logger = logging.getLogger("ownpt")
 

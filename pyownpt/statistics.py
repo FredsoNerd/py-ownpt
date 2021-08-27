@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from os import stat
-from rdflib.graph import Graph
-from rdflib.namespace import OWL
-from pyownpt.ownpt import NOMLEX, OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
+from pyownpt.ownpt import NOMLEX, OWNPT, RDF, SCHEMA
 
 class Statistics(OWNPT):
 
-
     def get_base_core(self, prefix="statistics"):
         # Base and Core
-        self.logger.debug(f"getting statistics for types CoreConcept and BaseConcept")
+        self.logger.debug(f"{prefix}:getting statistics for types CoreConcept and BaseConcept")
         
         query = "SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:CoreConcept ; wn30:containsWordSense ?s . }"
         own_core = self.graph.query(query).bindings[0]["count"].toPython()
@@ -52,7 +48,7 @@ class Statistics(OWNPT):
             query = "SELECT (COUNT( DISTINCT ?ss ) AS ?count) WHERE { ?ss a wn30:"+ss_type+" ; wn30:containsWordSense ?s1 . FILTER NOT EXISTS { ?ss wn30:containsWordSense ?s2 . FILTER( ?s1 != ?s2 )}}"
             count_eq_1 = self.graph.query(query).bindings[0]["count"].toPython()
 
-            statistics[ss_type] = count_eq_1, count_gt_1            
+            statistics[ss_type] = count_eq_1, count_gt_1
 
         # global
         ss_type = "Synset (total)"
@@ -84,6 +80,32 @@ class Statistics(OWNPT):
         query = "SELECT (COUNT ( DISTINCT ?w ) as ?count) WHERE { ?w wn30:lemma ?l . FILTER REGEX( STR( ?l ), ' ') }"
         statistics[name] = self.graph.query(query).bindings[0]["count"].toPython()
         
+        return statistics
+
+
+    def get_relations(self, prefix="statistics"):
+        """"""
+        self.logger.debug(f"{prefix}:getting statistics for Relations")
+
+        statistics = dict()
+        
+        for pointer in self.pointers:
+            senses_count = 0
+            synsets_count = 0
+            for subject, object in self.graph.subject_objects(pointer):
+                if "wordsense" in subject and "wordsense" in object:
+                    senses_count += 1
+                elif "synset" in subject and "synset" in object:
+                    synsets_count += 1
+                else:
+                    self.logger.warning(f"couldn't classify subject {subject.n3()} "
+                        f"or object {object.n3()} under relation {pointer.n3()}")
+            # formats
+            name = pointer
+            name = name.replace(SCHEMA, "wn30:")
+            name = name.replace(NOMLEX, "nomlex:")
+            statistics[name] = senses_count, synsets_count
+            
         return statistics
     
 

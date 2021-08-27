@@ -56,6 +56,8 @@ def statistics(
     instantiated_synsets_pt = statistics.get_defined("OWN-PT")
     multi_word_expressions_pt = statistics.get_multi_word_expressions("OWN-PT")
     senses_pt, words_pt = statistics.get_summary("OWN-PT")
+    relations_pt = statistics.get_relations("OWN-PT")
+
     ## en
     logger.info("generating statistics for OWN-EN")
     statistics = Statistics(ownen)
@@ -65,6 +67,7 @@ def statistics(
     instantiated_synsets_en = statistics.get_defined("OWN-EN")
     multi_word_expressions_en = statistics.get_multi_word_expressions("OWN-EN")
     senses_en, words_en = statistics.get_summary("OWN-EN")
+    relations_en = statistics.get_relations("OWN-EN")
 
     # serializes output
     logger.info(f"serializing output to '{output_filepath}'")
@@ -115,6 +118,19 @@ def statistics(
         outfile.write(tabulate.tabulate(
             tablefmt="orgtbl",
             headers=["Synset Type","OWN-PT","OWN-EN"],
+            tabular_data=[[
+                key, 
+                f"{table_pt[key][0]} / {table_pt[key][1]}",
+                f"{table_en[key][0]} / {table_en[key][1]}"]for key in table_pt]))
+
+        
+        # Relations
+        outfile.write("\n\n* Relations (Senses / Synsets)\n")
+        table_pt = relations_pt
+        table_en = relations_en
+        outfile.write(tabulate.tabulate(
+            tablefmt="orgtbl",
+            headers=["Relation","OWN-PT","OWN-EN"],
             tabular_data=[[
                 key, 
                 f"{table_pt[key][0]} / {table_pt[key][1]}",
