@@ -2,9 +2,9 @@
 
 from tqdm import tqdm
 
-from rdflib.graph import Graph
-from rdflib.namespace import OWL
-from pyownpt.ownpt import NOMLEX, OWNPT, Literal, URIRef, RDFS, RDF, SCHEMA
+from rdflib.graph import Graph, Literal, URIRef, BNode
+from rdflib.namespace import OWL, RDFS, RDF
+from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX
 
 class Repair(OWNPT):
 
@@ -32,7 +32,7 @@ class Repair(OWNPT):
             self.remove_sense_duplicates, # same label in a synset
             self.remove_desconex_sense_nodes, # without a synset
             self.remove_desconex_word_nodes, # without a sense
-            
+
             # self.fix_links_to_satelites,
             # self.fix_synset_id_types,
             # self.remove_lemma_property
@@ -89,6 +89,30 @@ class Repair(OWNPT):
             f"all {len(actions)} actions applied"
                 f"\n\ttotal: {self.added_triples} triples added"
                 f"\n\ttotal: {self.removed_triples} triples removed")
+
+    def sort_senses_instances(self, name=""):
+        """"""
+        count = 0
+        
+        for synset in tqdm(list(self.graph.subjects(SCHEMA.containsWordSense))):
+            # selecting senses
+            senses = self.graph.objects(synset, SCHEMA.containsWordSense)
+
+            # rename senses
+            labels = dict()
+            for sense in senses:
+                label = self.graph.value(sense, RDFS.label)
+                self.graph.remove((sense, SCHEMA.wordNumber, None))
+                # replaces sense name
+                blank_sense = BNode()
+                labels[label] = blank_sense
+                self._replace_node(sense, blank_sense)
+
+            # ordered senses
+            for label in sorted(labels):
+                old_sense = labels[label]
+                new_sense = self._new_sense(synset, True)
+                self._replace_node(old_sense, new_sense)
 
 
     def words_unique_pos(self):

@@ -95,6 +95,8 @@ def cli_update_ownpt_from_dump(
     repair = Repair(ownpt, ownpt_lang)
     logger.info(f"applying repairing actions to Wordnet")
     repair.repair_words()
+    logger.info(f"granting well ordered Sense instances") 
+    repair.sort_senses_instances()
 
     # saves results
     logger.info(f"serializing results to '{output_filepath}'")
