@@ -1,5 +1,6 @@
 wn
 tqdm
+html
 lxml
 urllib
 rdflib

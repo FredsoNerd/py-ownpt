@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import tqdm
-
-from urllib.parse import quote
-from lxml.etree import Element, tostring
-from pyownpt.ownpt import WORD_EN, Graph, OWNPT, OWL, SCHEMA, PWN30, WORD
+from io import StringIO
+from tqdm import tqdm
+from lxml.etree import Element, tostring, DTD
+from html.entities import html5, entitydefs
+from pyownpt.ownpt import Graph, OWNPT, OWL, SCHEMA, PWN30
 
 class OWNPT_LMF(OWNPT):
     def __init__(self, own_pt:Graph, ili_map:Graph, lexicon_id, label, version,
@@ -26,6 +26,13 @@ class OWNPT_LMF(OWNPT):
         self.email=email
         self.license=license
         self.citation=citation
+
+        # unicode mapping
+        self.unicode_entity_names = dict()
+        for name in sorted(html5, reverse=True):
+            char = html5[name]
+            name = name.strip(";").strip("&")
+            self.unicode_entity_names[char] = name
 
         
     def format(self,):
@@ -50,7 +57,7 @@ class OWNPT_LMF(OWNPT):
         
         words = self._get_all_words()
         words_lmf = []
-        for word, in tqdm.tqdm(words):
+        for word, in tqdm(words):
             words_lmf.append(self.get_lexical_entry_lmf(word))
         lexicon.extend(sorted(words_lmf, key = lambda x: x.attrib.items()))
         
@@ -59,7 +66,7 @@ class OWNPT_LMF(OWNPT):
 
         synsets = self._get_all_synsets()
         synsets_lmf = []
-        for synset, in tqdm.tqdm(synsets):
+        for synset, in tqdm(synsets):
             synset_lmf = self.get_synset_lmf(synset)
             # adds only if synset has members
             if not synset_lmf.get("members") == "":
@@ -109,17 +116,16 @@ class OWNPT_LMF(OWNPT):
     def get_lexical_entry_lmf(self, word):
         """"""
 
-        # lexical_entry and lemma
-        word_id = str(word)
-        word_id = word_id.replace(WORD,'word-')
-        word_id = word_id.replace(WORD_EN,'word-')
-        word_id = quote(word_id, safe='').replace('%', '::')
-        lexical_entry = Element("LexicalEntry", id = word_id)
+        written_form = self.graph.value(word, SCHEMA.lemma)
+        part_of_speech = self.graph.value(word, SCHEMA.pos)
+
+        # formatting lexical_entry
+        scaped_lemma = self._scape_lemma(written_form)
+        scaped_word_id = f"{self.lexicon_id}-word-{scaped_lemma}-{part_of_speech}"
+        lexical_entry = Element("LexicalEntry", id = scaped_word_id)
         
         # formatting lemma
-        part_of_speech = self.graph.value(word, SCHEMA.pos)
-        lexical_form = self.graph.value(word, SCHEMA.lemma)
-        lemma = Element("Lemma", partOfSpeech=part_of_speech, writtenForm=lexical_form)
+        lemma = Element("Lemma", partOfSpeech=part_of_speech, writtenForm=written_form)
         lexical_entry.append(lemma)
 
         # list of other forms for that lexical_entry (word)
@@ -243,3 +249,31 @@ class OWNPT_LMF(OWNPT):
 
     def _get_node_key(self, node):
         return "{}-{}".format(node.tag, node.attrib)
+
+
+    def _scape_lemma(self, lemma:str):
+        return "".join(self._scape_char(char) for char in lemma)
+
+    
+    def _scape_char(self, char:str):
+        if char == " ":
+            return "_"
+        elif self._validate_dtd_name_char(char):
+            return char
+        elif char in self.unicode_entity_names:
+            return f"-{self.unicode_entity_names[char]}-"
+        return f"-{char.encode().hex()}-"
+
+
+    def _validate_dtd_start_char(self, char:str):
+        return self._validate_dtd_name(char)
+    
+    def _validate_dtd_name_char(self, char:str):
+        return self._validate_dtd_name("id" + char)
+
+    def _validate_dtd_name(self, identifier:str):
+        dtd = "<!ELEMENT S EMPTY><!ATTLIST S id ID #REQUIRED>"
+        dtd_file = StringIO(dtd)
+        dtd_validator = DTD(dtd_file)
+        sample_xml_element = Element("S", id = identifier)
+        return dtd_validator.validate(sample_xml_element)
