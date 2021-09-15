@@ -3,7 +3,6 @@
 import re
 import logging
 
-from urllib.parse import quote
 from rdflib import Graph, Namespace, Literal, SKOS, DC, RDF, RDFS, OWL
 
 # global
@@ -182,11 +181,17 @@ class OWNPT():
         # if resulting words
         return None
 
+
     def _new_word(self, lexical:str, add_word=False, pos=None):
         """"""
 
+        # formats word
+        word = f"{lexical}-{pos}".strip()
+        word = re.sub(r" ", "+", word)
+        word = re.sub(r"<", "_", word)
+        word = re.sub(r">", "_", word)
+
         # gets suitable preffix
-        word = f"{quote(lexical, safe='')}-{pos}"
         if self.lang == "pt": word = WORD[word]
         if self.lang == "en": word = WORD_EN[word]
 
@@ -274,7 +279,7 @@ class OWNPT():
     def _format_lexical(self, lexical, replace_punctuation=False):
         if replace_punctuation:
             lexical = re.sub(r"\_", " ", lexical).strip()
-        return re.sub(r"\s+", " ", lexical).strip()
+        return re.sub(r"\s+", " ", lexical).replace("\xad","").strip()
 
 
     def _get_gloss(self, synset, lexical_form:str):
