@@ -279,7 +279,7 @@ class OWNPT():
     def _format_lexical(self, lexical, replace_punctuation=False):
         if replace_punctuation:
             lexical = re.sub(r"\_", " ", lexical).strip()
-        return re.sub(r"\s+", " ", lexical).replace("\xad","").strip()
+        return re.sub(r"\s+", " ", lexical).strip()
 
 
     def _get_gloss(self, synset, lexical_form:str):
