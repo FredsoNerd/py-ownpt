@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pyownpt.ownpt import NOMLEX, OWNPT, RDF, SCHEMA
+from pyownpt.ownpt import NOMLEX, OWNPT, SCHEMA
 
 class Statistics(OWNPT):
 

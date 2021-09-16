@@ -11,6 +11,7 @@ from rdflib import Graph
 from pyownpt.util import get_format
 from pyownpt.split import Split
 
+
 def _parse(args):
     own_filapaths = args.owp
     lang = args.l

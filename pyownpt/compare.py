@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import tqdm
-import logging
-
+from tqdm import tqdm
 from rdflib import Graph, URIRef
-from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX, SYNSETPT
-
+from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX
 
 class Compare(OWNPT):
     
@@ -58,7 +55,7 @@ class Compare(OWNPT):
 
         # start comparing
         self.logger.info(f"start comparing item {item_name}:")
-        for synset in tqdm.tqdm(self.dump):
+        for synset in tqdm(self.dump):
             doc_id = synset['doc_id']
 
             result, items, itemsd, itemso = self._compare_item(synset, item_name, query)
@@ -143,7 +140,7 @@ class Compare(OWNPT):
             "pairs":{"dump":[], "ownpt":[], "both":[]}}
 
         self.logger.info(f"start comparing pointer '{pointer_name}':")
-        for synset in tqdm.tqdm(self.dump):
+        for synset in tqdm(self.dump):
             doc_id = synset['doc_id']
 
             result, pairs, pairsd, pairso = self._compare_pointers(synset, pointer_name, pointer_uri)

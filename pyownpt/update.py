@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import logging
-from re import T
-from typing import AbstractSet
-from urllib.parse import scheme_chars
-import tqdm
-
-from pyownpt.ownpt import OWNPT, RDFS, SYNSETPT, SCHEMA
-
+from tqdm import tqdm
+from pyownpt.ownpt import OWNPT, RDFS, SCHEMA
 
 class Update(OWNPT):
 
@@ -65,7 +59,7 @@ class Update(OWNPT):
     def _apply_suggestions(self, suggestions:list):
         """"""
         
-        for suggestion in tqdm.tqdm(suggestions):
+        for suggestion in tqdm(suggestions):
             self._apply_suggestion(suggestion)
 
 

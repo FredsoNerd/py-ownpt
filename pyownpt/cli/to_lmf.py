@@ -4,12 +4,12 @@ import sys
 import argparse
 import logging
 
-from six import with_metaclass
 logger = logging.getLogger()
 
 from rdflib import Graph
 from pyownpt.util import get_format
 from pyownpt.ownlmf import OWNPT_LMF
+
 
 def _parse(args):
     ownpt_filapaths = args.owp

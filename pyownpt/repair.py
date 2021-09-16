@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from tqdm import tqdm
-
 from rdflib.graph import Graph, Literal, URIRef, BNode
 from rdflib.namespace import OWL, RDFS, RDF
 from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX

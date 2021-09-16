@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from re import U
 import sys
 import argparse
 import logging
+
 logger = logging.getLogger()
 
 from json import loads

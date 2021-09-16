@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from six import with_metaclass
-from pyownpt.ownpt import OWNPT
 import sys
 import argparse
 import logging
@@ -12,6 +10,7 @@ logger = logging.getLogger()
 from rdflib import Graph
 from pyownpt.util import get_format
 from pyownpt.statistics import Statistics
+
 
 def _parse(args):
     ownpt_filapaths = args.ownpt
