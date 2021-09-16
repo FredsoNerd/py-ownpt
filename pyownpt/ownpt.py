@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import re
-import logging
-
+from re import sub
+from io import StringIO
+from logging import getLogger
+from lxml.etree import Element, DTD
+from html.entities import html5, entitydefs
 from rdflib import Graph, Namespace, Literal, SKOS, DC, RDF, RDFS, OWL
 
 # global
@@ -12,7 +14,7 @@ SCHEMA = Namespace("https://w3id.org/own-pt/wn30/schema/")
 NOMLEX = Namespace("https://w3id.org/own-pt/nomlex/schema/")
 
 WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
-SYNSETPT = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
+SYNSET = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
 WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
 
 WORD_EN = Namespace("https://w3id.org/own-pt/wn30-en/instances/word-")
@@ -32,6 +34,16 @@ class OWNPT():
         self.graph.bind("wn30", SCHEMA)
         self.graph.bind("pwn30", PWN30)
         self.graph.bind("nomlex", NOMLEX)
+
+        # define local schema
+        if self.lang == "pt":
+            self.WORD = WORD
+            self.SYNSET = SYNSET
+            self.WORDSENSE = WORDSENSE 
+        if self.lang == "en":
+            self.WORD = WORD_EN
+            self.SYNSET = SYNSET_EN
+            self.WORDSENSE = WORDSENSE_EN 
 
         # statistics
         self.added_triples = 0
@@ -83,6 +95,13 @@ class OWNPT():
             NOMLEX.vehicle:"other",
         }
 
+        # unicode mapping
+        self.unicode_entity_names = dict()
+        for name in sorted(html5, reverse=True):
+            char = html5[name]
+            name = name.strip(";").strip("&")
+            self.unicode_entity_names[char] = name
+
         # synset types
         self.synset_types = [
             SCHEMA.Synset, 
@@ -101,7 +120,7 @@ class OWNPT():
             SCHEMA.AdjectiveSatelliteWordSense]
 
         # logging
-        self.logger = logging.getLogger("ownpt")
+        self.logger = getLogger("ownpt")
 
 
     def _new_sense(self, synset, add_sense=False):
@@ -186,14 +205,12 @@ class OWNPT():
         """"""
 
         # formats word
-        word = f"{lexical}-{pos}".strip()
-        word = re.sub(r" ", "+", word)
-        word = re.sub(r"<", "_", word)
-        word = re.sub(r">", "_", word)
+        word = f"{lexical}-{pos}"
+        word = sub(r" ", "_", word)
+        word = self._scape_lemma(word)
 
         # gets suitable preffix
-        if self.lang == "pt": word = WORD[word]
-        if self.lang == "en": word = WORD_EN[word]
+        word = self.WORD[word]
 
         # defines new word
         if add_word:
@@ -278,8 +295,8 @@ class OWNPT():
 
     def _format_lexical(self, lexical, replace_punctuation=False):
         if replace_punctuation:
-            lexical = re.sub(r"\_", " ", lexical).strip()
-        return re.sub(r"\s+", " ", lexical).strip()
+            lexical = sub(r"\_", " ", lexical).strip()
+        return sub(r"\s+", " ", lexical).strip()
 
 
     def _get_gloss(self, synset, lexical_form:str):
@@ -336,3 +353,29 @@ class OWNPT():
         if synset is None and synset_id.endswith("-a"):
             synset_id = synset_id.replace("-a", "-s") # from satellites
         return self.graph.value(predicate=SCHEMA.synsetId, object=Literal(synset_id))
+
+    
+    def _scape_lemma(self, lemma:str):
+        return "".join(self._scape_char(char) for char in lemma)
+
+    
+    def _scape_char(self, char:str):
+        if self._validate_dtd_name_char(char):
+            return char
+        if char in self.unicode_entity_names:
+            return f"-{self.unicode_entity_names[char]}-"
+        return f"-{char.encode().hex()}-"
+
+
+    def _validate_dtd_start_char(self, char:str):
+        return self._validate_dtd_name(char)
+    
+    def _validate_dtd_name_char(self, char:str):
+        return self._validate_dtd_name("id" + char)
+
+    def _validate_dtd_name(self, identifier:str):
+        dtd = "<!ELEMENT S EMPTY><!ATTLIST S id ID #REQUIRED>"
+        dtd_file = StringIO(dtd)
+        dtd_validator = DTD(dtd_file)
+        sample_xml_element = Element("S", id = identifier)
+        return dtd_validator.validate(sample_xml_element)

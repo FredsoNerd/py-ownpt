@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from io import StringIO
 from tqdm import tqdm
-from lxml.etree import Element, tostring, DTD
-from html.entities import html5, entitydefs
+from lxml.etree import Element, tostring
 from pyownpt.ownpt import Graph, OWNPT, OWL, SCHEMA, PWN30
 
 class OWNPT_LMF(OWNPT):
@@ -26,13 +24,6 @@ class OWNPT_LMF(OWNPT):
         self.email=email
         self.license=license
         self.citation=citation
-
-        # unicode mapping
-        self.unicode_entity_names = dict()
-        for name in sorted(html5, reverse=True):
-            char = html5[name]
-            name = name.strip(";").strip("&")
-            self.unicode_entity_names[char] = name
 
         
     def format(self,):
@@ -120,9 +111,9 @@ class OWNPT_LMF(OWNPT):
         part_of_speech = self.graph.value(word, SCHEMA.pos)
 
         # formatting lexical_entry
-        scaped_lemma = self._scape_lemma(written_form)
-        scaped_word_id = f"{self.lexicon_id}-word-{scaped_lemma}-{part_of_speech}"
-        lexical_entry = Element("LexicalEntry", id = scaped_word_id)
+        word_id = word.replace(self.WORD, "")
+        word_id = f"{self.lexicon_id}-word-{word_id}"
+        lexical_entry = Element("LexicalEntry", id=word_id)
         
         # formatting lemma
         lemma = Element("Lemma", partOfSpeech=part_of_speech, writtenForm=written_form)
@@ -249,31 +240,3 @@ class OWNPT_LMF(OWNPT):
 
     def _get_node_key(self, node):
         return "{}-{}".format(node.tag, node.attrib)
-
-
-    def _scape_lemma(self, lemma:str):
-        return "".join(self._scape_char(char) for char in lemma)
-
-    
-    def _scape_char(self, char:str):
-        if char == " ":
-            return "_"
-        elif self._validate_dtd_name_char(char):
-            return char
-        elif char in self.unicode_entity_names:
-            return f"-{self.unicode_entity_names[char]}-"
-        return f"-{char.encode().hex()}-"
-
-
-    def _validate_dtd_start_char(self, char:str):
-        return self._validate_dtd_name(char)
-    
-    def _validate_dtd_name_char(self, char:str):
-        return self._validate_dtd_name("id" + char)
-
-    def _validate_dtd_name(self, identifier:str):
-        dtd = "<!ELEMENT S EMPTY><!ATTLIST S id ID #REQUIRED>"
-        dtd_file = StringIO(dtd)
-        dtd_validator = DTD(dtd_file)
-        sample_xml_element = Element("S", id = identifier)
-        return dtd_validator.validate(sample_xml_element)
