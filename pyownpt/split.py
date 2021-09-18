@@ -1,72 +1,59 @@
 # -*- coding: utf-8 -*-
 
 from rdflib.graph import Graph
-from pyownpt.ownpt import OWNPT
+from pyownpt.ownpt import OWN
 
-class Split(OWNPT):
+class Split(OWN):
 
-    def get_splitted(self):
-        """"""
+    def pop_morphosemantic_links(self):
+        queries = [
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?s), '/nomlex-')) }",
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?o), '/nomlex-')) }",
+            "SELECT ?s ?p ?o WHERE{ VALUES ?p { owns:agent owns:bodyPart owns:byMeansOf owns:destination owns:event owns:instrument owns:location owns:material owns:property owns:result owns:state owns:undergoer owns:uses owns:vehicle } ?s ?p ?o . }"
+        ]
+        return self._split_graph(queries)
 
-        splitted = dict()
-        name_action_map = [
-            ("morphosemantic-links",self.get_morphosemantic_links),
-            ("same-as",self.get_same_as),
-            ("relations",self.get_relations),
-            ("words",self.get_words),
-            ("wordsenses",self.get_wordsenses),
-            ("synsets",self.get_base_synsets)]
+    def pop_same_as(self):
+        queries = [
+            "SELECT ?s ?p ?o WHERE{ VALUES ?p { owl:sameAs } ?s ?p ?o . }"
+        ]
+        return self._split_graph(queries)
 
-        for name, action in name_action_map:
-            self.logger.info(f"generating graph for {name}")
-            
-            splitted[name] = action()
-            for triple in splitted[name]:
-                self._drop_triple(triple)
+    def pop_relations(self):
+        queries = [
+            "SELECT ?s ?p ?o WHERE{ VALUES ?p { owns:adjectivePertainsTo owns:adverbPertainsTo owns:antonymOf owns:attribute owns:causes owns:classifiedByRegion owns:classifiedByTopic owns:classifiedByUsage owns:classifiesByRegion owns:classifiesByTopic owns:classifiesByUsage owns:derivationallyRelated owns:entails owns:hasInstance owns:hypernymOf owns:hyponymOf owns:instanceOf owns:similarTo owns:substanceHolonymOf owns:substanceMeronymOf owns:memberHolonymOf owns:memberMeronymOf owns:partHolonymOf owns:participleOf owns:partMeronymOf owns:sameVerbGroupAs owns:seeAlso } ?s ?p ?o . }"
+        ]
+        return self._split_graph(queries)
 
-        return splitted
+    def pop_words(self):
+        queries = [
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?s), '/word-')) }",
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?o), '/word-')) }"
+        ]
+        return self._split_graph(queries)
 
+    def pop_wordsenses(self):
+        queries = [
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?s), '/wordsense-')) }",
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?o), '/wordsense-')) }"
+        ]
+        return self._split_graph(queries)
 
-    def get_morphosemantic_links(self):
-        # cat own-pt-morpho.nt | grep "https://w3id.org/own-pt/nomlex" > own-files/own-pt-morphosemantic-links.nt
-        query = "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX(STR(?s), 'https://w3id.org/own-pt/nomlex') || REGEX(STR(?p), 'https://w3id.org/own-pt/nomlex') || REGEX(STR(?o), 'https://w3id.org/own-pt/nomlex')) }"
-        return self._get_graph(query)
+    def pop_base_synsets(self):
+        queries = [
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?s), '/synset-')) }",
+            "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX( STR(?o), '/synset-')) }",
+            "SELECT ?s ?p ?o WHERE{ VALUES ?o { skos:ConceptScheme } ?s ?p ?o . }",
+            "SELECT ?s ?p ?o WHERE{ VALUES ?p { dc:title } ?s ?p ?o . }"
+        ]
+        return self._split_graph(queries)
 
-
-    def get_same_as(self):
-        # cat own-pt-morpho.nt | grep "https://w3id.org/own-pt/nomlex" -v | grep "sameAs" > own-files/own-pt-same-as.nt
-        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { owl:sameAs } ?s ?p ?o . }"
-        return self._get_graph(query)
-
-
-    def get_relations(self):
-        # cat own-pt-morpho.nt | grep "https://w3id.org/own-pt/nomlex" -v | grep "sameAs" -v | egrep "(https://w3id.org/own-pt/wn30/schema/adjectivePertainsTo|https://w3id.org/own-pt/wn30/schema/adverbPertainsTo|https://w3id.org/own-pt/wn30/schema/antonymOf|https://w3id.org/own-pt/wn30/schema/attribute|https://w3id.org/own-pt/wn30/schema/causes|https://w3id.org/own-pt/wn30/schema/classifiedByRegion|https://w3id.org/own-pt/wn30/schema/classifiedByTopic|https://w3id.org/own-pt/wn30/schema/classifiedByUsage|https://w3id.org/own-pt/wn30/schema/classifiesByRegion|https://w3id.org/own-pt/wn30/schema/classifiesByTopic|https://w3id.org/own-pt/wn30/schema/classifiesByUsage|https://w3id.org/own-pt/wn30/schema/derivationallyRelated|https://w3id.org/own-pt/wn30/schema/entails|https://w3id.org/own-pt/wn30/schema/hasInstance|https://w3id.org/own-pt/wn30/schema/hypernymOf|https://w3id.org/own-pt/wn30/schema/hyponymOf|https://w3id.org/own-pt/wn30/schema/instanceOf|https://w3id.org/own-pt/wn30/schema/similarTo|https://w3id.org/own-pt/wn30/schema/substanceHolonymOf|https://w3id.org/own-pt/wn30/schema/substanceMeronymOf|https://w3id.org/own-pt/wn30/schema/memberHolonymOf|https://w3id.org/own-pt/wn30/schema/memberMeronymOf|https://w3id.org/own-pt/wn30/schema/partHolonymOf|https://w3id.org/own-pt/wn30/schema/participleOf|https://w3id.org/own-pt/wn30/schema/partMeronymOf|https://w3id.org/own-pt/wn30/schema/sameVerbGroupAs|https://w3id.org/own-pt/wn30/schema/seeAlso)" > own-files/own-pt-relations.nt
-        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { wn30:adjectivePertainsTo wn30:adverbPertainsTo wn30:antonymOf wn30:attribute wn30:causes wn30:classifiedByRegion wn30:classifiedByTopic wn30:classifiedByUsage wn30:classifiesByRegion wn30:classifiesByTopic wn30:classifiesByUsage wn30:derivationallyRelated wn30:entails wn30:hasInstance wn30:hypernymOf wn30:hyponymOf wn30:instanceOf wn30:similarTo wn30:substanceHolonymOf wn30:substanceMeronymOf wn30:memberHolonymOf wn30:memberMeronymOf wn30:partHolonymOf wn30:participleOf wn30:partMeronymOf wn30:sameVerbGroupAs wn30:seeAlso } ?s ?p ?o . }"
-        return self._get_graph(query)
-
-
-    def get_words(self):
-        # cat own-pt-morpho.nt | grep "https://w3id.org/own-pt/nomlex" -v | grep "sameAs" -v | egrep "(https://w3id.org/own-pt/wn30/schema/adjectivePertainsTo|https://w3id.org/own-pt/wn30/schema/adverbPertainsTo|https://w3id.org/own-pt/wn30/schema/antonymOf|https://w3id.org/own-pt/wn30/schema/attribute|https://w3id.org/own-pt/wn30/schema/causes|https://w3id.org/own-pt/wn30/schema/classifiedByRegion|https://w3id.org/own-pt/wn30/schema/classifiedByTopic|https://w3id.org/own-pt/wn30/schema/classifiedByUsage|https://w3id.org/own-pt/wn30/schema/classifiesByRegion|https://w3id.org/own-pt/wn30/schema/classifiesByTopic|https://w3id.org/own-pt/wn30/schema/classifiesByUsage|https://w3id.org/own-pt/wn30/schema/derivationallyRelated|https://w3id.org/own-pt/wn30/schema/entails|https://w3id.org/own-pt/wn30/schema/hasInstance|https://w3id.org/own-pt/wn30/schema/hypernymOf|https://w3id.org/own-pt/wn30/schema/hyponymOf|https://w3id.org/own-pt/wn30/schema/instanceOf|https://w3id.org/own-pt/wn30/schema/similarTo|https://w3id.org/own-pt/wn30/schema/substanceHolonymOf|https://w3id.org/own-pt/wn30/schema/substanceMeronymOf|https://w3id.org/own-pt/wn30/schema/memberHolonymOf|https://w3id.org/own-pt/wn30/schema/memberMeronymOf|https://w3id.org/own-pt/wn30/schema/partHolonymOf|https://w3id.org/own-pt/wn30/schema/participleOf|https://w3id.org/own-pt/wn30/schema/partMeronymOf|https://w3id.org/own-pt/wn30/schema/sameVerbGroupAs|https://w3id.org/own-pt/wn30/schema/seeAlso)" -v | egrep "/word-" > own-files/own-pt-words.nt
-        query = "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX(STR(?s), '/word-') || REGEX(STR(?p), '/word-') || REGEX(STR(?o), '/word-')) }"
-        return self._get_graph(query)
-
-
-    def get_wordsenses(self):
-        # cat own-pt-morpho.nt | grep "https://w3id.org/own-pt/nomlex" -v | grep "sameAs" -v | egrep "(https://w3id.org/own-pt/wn30/schema/adjectivePertainsTo|https://w3id.org/own-pt/wn30/schema/adverbPertainsTo|https://w3id.org/own-pt/wn30/schema/antonymOf|https://w3id.org/own-pt/wn30/schema/attribute|https://w3id.org/own-pt/wn30/schema/causes|https://w3id.org/own-pt/wn30/schema/classifiedByRegion|https://w3id.org/own-pt/wn30/schema/classifiedByTopic|https://w3id.org/own-pt/wn30/schema/classifiedByUsage|https://w3id.org/own-pt/wn30/schema/classifiesByRegion|https://w3id.org/own-pt/wn30/schema/classifiesByTopic|https://w3id.org/own-pt/wn30/schema/classifiesByUsage|https://w3id.org/own-pt/wn30/schema/derivationallyRelated|https://w3id.org/own-pt/wn30/schema/entails|https://w3id.org/own-pt/wn30/schema/hasInstance|https://w3id.org/own-pt/wn30/schema/hypernymOf|https://w3id.org/own-pt/wn30/schema/hyponymOf|https://w3id.org/own-pt/wn30/schema/instanceOf|https://w3id.org/own-pt/wn30/schema/similarTo|https://w3id.org/own-pt/wn30/schema/substanceHolonymOf|https://w3id.org/own-pt/wn30/schema/substanceMeronymOf|https://w3id.org/own-pt/wn30/schema/memberHolonymOf|https://w3id.org/own-pt/wn30/schema/memberMeronymOf|https://w3id.org/own-pt/wn30/schema/partHolonymOf|https://w3id.org/own-pt/wn30/schema/participleOf|https://w3id.org/own-pt/wn30/schema/partMeronymOf|https://w3id.org/own-pt/wn30/schema/sameVerbGroupAs|https://w3id.org/own-pt/wn30/schema/seeAlso)" -v | egrep "/word-" -v | egrep "/wordsense-" > own-files/own-pt-wordsenses.nt
-        query = "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX(STR(?s), '/wordsense-') || REGEX(STR(?p), '/wordsense-') || REGEX(STR(?o), '/wordsense-')) }"
-        return self._get_graph(query)
-
-
-    def get_base_synsets(self):
-        # cat own-pt-morpho.nt | grep "https://w3id.org/own-pt/nomlex" -v | grep "sameAs" -v | egrep "(https://w3id.org/own-pt/wn30/schema/adjectivePertainsTo|https://w3id.org/own-pt/wn30/schema/adverbPertainsTo|https://w3id.org/own-pt/wn30/schema/antonymOf|https://w3id.org/own-pt/wn30/schema/attribute|https://w3id.org/own-pt/wn30/schema/causes|https://w3id.org/own-pt/wn30/schema/classifiedByRegion|https://w3id.org/own-pt/wn30/schema/classifiedByTopic|https://w3id.org/own-pt/wn30/schema/classifiedByUsage|https://w3id.org/own-pt/wn30/schema/classifiesByRegion|https://w3id.org/own-pt/wn30/schema/classifiesByTopic|https://w3id.org/own-pt/wn30/schema/classifiesByUsage|https://w3id.org/own-pt/wn30/schema/derivationallyRelated|https://w3id.org/own-pt/wn30/schema/entails|https://w3id.org/own-pt/wn30/schema/hasInstance|https://w3id.org/own-pt/wn30/schema/hypernymOf|https://w3id.org/own-pt/wn30/schema/hyponymOf|https://w3id.org/own-pt/wn30/schema/instanceOf|https://w3id.org/own-pt/wn30/schema/similarTo|https://w3id.org/own-pt/wn30/schema/substanceHolonymOf|https://w3id.org/own-pt/wn30/schema/substanceMeronymOf|https://w3id.org/own-pt/wn30/schema/memberHolonymOf|https://w3id.org/own-pt/wn30/schema/memberMeronymOf|https://w3id.org/own-pt/wn30/schema/partHolonymOf|https://w3id.org/own-pt/wn30/schema/participleOf|https://w3id.org/own-pt/wn30/schema/partMeronymOf|https://w3id.org/own-pt/wn30/schema/sameVerbGroupAs|https://w3id.org/own-pt/wn30/schema/seeAlso)" -v | egrep "/word-" -v | egrep "/wordsense-" -v > own-files/own-pt-synsets.nt
-        query = "SELECT ?s ?p ?o WHERE{ ?s ?p ?o . FILTER( REGEX(STR(?s), '/synset-') || REGEX(STR(?p), '/synset-') || REGEX(STR(?o), '/synset-') || REGEX(STR(?s), STR(skos:)) || REGEX(STR(?p), STR(skos:)) || REGEX(STR(?o), STR(skos:)) || REGEX(STR(?s), STR(dc:)) || REGEX(STR(?p), STR(dc:)) || REGEX(STR(?o), STR(dc:)) ) }"
-        return self._get_graph(query)
-
-
-    def _get_graph(self, query):
-
-        graph = OWNPT(Graph(), None)
-        for triple in self.graph.query(query):
-            graph._add_triple(triple)
-        
+    def _split_graph(self, queries:list):
+        graph = OWN(Graph(), None)
+        # populate for each query
+        for query in queries:
+            # draw each from query
+            for triple in self.graph.query(query):
+                graph._add_triple(triple)
+                self.graph.remove(triple)
         return graph.graph

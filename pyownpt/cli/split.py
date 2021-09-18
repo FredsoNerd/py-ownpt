@@ -46,13 +46,21 @@ def split_into_files(
 
     ## generates files
     logger.info(f"generating splitted graphs")
-    splitted = Split(ownpt, lang).get_splitted()
+    split = Split(ownpt, lang)
 
-    for name, graph in splitted.items():
-        outfile = os.path.join(output_filepath, f"own-{lang}-{name}.{extension}")
-        logger.info(f"serializing output to {outfile}")
-        graph.serialize(outfile, format=get_format(outfile))
+    actions = [
+        (split.pop_morphosemantic_links, "morphosemantic-links"),
+        (split.pop_same_as, "same-as"),
+        (split.pop_relations, "relations"),
+        (split.pop_words, "words"),
+        (split.pop_wordsenses, "wordsenses"),
+        (split.pop_base_synsets, "synsets"),]
 
+    for action, name in actions:
+        filename = f"own-{lang}-{name}.{extension}"
+        outfile = os.path.join(output_filepath, filename)
+        logger.info(f"split graph to file '{outfile}'")
+        action().serialize(outfile, format=get_format(outfile))
 
 
 # sets parser and interface function

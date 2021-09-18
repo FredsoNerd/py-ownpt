@@ -3,9 +3,9 @@
 from tqdm import tqdm
 from rdflib.graph import Graph, Literal, URIRef, BNode
 from rdflib.namespace import OWL, RDFS, RDF
-from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX
+from pyownpt.ownpt import OWN, SCHEMA
 
-class Repair(OWNPT):
+class Repair(OWN):
 
     def repair(self):
         """"""
@@ -118,7 +118,7 @@ class Repair(OWNPT):
         """"""
         
         count = 0
-        nomlex_map = {"n":NOMLEX.noun, "v":NOMLEX.verb}
+        nomlex_map = {"n":SCHEMA.noun, "v":SCHEMA.verb}
 
         self.logger.info(f"start formatting Words to unique POS")
         words = self._get_all_words()
@@ -322,7 +322,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?p ?o WHERE { VALUES ?p { wn30:lemma } ?s ?p ?o . }"
+        query = "SELECT ?s ?p ?o WHERE { VALUES ?p { owns:lemma } ?s ?p ?o . }"
         result = self.graph.query(query)
 
         for triple in result:
@@ -337,7 +337,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s WHERE { VALUES ?t { wn30:Synset wn30:AdjectiveSatelliteSynset wn30:AdjectiveSynset wn30:AdverbSynset wn30:NounSynset wn30:VerbSynset } ?s a ?t . }"
+        query = "SELECT ?s WHERE { VALUES ?t { owns:Synset owns:AdjectiveSatelliteSynset owns:AdjectiveSynset owns:AdverbSynset owns:NounSynset owns:VerbSynset } ?s a ?t . }"
         result = self.graph.query(query)
 
         for synset, in result:
@@ -358,7 +358,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s2 WHERE { VALUES ?p { wn30:adverbPertainsTo wn30:derivationallyRelated wn30:classifiesByUsage wn30:classifiesByTopic wn30:classifiesByRegion } ?s1 ?p ?s2 . ?s1 a wn30:WordSense . FILTER NOT EXISTS { ?s2 a ?t . } }"
+        query = "SELECT ?s2 WHERE { VALUES ?p { owns:adverbPertainsTo owns:derivationallyRelated owns:classifiesByUsage owns:classifiesByTopic owns:classifiesByRegion } ?s1 ?p ?s2 . ?s1 a owns:WordSense . FILTER NOT EXISTS { ?s2 a ?t . } }"
         result = self.graph.query(query)
 
         for sense, in result:
@@ -379,7 +379,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?w ?l ?p WHERE { ?w rdf:type wn30:Word . ?w wn30:lemma ?l . ?w wn30:pos ?p }"
+        query = "SELECT ?w ?l ?p WHERE { ?w rdf:type owns:Word . ?w owns:lemma ?l . ?w owns:pos ?p }"
         result = self.graph.query(query)
         
         for word, lexical, pos in result:
@@ -396,7 +396,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . FILTER NOT EXISTS { ?s ?p ?w . } } "
+        query = "SELECT ?w WHERE{ ?w rdf:type owns:Word . FILTER NOT EXISTS { ?s ?p ?w . } } "
         result = self.graph.query(query)
         
         for word, in result:
@@ -411,7 +411,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s WHERE{ ?s rdf:type wn30:WordSense . FILTER NOT EXISTS { ?ss wn30:containsWordSense ?s . } } "
+        query = "SELECT ?s WHERE{ ?s rdf:type owns:WordSense . FILTER NOT EXISTS { ?ss owns:containsWordSense ?s . } } "
         result = self.graph.query(query)
         
         for sense, in result:
@@ -426,7 +426,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s2 WHERE{ ?ss wn30:containsWordSense ?s1; wn30:containsWordSense ?s2 . ?s1 rdfs:label ?l . ?s2 rdfs:label ?l . FILTER ( STR(?s1) < STR(?s2) ) }"
+        query = "SELECT ?s2 WHERE{ ?ss owns:containsWordSense ?s1; owns:containsWordSense ?s2 . ?s1 rdfs:label ?l . ?s2 rdfs:label ?l . FILTER ( STR(?s1) < STR(?s2) ) }"
         result = self.graph.query(query)
         
         for sense2, in result:
@@ -441,7 +441,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?w1 ?w2 WHERE{ ?w1 wn30:lemma ?l . ?w2 wn30:lemma ?l . ?w1 wn30:pos ?p . ?w2 wn30:pos ?p . FILTER ( STR(?w1) < STR(?w2) )}"
+        query = "SELECT ?w1 ?w2 WHERE{ ?w1 owns:lemma ?l . ?w2 owns:lemma ?l . ?w1 owns:pos ?p . ?w2 owns:pos ?p . FILTER ( STR(?w1) < STR(?w2) )}"
         result = self.graph.query(query)
         for word1, word2 in result:
             count += 1
@@ -455,7 +455,7 @@ class Repair(OWNPT):
         """"""
         count = 0
         
-        query = "SELECT ?w WHERE{ ?w wn30:lemma ?l1 . ?w wn30:lemma ?l2 . FILTER ( ?l1 != ?l2 ) }"
+        query = "SELECT ?w WHERE{ ?w owns:lemma ?l1 . ?w owns:lemma ?l2 . FILTER ( ?l1 != ?l2 ) }"
         result = self.graph.query(query)
 
         for word, in result:
@@ -470,7 +470,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label wn30:lemma wn30:gloss wn30:example wn30:lemma } ?s ?p ?o . }"
+        query = "SELECT ?s ?p ?o WHERE{ VALUES ?p { rdfs:label owns:lemma owns:gloss owns:example owns:lemma } ?s ?p ?o . }"
         result = self.graph.query(query)
         
         for s, p, lexical in result:
@@ -489,7 +489,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?w WHERE{ { ?s wn30:word ?w } UNION { ?w wn30:lemma ?l } . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
+        query = "SELECT ?w WHERE{ { ?s owns:word ?w } UNION { ?w owns:lemma ?l } . FILTER NOT EXISTS { ?w rdf:type ?t .} }"
         result = self.graph.query(query)
         
         for word, in result:
@@ -504,7 +504,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s WHERE{ { ?ss wn30:containsWordSense ?s . } UNION { ?s wn30:word ?w } FILTER NOT EXISTS { ?s rdf:type ?t .} }"
+        query = "SELECT ?s WHERE{ { ?ss owns:containsWordSense ?s . } UNION { ?s owns:word ?w } FILTER NOT EXISTS { ?s rdf:type ?t .} }"
         result = self.graph.query(query)
         
         for sense, in result:
@@ -519,7 +519,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?sl ?wl WHERE{ ?s rdfs:label ?sl . ?s wn30:word ?w . ?w wn30:lemma ?wl . FILTER ( ?sl != ?wl )}"
+        query = "SELECT ?s ?sl ?wl WHERE{ ?s rdfs:label ?sl . ?s owns:word ?w . ?w owns:lemma ?wl . FILTER ( ?sl != ?wl )}"
         result = self.graph.query(query)
         
         for sense, label, lexical in result:
@@ -534,7 +534,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s WHERE{ ?ss wn30:containsWordSense ?s . FILTER NOT EXISTS { ?s wn30:wordNumber ?n .} }"
+        query = "SELECT ?s WHERE{ ?ss owns:containsWordSense ?s . FILTER NOT EXISTS { ?s owns:wordNumber ?n .} }"
         result = self.graph.query(query)
         
         for sense, in result:
@@ -552,7 +552,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?l WHERE{ ?s rdf:type wn30:WordSense . ?s wn30:word ?w . ?w wn30:lemma ?l . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
+        query = "SELECT ?s ?l WHERE{ ?s rdf:type owns:WordSense . ?s owns:word ?w . ?w owns:lemma ?l . FILTER NOT EXISTS { ?s rdfs:label ?l .} }"
         result = self.graph.query(query)
         
         for sense, label in result:
@@ -568,7 +568,7 @@ class Repair(OWNPT):
         """"""
         count = 0
 
-        query = "SELECT ?s ?l WHERE{ ?s rdf:type wn30:WordSense . ?s rdfs:label ?l . FILTER NOT EXISTS { ?s wn30:word ?w . } }"
+        query = "SELECT ?s ?l WHERE{ ?s rdf:type owns:WordSense . ?s rdfs:label ?l . FILTER NOT EXISTS { ?s owns:word ?w . } }"
         result = self.graph.query(query)
         
         for sense, label in result:
@@ -585,7 +585,7 @@ class Repair(OWNPT):
         """"""
         count = 0
         
-        query = "SELECT ?w WHERE{ ?w rdf:type wn30:Word . FILTER NOT EXISTS { ?w wn30:lemma ?l .} }"
+        query = "SELECT ?w WHERE{ ?w rdf:type owns:Word . FILTER NOT EXISTS { ?w owns:lemma ?l .} }"
         result = self.graph.query(query)
         
         for word in result:
@@ -600,7 +600,7 @@ class Repair(OWNPT):
         """"""
         count = 0
         
-        query = "SELECT ?w WHERE { ?w rdf:type wn30:Word . FILTER ( isBlank(?w) ) }"
+        query = "SELECT ?w WHERE { ?w rdf:type owns:Word . FILTER ( isBlank(?w) ) }"
         result = self.graph.query(query)
 
         for word, in result:
@@ -615,7 +615,7 @@ class Repair(OWNPT):
         """"""
         count = 0
         
-        query = "SELECT ?ss ?s WHERE { ?ss wn30:containsWordSense ?s . FILTER ( isBlank(?s) ) }"
+        query = "SELECT ?ss ?s WHERE { ?ss owns:containsWordSense ?s . FILTER ( isBlank(?s) ) }"
         result = self.graph.query(query)
 
         for synset, sense in result:

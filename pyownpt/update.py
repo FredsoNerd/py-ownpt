@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from tqdm import tqdm
-from pyownpt.ownpt import OWNPT, RDFS, SCHEMA
+from pyownpt.ownpt import OWN, RDFS, SCHEMA
 
-class Update(OWNPT):
+class Update(OWN):
 
     def update(
         self,

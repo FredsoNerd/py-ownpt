@@ -2,9 +2,9 @@
 
 from tqdm import tqdm
 from rdflib import Graph, URIRef
-from pyownpt.ownpt import OWNPT, SCHEMA, NOMLEX
+from pyownpt.ownpt import OWN, SCHEMA
 
-class Compare(OWNPT):
+class Compare(OWN):
     
     def __init__(self, graph:Graph, dump:dict):
         super().__init__(graph)
@@ -99,19 +99,19 @@ class Compare(OWNPT):
 
         # morphosemantic links
         pointers_uri_map = {  
-            "wn30_pt_property": NOMLEX.property,
-            "wn30_pt_result": NOMLEX.result,
-            "wn30_pt_state": NOMLEX.state,
-            "wn30_pt_undergoer": NOMLEX.undergoer,
-            "wn30_pt_uses": NOMLEX.uses,
-            "wn30_pt_vehicle": NOMLEX.vehicle,
-            "wn30_pt_event": NOMLEX.event,
-            "wn30_pt_instrument": NOMLEX.instrument,
-            "wn30_pt_location": NOMLEX.location,
-            "wn30_pt_material": NOMLEX.material,
-            "wn30_pt_agent": NOMLEX.agent,
-            "wn30_pt_bodyPart": NOMLEX.bodyPart,
-            "wn30_pt_byMeansOf": NOMLEX.byMeansOf
+            "wn30_pt_property": SCHEMA.property,
+            "wn30_pt_result": SCHEMA.result,
+            "wn30_pt_state": SCHEMA.state,
+            "wn30_pt_undergoer": SCHEMA.undergoer,
+            "wn30_pt_uses": SCHEMA.uses,
+            "wn30_pt_vehicle": SCHEMA.vehicle,
+            "wn30_pt_event": SCHEMA.event,
+            "wn30_pt_instrument": SCHEMA.instrument,
+            "wn30_pt_location": SCHEMA.location,
+            "wn30_pt_material": SCHEMA.material,
+            "wn30_pt_agent": SCHEMA.agent,
+            "wn30_pt_bodyPart": SCHEMA.bodyPart,
+            "wn30_pt_byMeansOf": SCHEMA.byMeansOf
         }
 
         return self._compare_pointers_ownpt_dump(pointers_uri_map)
@@ -230,11 +230,11 @@ class Compare(OWNPT):
         # finds pointers
         doc_id = synset["doc_id"]
         query = ("SELECT ?ss ?sw ?swl ?ts ?tw ?twl WHERE{{"
-                    "?s wn30:synsetId \"{synset}\" ."
-                    "?s wn30:containsWordSense ?ss ."
+                    "?s owns:synsetId \"{synset}\" ."
+                    "?s owns:containsWordSense ?ss ."
                     "?ss {pointer} ?ts ."
-                    "?ss wn30:word ?sw . ?sw wn30:lemma ?swl ."
-                    "?ts wn30:word ?tw . ?tw wn30:lemma ?twl . }}")
+                    "?ss owns:word ?sw . ?sw owns:lemma ?swl ."
+                    "?ts owns:word ?tw . ?tw owns:lemma ?twl . }}")
         result = self.graph.query(query.format(
                     synset = doc_id,
                     pointer = pointer_uri.n3()))
@@ -278,11 +278,11 @@ class Compare(OWNPT):
         """"""
 
         if item_name == "word_pt":
-            return "SELECT ?wl WHERE {{ {synset} wn30:containsWordSense/wn30:word/wn30:lemma ?wl . }}"
+            return "SELECT ?wl WHERE {{ {synset} owns:containsWordSense/owns:word/owns:lemma ?wl . }}"
         if item_name == "gloss_pt":
-            return "SELECT ?gl WHERE {{ {synset} wn30:gloss ?gl . }}"
+            return "SELECT ?gl WHERE {{ {synset} owns:gloss ?gl . }}"
         if item_name == "example_pt":
-            return "SELECT ?ex WHERE {{ {synset} wn30:example ?ex . }}"
+            return "SELECT ?ex WHERE {{ {synset} owns:example ?ex . }}"
         
         raise Exception(f"not a valid option for comparing: {item_name}")
 

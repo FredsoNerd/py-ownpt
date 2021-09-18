@@ -8,42 +8,40 @@ from html.entities import html5, entitydefs
 from rdflib import Graph, Namespace, Literal, SKOS, DC, RDF, RDFS, OWL
 
 # global
+SCHEMA = Namespace("https://w3id.org/own/schema/")
 PWN30 = Namespace("http://wordnet-rdf.princeton.edu/wn30/")
 
-SCHEMA = Namespace("https://w3id.org/own-pt/wn30/schema/")
-NOMLEX = Namespace("https://w3id.org/own-pt/nomlex/schema/")
-
-WORD = Namespace("https://w3id.org/own-pt/wn30-pt/instances/word-")
-SYNSET = Namespace("https://w3id.org/own-pt/wn30-pt/instances/synset-")
-WORDSENSE = Namespace("https://w3id.org/own-pt/wn30-pt/instances/wordsense-")
-
-WORD_EN = Namespace("https://w3id.org/own-pt/wn30-en/instances/word-")
-SYNSET_EN = Namespace("https://w3id.org/own-pt/wn30-en/instances/synset-")
-WORDSENSE_EN = Namespace("https://w3id.org/own-pt/wn30-en/instances/wordsense-")
+INSTANCE_PT = Namespace("https://w3id.org/own/own-pt/instances/")
+INSTANCE_EN = Namespace("https://w3id.org/own/own-en/instances/")
 
 
-class OWNPT():
+class OWN():
     def __init__(self, graph:Graph, lang="pt"):
         self.lang = lang
         self.graph = graph
+        
+        # define some prefixes
         self.graph.bind("dc", DC)
         self.graph.bind("owl", OWL)
         self.graph.bind("rdf", RDF)
         self.graph.bind("rdfs", RDFS)
         self.graph.bind("skos", SKOS)
-        self.graph.bind("wn30", SCHEMA)
+        self.graph.bind("owns", SCHEMA)
         self.graph.bind("pwn30", PWN30)
-        self.graph.bind("nomlex", NOMLEX)
+        self.graph.bind("own-pt", INSTANCE_PT)
+        self.graph.bind("own-en", INSTANCE_EN)
 
-        # define local schema
+        # define local instance
+        self.INSTANCE_LANG = None
         if self.lang == "pt":
-            self.WORD = WORD
-            self.SYNSET = SYNSET
-            self.WORDSENSE = WORDSENSE 
+            self.INSTANCE_LANG = INSTANCE_PT
         if self.lang == "en":
-            self.WORD = WORD_EN
-            self.SYNSET = SYNSET_EN
-            self.WORDSENSE = WORDSENSE_EN 
+            self.INSTANCE_LANG = INSTANCE_EN
+
+        if self.INSTANCE_LANG:
+            self.WORD = Namespace(self.INSTANCE_LANG["word-"])
+            self.SYNSET = Namespace(self.INSTANCE_LANG["synset-"])
+            self.WORDSENSE = Namespace(self.INSTANCE_LANG["wordsense-"])
 
         # statistics
         self.added_triples = 0
@@ -79,20 +77,20 @@ class OWNPT():
             SCHEMA.substanceMeronymOf:"mero_substance",
             SCHEMA.sameVerbGroupAs:"similar", # verb_group
 
-            NOMLEX.agent: "other", # "agent"
-            NOMLEX.bodyPart:"other", 
-            NOMLEX.byMeansOf:"other", 
-            NOMLEX.destination:"other", 
-            NOMLEX.event:"other", 
-            NOMLEX.instrument: "other", # "instrument"
-            NOMLEX.location: "other", # "location"
-            NOMLEX.material:"other", 
-            NOMLEX.property:"other", 
-            NOMLEX.result: "other", # "result"
-            NOMLEX.state:"other", 
-            NOMLEX.undergoer:"other", 
-            NOMLEX.uses:"other", 
-            NOMLEX.vehicle:"other",
+            SCHEMA.agent:"other", # "agent"
+            SCHEMA.bodyPart:"other", 
+            SCHEMA.byMeansOf:"other", 
+            SCHEMA.destination:"other", 
+            SCHEMA.event:"other", 
+            SCHEMA.instrument:"other", # "instrument"
+            SCHEMA.location:"other", # "location"
+            SCHEMA.material:"other", 
+            SCHEMA.property:"other", 
+            SCHEMA.result:"other", # "result"
+            SCHEMA.state:"other", 
+            SCHEMA.undergoer:"other", 
+            SCHEMA.uses:"other", 
+            SCHEMA.vehicle:"other",
         }
 
         # unicode mapping
@@ -129,14 +127,11 @@ class OWNPT():
         synset_id = synset.split("/")[-1]
         synset_id = synset_id[synset_id.find("-")+1:]
 
-        _WORDSENSE = None
-        if self.lang == "pt": _WORDSENSE = WORDSENSE
-        if self.lang == "en": _WORDSENSE = WORDSENSE_EN 
         # finds new sense_id 
         sense_id = 1
         while True:
             # new sense to add
-            new_sense = _WORDSENSE[f"{synset_id}-{sense_id}"]
+            new_sense = self.WORDSENSE[f"{synset_id}-{sense_id}"]
             new_triple = (synset, SCHEMA.containsWordSense, new_sense)
 
             # validate new sense
@@ -341,11 +336,11 @@ class OWNPT():
 
     
     def _get_all_words(self):
-        return self.graph.query("SELECT ?w WHERE { ?w a wn30:Word }")
+        return self.graph.query("SELECT ?w WHERE { ?w a owns:Word }")
     
     
     def _get_all_synsets(self):
-        return self.graph.query("SELECT ?s WHERE { VALUES ?t { wn30:Synset wn30:AdjectiveSatelliteSynset wn30:AdjectiveSynset wn30:AdverbSynset wn30:NounSynset wn30:VerbSynset } ?s a ?t . }")
+        return self.graph.query("SELECT ?s WHERE { VALUES ?t { owns:Synset owns:AdjectiveSatelliteSynset owns:AdjectiveSynset owns:AdverbSynset owns:NounSynset owns:VerbSynset } ?s a ?t . }")
         
     
     def _get_synset_by_id(self, synset_id):

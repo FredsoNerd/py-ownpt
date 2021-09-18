@@ -8,7 +8,7 @@ logger = logging.getLogger()
 
 from rdflib import Graph
 from pyownpt.util import get_format
-from pyownpt.ownlmf import OWNPT_LMF
+from pyownpt.ownlmf import OWN_LMF
 
 
 def _parse(args):
@@ -59,7 +59,7 @@ def lmf_format(ownpt_filapaths, ili_map_filapath, output_filepath, lexicon_id,
 
     # formats into LMF format
     logger.info(f"formatting into LMF format")
-    ownpt_lmf = OWNPT_LMF(ownpt, ili_map, lexicon_id, label, version, lang,
+    ownpt_lmf = OWN_LMF(ownpt, ili_map, lexicon_id, label, version, lang,
                     status, confidenceScore, url, email, license, citation).format()
 
     # serializes output

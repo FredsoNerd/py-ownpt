@@ -2,9 +2,9 @@
 
 from tqdm import tqdm
 from lxml.etree import Element, tostring
-from pyownpt.ownpt import Graph, OWNPT, OWL, SCHEMA, PWN30
+from pyownpt.ownpt import Graph, OWN, OWL, SCHEMA, PWN30
 
-class OWNPT_LMF(OWNPT):
+class OWN_LMF(OWN):
     def __init__(self, own_pt:Graph, ili_map:Graph, lexicon_id, label, version,
         lang, status, confidenceScore, url, email, license, citation):
 
