@@ -8,7 +8,7 @@ class OWN_LMF(OWN):
     def __init__(self, own_pt:Graph, ili_map:Graph, lexicon_id, label, version,
         lang, status, confidenceScore, url, email, license, citation):
 
-        super().__init__(own_pt)
+        super().__init__(own_pt, lang)
         self.ili = ili_map
         self.ili.bind("owl", OWL)
         self.namespace = {"dc":"https://globalwordnet.github.io/schemas/dc/"}
@@ -33,7 +33,7 @@ class OWN_LMF(OWN):
         lexical_resource.append(self.get_lexicon_lmf())
 
         return tostring(lexical_resource, encoding="UTF-8", pretty_print=True, xml_declaration=True,
-            doctype="<!DOCTYPE LexicalResource SYSTEM 'http://globalwordnet.github.io/schemas/WN-LMF-1.0.dtd'>").decode()
+            doctype="<!DOCTYPE LexicalResource SYSTEM 'http://globalwordnet.github.io/schemas/WN-LMF-1.1.dtd'>").decode()
 
 
     def get_lexicon_lmf(self):
