@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from rdflib.graph import Graph
-from pyownpt.ownpt import OWN
+from pyown.own import OWN
 
 class Split(OWN):
 

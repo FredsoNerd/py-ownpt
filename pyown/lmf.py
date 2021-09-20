@@ -2,13 +2,13 @@
 
 from tqdm import tqdm
 from lxml.etree import Element, tostring
-from pyownpt.ownpt import Graph, OWN, OWL, SCHEMA, PWN30
+from pyown.own import Graph, OWN, OWL, SCHEMA, PWN30
 
-class OWN_LMF(OWN):
-    def __init__(self, own_pt:Graph, ili_map:Graph, lexicon_id, label, version,
+class LMF(OWN):
+    def __init__(self, own:Graph, ili_map:Graph, lexicon_id, label, version,
         lang, status, confidenceScore, url, email, license, citation):
 
-        super().__init__(own_pt, lang)
+        super().__init__(own, lang)
         self.ili = ili_map
         self.ili.bind("owl", OWL)
         self.namespace = {"dc":"https://globalwordnet.github.io/schemas/dc/"}

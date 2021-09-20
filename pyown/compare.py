@@ -2,7 +2,7 @@
 
 from tqdm import tqdm
 from rdflib import Graph, URIRef
-from pyownpt.ownpt import OWN, SCHEMA
+from pyown.own import OWN, SCHEMA
 
 class Compare(OWN):
     
@@ -16,9 +16,9 @@ class Compare(OWN):
         """"""
 
         # compares items
-        _, report_word = self.compare_item_ownpt_dump(item_name="word_pt")
-        _, report_gloss = self.compare_item_ownpt_dump(item_name="gloss_pt")
-        _, report_example = self.compare_item_ownpt_dump(item_name="example_pt")
+        _, report_word = self.compare_item_own_dump(item_name="word_pt")
+        _, report_gloss = self.compare_item_own_dump(item_name="gloss_pt")
+        _, report_example = self.compare_item_own_dump(item_name="example_pt")
         report_word = report_word["docs"]
         report_gloss = report_gloss["docs"]
         report_example = report_example["docs"]
@@ -41,14 +41,14 @@ class Compare(OWN):
         return report
 
 
-    def compare_item_ownpt_dump(self, item_name="word_pt"):
+    def compare_item_own_dump(self, item_name):
         """"""
 
         # reports
         compare = True
         report = {
             "docs":dict(), 
-            "count":{"dump":0, "ownpt":0, "both":0}}
+            "count":{"dump":0, "rdf":0, "both":0}}
         
         # query
         query = self._get_query(item_name)
@@ -63,39 +63,37 @@ class Compare(OWN):
             # update report
             report["count"]["both"] += len(items)
             report["count"]["dump"] += len(itemsd)
-            report["count"]["ownpt"] += len(itemso)
+            report["count"]["rdf"] += len(itemso)
             
             report["docs"][doc_id] = dict()
-            report["docs"][doc_id][item_name] = {"compare":result, "both":items, "dump":itemsd, "ownpt":itemso}
+            report["docs"][doc_id][item_name] = {"compare":result, "both":items, "dump":itemsd, "rdf":itemso}
 
             # displays debug info
             if not result:
                 compare = False
                 self.logger.debug(f"synset {doc_id}:words: comparing resulted False:"
                                 f"\n\t {item_name} {itemsd} found only in dump"
-                                f"\n\t {item_name} {itemso} found only in ownpt"
+                                f"\n\t {item_name} {itemso} found only in rdf"
                                 f"\n\t {item_name} {items} found in both documents")
         
         self.logger.info(f"{item_name}: comparing resulted '{compare}':"
                         f"\n\t {item_name}:{report['count']['dump']} found only in dump"
-                        f"\n\t {item_name}:{report['count']['ownpt']} found only in ownpt"
+                        f"\n\t {item_name}:{report['count']['rdf']} found only in rdf"
                         f"\n\t {item_name}:{report['count']['both']} found in both documents")
 
         # returns report
         return compare, report
 
 
-    def compare_antonymof_ownpt_dump(self):
+    def compare_antonymof_own_dump(self):
         """"""
 
         map_pointers = {"wn30_pt_antonymOf":SCHEMA.antonymOf}
-        return self._compare_pointers_ownpt_dump(map_pointers)
+        return self._compare_pointers_own_dump(map_pointers)
 
     
-    def compare_morpho_ownpt_dump(self):
+    def compare_morpho_own_dump(self):
         """"""
-
-        ownpt = Graph()
 
         # morphosemantic links
         pointers_uri_map = {  
@@ -114,30 +112,30 @@ class Compare(OWN):
             "wn30_pt_byMeansOf": SCHEMA.byMeansOf
         }
 
-        return self._compare_pointers_ownpt_dump(pointers_uri_map)
+        return self._compare_pointers_own_dump(pointers_uri_map)
 
 
-    def _compare_pointers_ownpt_dump(self, map_pointers:dict):
+    def _compare_pointers_own_dump(self, map_pointers:dict):
         """"""
 
         compare = True
         reports = dict()
 
         for pointer_name, pointer_uri in map_pointers.items():
-            compare_i, reports[pointer_name] = self._compare_pointer_ownpt_dump(pointer_name, pointer_uri)
+            compare_i, reports[pointer_name] = self._compare_pointer_own_dump(pointer_name, pointer_uri)
             compare = compare if compare_i else False
         
         return compare, reports
 
 
-    def _compare_pointer_ownpt_dump(self, pointer_name, pointer_uri):
+    def _compare_pointer_own_dump(self, pointer_name, pointer_uri):
         """"""
 
         # reports
         compare = True
         report = {
-            "count":{"dump":0, "ownpt":0, "both":0},
-            "pairs":{"dump":[], "ownpt":[], "both":[]}}
+            "count":{"dump":0, "rdf":0, "both":0},
+            "pairs":{"dump":[], "rdf":[], "both":[]}}
 
         self.logger.info(f"start comparing pointer '{pointer_name}':")
         for synset in tqdm(self.dump):
@@ -148,22 +146,22 @@ class Compare(OWN):
             # update report
             report["count"]["both"] += len(pairs)
             report["count"]["dump"] += len(pairsd)
-            report["count"]["ownpt"] += len(pairso)
+            report["count"]["rdf"] += len(pairso)
             report["pairs"]["both"] += pairs
             report["pairs"]["dump"] += pairsd
-            report["pairs"]["ownpt"] += pairso
+            report["pairs"]["rdf"] += pairso
             
             # display debug
             if not result:
                 compare = False
                 self.logger.debug(f"synset {doc_id}:{pointer_name}: comparing resulted False:"
                                 f"\n\t pairs {pairsd} found only in dump"
-                                f"\n\t pairs {pairso} found only in ownpt"
+                                f"\n\t pairs {pairso} found only in rdf"
                                 f"\n\t pairs {pairs} found in both documents")
         
         self.logger.info(f"{pointer_name}: comparing resulted '{compare}':"
                         f"\n\t {report['count']['dump']} pairs found only in dump"
-                        f"\n\t {report['count']['ownpt']} pairs found only in ownpt"
+                        f"\n\t {report['count']['rdf']} pairs found only in rdf"
                         f"\n\t {report['count']['both']} pairs found in both documents")
 
         # returns report

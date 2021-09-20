@@ -8,8 +8,8 @@ import tabulate
 logger = logging.getLogger()
 
 from rdflib import Graph
-from pyownpt.util import get_format
-from pyownpt.statistics import Statistics
+from pyown.util import get_format
+from pyown.statistics import Statistics
 
 
 def _parse(args):

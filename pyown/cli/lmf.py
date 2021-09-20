@@ -7,12 +7,12 @@ import logging
 logger = logging.getLogger()
 
 from rdflib import Graph
-from pyownpt.util import get_format
-from pyownpt.ownlmf import OWN_LMF
+from pyown.util import get_format
+from pyown.lmf import LMF
 
 
 def _parse(args):
-    ownpt_filapaths = args.owp
+    filapaths = args.rdf
     ili_map_filapath = args.ili
     output_filepath = args.o
 
@@ -38,19 +38,31 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler,fileHandler])
 
     # calls main function
-    lmf_format(ownpt_filapaths, ili_map_filapath, output_filepath, lexicon_id, 
-        label, version, lang, status, confidenceScore, url, email, license, citation)
+    lmf_format(filapaths, ili_map_filapath, output_filepath, lexicon_id,  label,
+        version, lang, status, confidenceScore, url, email, license, citation)
 
 
-def lmf_format(ownpt_filapaths, ili_map_filapath, output_filepath, lexicon_id,
-    label, version, lang, status, confidenceScore, url, email, license, citation):
+def lmf_format(
+    filapaths:str,
+    ili_map_filapath:str,
+    output_filepath:str,
+    lexicon_id:str,
+    label:str,
+    version:str,
+    lang:str,
+    status:str,
+    confidence_score:str,
+    url:str,
+    email,
+    license,
+    citation):
 
     # loading data
-    ownpt = Graph()
-    for ownpt_filapath in ownpt_filapaths:
-        logger.info(f"loading data from file '{ownpt_filapath}'")
-        ownpt_format = get_format(ownpt_filapath)
-        ownpt.parse(ownpt_filapath, format=ownpt_format)
+    rdf = Graph()
+    for filapath in filapaths:
+        logger.info(f"loading data from file '{filapath}'")
+        format = get_format(filapath)
+        rdf.parse(filapath, format=format)
 
     ili_map = Graph()
     logger.info(f"loading data from file '{ili_map_filapath}'")
@@ -59,19 +71,19 @@ def lmf_format(ownpt_filapaths, ili_map_filapath, output_filepath, lexicon_id,
 
     # formats into LMF format
     logger.info(f"formatting into LMF format")
-    ownpt_lmf = OWN_LMF(ownpt, ili_map, lexicon_id, label, version, lang,
-                    status, confidenceScore, url, email, license, citation).format()
+    lmf = LMF(rdf, ili_map, lexicon_id, label, version, lang, status,
+            confidence_score, url, email, license, citation).format()
 
     # serializes output
     logger.info(f"serialiing output to {output_filepath}")
-    open(output_filepath, "w", encoding="utf8").write(ownpt_lmf)
+    open(output_filepath, "w", encoding="utf8").write(lmf)
 
 
 # sets parser and interface function
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="fileS from own-pt", nargs="+")
+parser.add_argument("rdf", help="rdf files", nargs="+")
 parser.add_argument("ili", help="rdf file from ili-map")
 
 parser.add_argument("-o", help="output file (default: output.xml)", default="output.xml")

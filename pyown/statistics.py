@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from pyownpt.ownpt import OWN, SCHEMA
+from pyown.own import OWN, SCHEMA
 
 class Statistics(OWN):
 

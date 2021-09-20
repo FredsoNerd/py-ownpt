@@ -118,7 +118,7 @@ class OWN():
             SCHEMA.AdjectiveSatelliteWordSense]
 
         # logging
-        self.logger = getLogger("ownpt")
+        self.logger = getLogger("own")
 
 
     def _new_sense(self, synset, add_sense=False):

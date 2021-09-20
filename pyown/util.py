@@ -14,13 +14,13 @@ def get_unify_actions(report:dict):
             # removes if comparing positive
             report.pop(doc)
         else:
-            # adds actions to apply to ownpt
+            # adds actions to apply to rdf
             report[doc]["actions"] = {
                 "add-word-pt": report[doc]["word_pt"]["dump"],
-                "remove-word-pt": report[doc]["word_pt"]["ownpt"],
+                "remove-word-pt": report[doc]["word_pt"]["rdf"],
                 "add-gloss-pt": report[doc]["gloss_pt"]["dump"],
-                "remove-gloss-pt": report[doc]["gloss_pt"]["ownpt"],
+                "remove-gloss-pt": report[doc]["gloss_pt"]["rdf"],
                 "add-example-pt": report[doc]["example_pt"]["dump"],
-                "remove-example-pt": report[doc]["example_pt"]["ownpt"]}
+                "remove-example-pt": report[doc]["example_pt"]["rdf"]}
 
     return report

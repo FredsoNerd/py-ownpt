@@ -8,12 +8,12 @@ import logging
 logger = logging.getLogger()
 
 from rdflib import Graph
-from pyownpt.util import get_format
-from pyownpt.split import Split
+from pyown.util import get_format
+from pyown.split import Split
 
 
 def _parse(args):
-    own_filapaths = args.owp
+    filapaths = args.rdf
     lang = args.l
     extension = args.e
     output_filepath = args.o
@@ -25,28 +25,28 @@ def _parse(args):
     logging.basicConfig(level=logging.DEBUG, handlers=[streamHandler])
 
     # calls main function
-    split_into_files(own_filapaths, lang, extension, output_filepath)
+    split_into_files(filapaths, lang, extension, output_filepath)
 
 
 def split_into_files(
-    ownpt_filapaths:str, 
+    filapaths:str, 
     lang:str,
     extension:str,
     output_filepath:str):
 
     # loading data
-    ownpt = Graph()
-    for ownpt_filapath in ownpt_filapaths:
-        logger.info(f"loading data from file '{ownpt_filapath}'")
-        ownpt_format = get_format(ownpt_filapath)
-        ownpt.parse(ownpt_filapath, format=ownpt_format)
+    rdf = Graph()
+    for filapath in filapaths:
+        logger.info(f"loading data from file '{filapath}'")
+        format = get_format(filapath)
+        rdf.parse(filapath, format=format)
       
     # generates files
     os.makedirs(output_filepath, exist_ok=True)
 
     ## generates files
     logger.info(f"generating splitted graphs")
-    split = Split(ownpt, lang)
+    split = Split(rdf, lang)
 
     actions = [
         (split.pop_morphosemantic_links, "morphosemantic-links"),
@@ -67,8 +67,8 @@ def split_into_files(
 parser = argparse.ArgumentParser()
 
 # sets the user options
-parser.add_argument("owp", help="files from own-pt", nargs="+")
-parser.add_argument("-l", help="wordnet language (default: 'pt')", default="pt")
+parser.add_argument("rdf", help="rdf files", nargs="+")
+parser.add_argument("-l", help="wordnet language")
 parser.add_argument("-e", help="splitted extension (default: 'ttl')", default="ttl")
 parser.add_argument("-o", help="output filepath (default: 'output')", default="output")
 

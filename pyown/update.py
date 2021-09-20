@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from tqdm import tqdm
-from pyownpt.ownpt import OWN, RDFS, SCHEMA
+from pyown.own import OWN, RDFS, SCHEMA
 
 class Update(OWN):
 
